@@ -10,7 +10,6 @@ class CreateUserController {
     async handle(request: Request, response: Response) {
         try {
             const {username, password, registration, name, email, isAdmin } = request.body;
-            let _isAdmin = isAdmin == undefined ? false : isAdmin;
             
             if (!(username && password && registration && name && email)) {
                 return response.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
@@ -41,23 +40,6 @@ class CreateUserController {
                 return response.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
             }
 
-            // Garantindo que apenas usuários administradores criarão usuários administradores
-            if (request.params.userid == undefined) {
-                // Controller acessado por usuário não logado: cria apenas usuário comum
-                _isAdmin = false;
-            } else {
-                const creatorIsAdmin = await database.user.findUnique({
-                    where: {
-                        id: (Number)(request.params.userid),
-                        isAdmin: true
-                    }
-                });
-                if (!creatorIsAdmin) {
-                    // Novo usuário será criado por usuário logado, mas que não é administrador (caso de exceção, front não deve oferecer essa opção ao usuário comum)
-                    _isAdmin = false;
-                }
-            }
-
             // Criptografando a senha (hashed password)
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
@@ -76,7 +58,7 @@ class CreateUserController {
                         username,
                         password: hashedPassword,
                         userRegistration: registration,
-                        isAdmin: _isAdmin
+                        isAdmin: isAdmin == undefined ? false : isAdmin
                     }
                 }).then((newUser) => {
                     // Gerando o access e refresh token
