@@ -8,7 +8,7 @@ class DeleteItemController {
             const numberOfPatrimony = req.params.numberOfPatrimony;
             
             if (!numberOfPatrimony) {
-                return res.status(404).send("O id do item deve ser informado");
+                return res.status(404).send("O número de patrimônio do item deve ser informado");
             }
 
             const item = await database.item.findUnique({
