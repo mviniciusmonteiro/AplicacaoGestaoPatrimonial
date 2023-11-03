@@ -71,10 +71,9 @@ class CreateItemController {
                     projectName: _isOnProject ? projectName : null,
                     imageId: newImage == null ? null : newImage.id
                 }
-            }).then((newItem) => {
-                return res.status(201).json({
-                    "item": newItem
-                });
+            });
+            return res.status(201).json({
+                "item": newItem
             });
         } catch (error) {
             throw error;

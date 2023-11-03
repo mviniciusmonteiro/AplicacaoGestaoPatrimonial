@@ -50,23 +50,21 @@ class CreateUserController {
                     name,
                     email
                 }
-            }).then(async () => {
-                // Dados de login
-                const newUser = await database.user.create({
-                    data: {
-                        username,
-                        password: hashedPassword,
-                        userRegistration: registration,
-                        isAdmin: isAdmin == undefined ? false : isAdmin
-                    }
-                }).then((newUser) => {
-                    return res.status(201).json(
-                        {
-                            user: newUser
-                        }
-                    );
-                });
             });
+            // Dados de login
+            const newUser = await database.user.create({
+                data: {
+                    username,
+                    password: hashedPassword,
+                    userRegistration: registration,
+                    isAdmin: isAdmin == undefined ? false : isAdmin
+                }
+            });
+            return res.status(201).json(
+                {
+                    user: newUser
+                }
+            );
         } catch (error) {
             throw error;
         }

@@ -31,9 +31,10 @@ class GetItemByNumberOfPatrimony {
                         id: item.imageId
                     }
                 });
-                if (image) {
-                    utils.base64_decode(image.file, image.fileName);
-                }
+                // TODO: Verificar necessidade
+                // if (image) {
+                //     utils.base64_decode(image.file, image.fileName);
+                // }
             }
             return res.status(200).json({
                 item,
