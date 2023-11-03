@@ -24,7 +24,6 @@ router.put('/item/:numberOfPatrimony', new AuthorizationJWTCommom().handle, uplo
 // Rotas que requerem autorização de administrador
 router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
-
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
 
 export { router };

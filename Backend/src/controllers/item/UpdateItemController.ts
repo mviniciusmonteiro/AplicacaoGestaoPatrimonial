@@ -9,7 +9,7 @@ class UpdateItemController {
             const numberOfPatrimonyParam = req.params.numberOfPatrimony;
             
             if (!numberOfPatrimonyParam) {
-                return res.status(404).send("O número de patrimônio do item e a flag changeImage devem ser informados");
+                return res.status(404).send("O número de patrimônio do item deve ser informados");
             }
 
             const { name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
