@@ -4,15 +4,13 @@ import { database } from '../../database';
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-let refreshTokens: string[] = [];
-
 class LoginController {
-    async handle(request: Request, response: Response) {
+    async handle(req: Request, res: Response) {
         try {
-            const { username, password } = request.body;
+            const { username, password } = req.body;
 
             if (!(username && password)) {
-                return response.status(400).send("Usuário e senha são obrigatórios");
+                return res.status(400).send("Usuário e senha são obrigatórios");
             }
 
             // Buscando dados do usuário
@@ -23,26 +21,19 @@ class LoginController {
             });
 
             if (user && (await bcrypt.compare(password, user.password))) {
-                // Usuário cadastrado e credenciais corretas: cria token
+                // Usuário cadastrado e credenciais corretas: gera token e salva nos cookies
+                let role = user.isAdmin ? "admin" : "commom";
                 const token = jwt.sign(
-                    { user_id: user.id, username: username },
-                    process.env.JWT_SECRET_KEY,
-                    { expiresIn: "5min" }
-                );
-
-                const refreshToken = jwt.sign(
-                    { user_id: user.id, username: username },
+                    {id: user.id, role: role},
                     process.env.JWT_SECRET_KEY
-                )
-                refreshTokens.push(refreshToken);
-
-                return response.status(200).json({
-                    user,
-                    token,
-                    refresh: refreshToken
-                });
+                );
+                
+                return res.cookie('access_token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production"
+                }).status(200).json({mensagem: "Login realizado com sucesso"});
             }
-            return response.status(400).send("Usuário e/ou senha inválidos");
+            return res.status(400).send("Usuário e/ou senha inválidos");
         } catch (error) {
             throw error;
         }
