@@ -6,7 +6,7 @@ const utils = require('../../utils/index.js');
 class GetItemByNumberOfPatrimony {
     async handle(req: Request, res: Response) {
         try {
-            const numberOfPatrimony = req.params.id;
+            const numberOfPatrimony = req.params.numberOfPatrimony;
 
             if (!numberOfPatrimony) {
                 return res.status(400).send("O número de patrimônio do item deve ser informado");
