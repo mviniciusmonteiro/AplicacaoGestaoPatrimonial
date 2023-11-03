@@ -5,6 +5,7 @@ import { AuthorizationJWTCommom } from "../middleware/AuthorizationJWTCommom";
 import { LogoffController } from "../controllers/user/LogoffController";
 import { CreateItemController } from "../controllers/item/CreateItemController";
 import { AuthorizationJWTAdmin } from "../middleware/AuthorizationJWTAdmin";
+import { GetItemByNumberOfPatrimony } from "../controllers/item/GetItemByNumberOfPatrimonyController";
 
 const router = Router();
 const multer = require('multer');
@@ -19,5 +20,6 @@ router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController(
 
 // Rotas que requerem autorização de administrador
 router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
+router.get('/item/:id', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 
 export { router };
