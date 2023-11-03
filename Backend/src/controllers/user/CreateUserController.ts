@@ -1,19 +1,16 @@
 import { Request, Response } from 'express';
 import { database } from '../../database';
-import { isModuleNamespaceObject } from 'util/types';
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-let refreshTokens: string[] = [];
-
 class CreateUserController {
-    async handle(request: Request, response: Response) {
-        const {username, password, registration, name, email, isAdmin } = request.body;
+    async handle(req: Request, res: Response) {
+        const {username, password, registration, name, email, isAdmin } = req.body;
         let _isAdmin = isAdmin == undefined ? false : isAdmin;
         
         if (!(username && password && registration && name && email)) {
-            return response.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
+            return res.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
         }
 
         // Verificando se já existe usuário com mesmo username
@@ -34,21 +31,21 @@ class CreateUserController {
         });
 
         if (usernameAlreadyExist) {
-            return response.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
+            return res.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
         }
 
         if (registrationOrEmailAlreadyExist) {
-            return response.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
+            return res.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
         }
 
         // Garantindo que apenas usuários administradores criarão usuários administradores
-        if (request.params.userid == undefined) {
+        if (req.params.userid == undefined) {
             // Controller acessado por usuário não logado: cria apenas usuário comum
             _isAdmin = false;
         } else {
             const creatorIsAdmin = await database.user.findUnique({
                 where: {
-                    id: (Number)(request.params.userid),
+                    id: (Number)(req.params.userid),
                     isAdmin: true
                 }
             });
@@ -82,29 +79,13 @@ class CreateUserController {
                 }
             });
 
-            // Gerando o access e refresh token
-            const token = jwt.sign(
-                { user_id: newUser.id, username: username },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: "5min" }
-            );
-
-            const refreshToken = jwt.sign(
-                { user_id: newUser.id, username: username },
-                process.env.JWT_SECRET_KEY
-            );
-
-            refreshTokens.push(refreshToken);
-
-            return response.status(201).json(
+            return res.status(201).json(
                 {
-                    user: newUser,
-                    token: token,
-                    refresh: refreshToken
+                    user: newUser
                 }
             );
         } catch (e) {
-            return response.status(500).json("Ocorreu um erro interno ao tentar criar o usuário");
+            return res.status(500).json("Ocorreu um erro interno ao tentar criar o usuário");
         }
     }
 }
