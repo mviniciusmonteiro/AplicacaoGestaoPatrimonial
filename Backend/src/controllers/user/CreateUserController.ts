@@ -4,15 +4,13 @@ import { database } from '../../database';
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-let refreshTokens: string[] = [];
-
 class CreateUserController {
-    async handle(request: Request, response: Response) {
+    async handle(req: Request, res: Response) {
         try {
-            const {username, password, registration, name, email, isAdmin } = request.body;
+            const {username, password, registration, name, email, isAdmin } = req.body;
             
             if (!(username && password && registration && name && email)) {
-                return response.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
+                return res.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
             }
 
             // Verificando se já existe usuário com mesmo username
@@ -33,12 +31,13 @@ class CreateUserController {
             });
 
             if (usernameAlreadyExist) {
-                return response.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
+                return res.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
             }
 
             if (registrationOrEmailAlreadyExist) {
-                return response.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
+                return res.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
             }
+
 
             // Criptografando a senha (hashed password)
             const salt = await bcrypt.genSalt(10);
@@ -61,24 +60,9 @@ class CreateUserController {
                         isAdmin: isAdmin == undefined ? false : isAdmin
                     }
                 }).then((newUser) => {
-                    // Gerando o access e refresh token
-                    const token = jwt.sign(
-                        { user_id: newUser.id, username: username },
-                        process.env.JWT_SECRET_KEY,
-                        { expiresIn: "5min" }
-                    );
-                    const refreshToken = jwt.sign(
-                        { user_id: newUser.id, username: username },
-                        process.env.JWT_SECRET_KEY
-                    );
-
-                    refreshTokens.push(refreshToken);
-
-                    return response.status(201).json(
+                    return res.status(201).json(
                         {
-                            user: newUser,
-                            token: token,
-                            refresh: refreshToken
+                            user: newUser
                         }
                     );
                 });
