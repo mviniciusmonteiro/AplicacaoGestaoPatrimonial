@@ -9,13 +9,13 @@ class UpdateItemController {
             const numberOfPatrimonyParam = req.params.numberOfPatrimony;
             
             if (!numberOfPatrimonyParam) {
-                return res.status(404).send("O número de patrimônio do item deve ser informados");
+                return res.status(404).json({mensagem: "O número de patrimônio do item deve ser informados"});
             }
 
             const { name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
         
             if (!(name && description && localization && (hasResponsible != undefined)  && (isOnProject != undefined))) {
-                return res.status(400).send("Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios");
+                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios"});
             }
 
             // Variáveis com os tipos definidos (necessário pois, nesse caso, como há um arquivo, os dados do body são passados por form-data - que tipa tudo como string)
@@ -32,7 +32,7 @@ class UpdateItemController {
                 });
 
                 if (!registrationIsValid) {
-                    return res.status(400).send("A matrícula do responsável pelo item é inválida");
+                    return res.status(400).json({mensagem: "A matrícula do responsável pelo item é inválida"});
                 }
             }            
 
@@ -41,7 +41,7 @@ class UpdateItemController {
             });
 
             if (!oldItem) {
-                return res.status(400).send("Item do patrimônio não encontrado");
+                return res.status(400).json({mensagem: "Item do patrimônio não encontrado"});
             }
 
             // Deletando imagem antiga

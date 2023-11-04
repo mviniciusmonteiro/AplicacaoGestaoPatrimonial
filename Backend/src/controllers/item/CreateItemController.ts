@@ -9,7 +9,7 @@ class CreateItemController {
             const { numberOfPatrimony, name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
 
             if (!(numberOfPatrimony && name && description && localization && (hasResponsible != undefined)  && (isOnProject != undefined))) {
-                return res.status(400).send("Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios");
+                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios"});
             }
 
             // Variáveis com os tipos definidos (necessário pois, nesse caso, como há um arquivo, os dados do body são passados por form-data - que tipa tudo como string)
@@ -26,7 +26,7 @@ class CreateItemController {
             });
 
             if (itemAlreadyExist) {
-                return res.status(400).send("Já existe um item com mesmo número de patrimônio");
+                return res.status(400).json({mensagem: "Já existe um item com mesmo número de patrimônio"});
             }
 
             // Verificando se há um responsável e se sua matrícula é válida
@@ -38,7 +38,7 @@ class CreateItemController {
                 });
 
                 if (!registrationIsValid) {
-                    return res.status(400).send("A matrícula do responsável pelo item é inválida");
+                    return res.status(400).json({mensagem: "A matrícula do responsável pelo item é inválida"});
                 }
             }
 
