@@ -44,26 +44,55 @@ class UpdateItemController {
                 return res.status(400).json({mensagem: "Item do patrimônio não encontrado"});
             }
 
-            // Deletando imagem antiga
-            if (oldItem.imageId) {
-                const oldImage = await database.image.delete({
-                    where: { id: Number(oldItem.imageId) }
+            const removeOldImage = async (imageId: Number) => {
+                console.log("Removi imagem antiga");
+                oldImage = await database.image.delete({
+                    where: { id: Number(imageId) }
                 });
             }
-            let newImage = null;
+
+            // Buscando a imagem antiga cadastrada no banco
+            let oldImage = null;
+            let oldImageName = null;
+            if (oldItem.imageId) {
+                oldImage = await database.image.findUnique({
+                    where: { id: Number(oldItem.imageId) }
+                });
+                if (oldImage) {
+                    oldImageName = oldImage.fileName;
+                }
+            }
+
+            let newImage = oldImage;
             // Verificando se imagem será atualizada
             if (req.file) {
-                // Lendo os dados da nova imagem salvos na pasta src/upload
-                let fileContent = utils.base64_encode(req.file.filename);
+                // Usuário enviou uma imagem na requisição
+                if (oldImageName != req.file.originalname) {
+                    // Imagem passada por requisição é diferente da imagem cadastrada antes: atualiza
 
-                // Salvando imagem no banco
-                newImage = await database.image.create({
-                    data: {
-                        fileName: req.file.originalname,
-                        fileExt: req.file.mimetype,
-                        file: fileContent
+                    // Remove imagem antiga
+                    if (oldImage) {
+                        removeOldImage(oldImage.id);
                     }
-                });
+
+                    // Salva nova imagem
+                    // Lendo os dados da nova imagem salvos na pasta src/upload
+                    let fileContent = utils.base64_encode(req.file.filename);
+
+                    // Salvando imagem no banco
+                    newImage = await database.image.create({
+                        data: {
+                            fileName: req.file.originalname,
+                            fileExt: req.file.mimetype,
+                            file: fileContent
+                        }
+                    });
+                }
+            } else {
+                if (oldImage) {
+                    removeOldImage(oldImage.id);
+                    newImage = null;
+                }
             }
 
             // Atualizando dados do item
@@ -78,7 +107,7 @@ class UpdateItemController {
                     responsibleRegistration: _hasResponsible ? _responsibleRegistration : null,
                     isOnProject: _isOnProject,
                     projectName: _isOnProject ? projectName : null,
-                    imageId: newImage == null ? null : newImage.id
+                    imageId: newImage ? newImage.id : null
                 }
             });
 
