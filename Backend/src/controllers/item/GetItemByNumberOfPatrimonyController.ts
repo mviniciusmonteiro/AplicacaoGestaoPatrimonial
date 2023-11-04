@@ -9,7 +9,7 @@ class GetItemByNumberOfPatrimony {
             const numberOfPatrimony = req.params.numberOfPatrimony;
 
             if (!numberOfPatrimony) {
-                return res.status(400).json({mensagem: "O número de patrimônio do item deve ser informado"});
+                return res.status(404).json({mensagem: "O número de patrimônio do item deve ser informado"});
             }
 
             // Buscando dados do item
