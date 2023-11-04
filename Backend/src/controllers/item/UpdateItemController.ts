@@ -19,22 +19,22 @@ class UpdateItemController {
             }
 
             // Variáveis com os tipos definidos (necessário pois, nesse caso, como há um arquivo, os dados do body são passados por form-data - que tipa tudo como string)
-            let _hasResponsible = Boolean(hasResponsible);
+            let _hasResponsible = hasResponsible == "true" ? true : false;
             let _responsibleRegistration = Number(responsibleRegistration);
-            let _isOnProject = Boolean(isOnProject);
+            let _isOnProject = isOnProject == "true" ? true : false;
 
             // Verificando se há um responsável e se sua matrícula é válida
-            if (hasResponsible) {
-                const registrationIsValid = database.user.findFirst({
+            if (_hasResponsible) {
+                const registrationIsValid = await database.user.findFirst({
                     where: {
-                        userRegistration: responsibleRegistration
+                        userRegistration: _responsibleRegistration
                     }
                 });
 
                 if (!registrationIsValid) {
                     return res.status(400).json({mensagem: "A matrícula do responsável pelo item é inválida"});
                 }
-            }            
+            }
 
             const oldItem = await database.item.findUnique({
                 where: { numberOfPatrimony: Number(numberOfPatrimonyParam) }
@@ -46,7 +46,7 @@ class UpdateItemController {
 
             // Deletando imagem antiga
             if (oldItem.imageId) {
-                await database.image.delete({
+                const oldImage = await database.image.delete({
                     where: { id: Number(oldItem.imageId) }
                 });
             }
@@ -83,7 +83,7 @@ class UpdateItemController {
             });
 
             return res.status(200).json({
-                item: { updatedItem }
+                item: updatedItem
             });
         } catch (error) {
             console.error(error);
