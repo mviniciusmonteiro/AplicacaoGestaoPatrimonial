@@ -11,7 +11,7 @@ class CreateUserController {
             let _isAdmin = isAdmin == undefined ? false : isAdmin;
 
             if (!(username && password && registration && name && email)) {
-                return res.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
+                return res.status(400).json({mensagem: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios"});
             }
 
             // Verificando se já existe usuário com mesmo username
@@ -32,11 +32,11 @@ class CreateUserController {
             });
 
             if (usernameAlreadyExist) {
-                return res.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
             }
 
             if (registrationOrEmailAlreadyExist) {
-                return res.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo número de matrícula ou email"});
             }
 
             // Garantindo que apenas usuário administrador pode criar usuário administrador
@@ -55,23 +55,19 @@ class CreateUserController {
                     name,
                     email
                 }
-            }).then(async () => {
-                // Dados de login
-                const newUser = await database.user.create({
-                    data: {
-                        username,
-                        password: hashedPassword,
-                        userRegistration: registration,
-                        isAdmin: _isAdmin
-                    }
-                }).then((newUser) => {
-                    return res.status(201).json(
-                        {
-                            user: newUser
-                        }
-                    );
-                });
             });
+            // Dados de login
+            const newUser = await database.user.create({
+                data: {
+                    username,
+                    password: hashedPassword,
+                    userRegistration: registration,
+                    isAdmin: _isAdmin
+                }
+            });
+            return res.status(201).json(
+                { user: newUser }
+            );
         } catch (error) {
             throw error;
         }
