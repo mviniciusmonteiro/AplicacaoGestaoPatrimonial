@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { database } from "../../../database";
 
 class GetItemsReportController {
-    async handle(req: Request, res: Response) {
+    async handle(req: Request | any, res: Response) {
         try {
             const { numberOfPatrimony, name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
 
@@ -22,7 +22,7 @@ class GetItemsReportController {
             }
 
             // Filtrando parâmetros booleanos
-            if (hasResponsible.toLowerCase() != "todos") {
+            if (hasResponsible.toLowerCase() != "todos" && req.userRole == "admin") {
                 // Filtra de acordo com o parâmetro do filtro
                 filteredItems = filteredItems.filter((item) => {
                     const filterParam = hasResponsible.toLowerCase() == "sim" ? true : false;
@@ -47,7 +47,20 @@ class GetItemsReportController {
             }
 
             // Filtrando parâmetro inteiro (matrícula do responsável)
-            if (responsibleRegistration != "") {
+            if (req.userRole == "commom") {
+                const userLogged = await database.user.findUnique({
+                    where: {
+                        id: req.userId
+                    }
+                });
+
+                const loggedUserRegist = userLogged?.userRegistration;
+                // Filtra apenas itens que usuário logado é responsável
+                filteredItems = filteredItems.filter((item) => {
+                    return (item.responsibleRegistration == loggedUserRegist);
+                });
+            } else if (responsibleRegistration != "") {
+                // Filtra quaisquer itens
                 const registrationInt = Number(responsibleRegistration);
 
                 filteredItems = filteredItems.filter((item) => {
