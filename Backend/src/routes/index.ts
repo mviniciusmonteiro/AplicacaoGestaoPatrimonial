@@ -8,6 +8,7 @@ import { AuthorizationJWTAdmin } from "../middleware/AuthorizationJWTAdmin";
 import { GetItemByNumberOfPatrimony } from "../controllers/item/GetItemByNumberOfPatrimonyController";
 import { DeleteItemController } from "../controllers/item/DeleteItemController";
 import { UpdateItemController } from "../controllers/item/UpdateItemController";
+import { GetItemsReportController } from "../controllers/report/item/GetItemsReportController";
 
 const router = Router();
 const multer = require('multer');
@@ -20,6 +21,7 @@ router.post('/login', new LoginController().handle);
 // Rotas que requerem autorização comum
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTCommom().handle, upload.single('image'), new UpdateItemController().handle);
+router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 
 // Rotas que requerem autorização de administrador
 router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
