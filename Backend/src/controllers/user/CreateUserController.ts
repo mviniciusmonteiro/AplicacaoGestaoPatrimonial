@@ -5,12 +5,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 class CreateUserController {
-    async handle(req: Request, res: Response) {
+    async handle(req: Request | any, res: Response) {
         try {
             const {username, password, registration, name, email, isAdmin } = req.body;
-            
+            let _isAdmin = isAdmin == undefined ? false : isAdmin;
+
             if (!(username && password && registration && name && email)) {
-                return res.status(400).send("Nome de usuário, senha, matrícula, nome e email são campos obrigatórios");
+                return res.status(400).json({mensagem: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios"});
             }
 
             // Verificando se já existe usuário com mesmo username
@@ -31,13 +32,17 @@ class CreateUserController {
             });
 
             if (usernameAlreadyExist) {
-                return res.status(400).send("Há um usuário cadastrado com mesmo nome de usuário");
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
             }
 
             if (registrationOrEmailAlreadyExist) {
-                return res.status(400).send("Há um usuário cadastrado com mesmo número de matrícula ou email");
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo número de matrícula ou email"});
             }
 
+            // Garantindo que apenas usuário administrador pode criar usuário administrador
+            if (req.userRole == "commom") {
+                _isAdmin = false;
+            }
 
             // Criptografando a senha (hashed password)
             const salt = await bcrypt.genSalt(10);
@@ -57,13 +62,11 @@ class CreateUserController {
                     username,
                     password: hashedPassword,
                     userRegistration: registration,
-                    isAdmin: isAdmin == undefined ? false : isAdmin
+                    isAdmin: _isAdmin
                 }
             });
             return res.status(201).json(
-                {
-                    user: newUser
-                }
+                { user: newUser }
             );
         } catch (error) {
             throw error;
