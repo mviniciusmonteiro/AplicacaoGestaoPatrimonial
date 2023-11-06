@@ -10,7 +10,7 @@ class LoginController {
             const { username, password } = req.body;
 
             if (!(username && password)) {
-                return res.status(400).send("Usuário e senha são obrigatórios");
+                return res.status(400).json({mensagem: "Usuário e senha são obrigatórios"});
             }
 
             // Buscando dados do usuário
@@ -33,7 +33,7 @@ class LoginController {
                     secure: process.env.NODE_ENV === "production"
                 }).status(200).json({mensagem: "Login realizado com sucesso"});
             }
-            return res.status(400).send("Usuário e/ou senha inválidos");
+            return res.status(400).json({mensagem: "Usuário e/ou senha inválidos"});
         } catch (error) {
             throw error;
         }
