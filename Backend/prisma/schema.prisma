@@ -16,9 +16,11 @@ model User {
   password String
   isAdmin Boolean @default(false)
   createdAt DateTime @default(now())
-
-  userData ProfileData @relation(fields: [userRegistration], references: [registration]) // Campo do relacionamento: apenas define conexão, não existe no banco
   userRegistration Int // Chave estrangeira
+
+  // Campos do relacionamento: apenas definem conexão, não existem no banco
+  userData ProfileData @relation(fields: [userRegistration], references: [registration]) 
+  associatedItem Item[]
 
   @@map("users")
 }
@@ -31,4 +33,34 @@ model ProfileData {
   ownerOfData User[] // Campo do relacionamento: apenas define conexão, não existe no banco
 
   @@map("profile_data")
+}
+
+model Item {
+  id Int @id @default(autoincrement())
+  numberOfPatrimony Int @unique
+  name String
+  description String
+  localization String
+  hasResponsible Boolean
+  responsibleRegistration Int? // Chave estrangeira
+  isOnProject Boolean
+  projectName String?
+  imageId Int? // Chave estrangeira
+
+  // Campo de relacionamento
+  itemImage Image? @relation(fields: [imageId], references: [id])
+  responsibleForItem User? @relation(fields: [responsibleRegistration], references: [id])
+
+  @@map("items")
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+  fileName String @db.VarChar(255)
+  fileExt String @db.VarChar(255)
+  file String?
+
+  ownerOfImage Item[] // Campo de relacionamento
+
+  @@map("images")
 }
