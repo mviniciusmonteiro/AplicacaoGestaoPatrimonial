@@ -28,7 +28,7 @@ router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController(
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
 router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new CreateItemController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
-// router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, upload.single('image'), new UpdateItemController().handle);
+router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new UpdateItemController().handle);
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
 
 export { router };

@@ -1,33 +1,34 @@
 import { Request, Response } from "express";
 import { database } from "../../database";
 
-const utils = require('../../utils/index.js');
+const fs = require('fs');
 
 class UpdateItemController {
-    async handle(req: Request | any, res: Response) {/*
+    async handle(req: Request | any, res: Response) {
         try {
-            const numberOfPatrimonyParam = req.params.numberOfPatrimony;
+            let numberOfPatrimonyParam = req.params.numberOfPatrimony;
             
             if (!numberOfPatrimonyParam) {
                 return res.status(404).json({mensagem: "O número de patrimônio do item deve ser informados"});
             }
 
-            const { name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
-        
-            if (!(name && description && localization && (hasResponsible != undefined)  && (isOnProject != undefined))) {
-                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios"});
+            let { name, description, locationId, responsibleRegistration, projectId } = req.body;
+
+            if (!(name && description && locationId)) {
+                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição e id da localização são obrigatórios"});
             }
 
             // Variáveis com os tipos definidos (necessário pois, nesse caso, como há um arquivo, os dados do body são passados por form-data - que tipa tudo como string)
-            let _hasResponsible = hasResponsible == "true" ? true : false;
-            let _responsibleRegistration = Number(responsibleRegistration);
-            let _isOnProject = isOnProject == "true" ? true : false;
+            numberOfPatrimonyParam = Number(numberOfPatrimonyParam)
+            responsibleRegistration = responsibleRegistration ? Number(responsibleRegistration) : null;
+            projectId = projectId ? Number(projectId) : null;
+            locationId = Number(locationId); 
 
-            // Verificando se há um responsável e se sua matrícula é válida
-            if (_hasResponsible) {
-                const registrationIsValid = await database.user.findFirst({
+            // Verificando se há um funcionário responsável e se sua matrícula é válida
+            if (responsibleRegistration) {
+                const registrationIsValid = await database.employee.findFirst({
                     where: {
-                        userRegistration: _responsibleRegistration
+                        registration: responsibleRegistration
                     }
                 });
 
@@ -37,77 +38,33 @@ class UpdateItemController {
             }
 
             const oldItem = await database.item.findUnique({
-                where: { numberOfPatrimony: Number(numberOfPatrimonyParam) }
+                where: { numberOfPatrimony: numberOfPatrimonyParam }
             });
 
             if (!oldItem) {
                 return res.status(400).json({mensagem: "Item do patrimônio não encontrado"});
             }
 
-            const removeOldImage = async (imageId: Number) => {
-                console.log("Removi imagem antiga");
-                oldImage = await database.image.delete({
-                    where: { id: Number(imageId) }
-                });
+            const deleteImage = (path: String) => {
+                
             }
 
-            // Buscando a imagem antiga cadastrada no banco
-            let oldImage = null;
-            let oldImageName = null;
-            if (oldItem.imageId) {
-                oldImage = await database.image.findUnique({
-                    where: { id: Number(oldItem.imageId) }
-                });
-                if (oldImage) {
-                    oldImageName = oldImage.fileName;
-                }
-            }
-
-            let newImage = oldImage;
-            // Verificando se imagem será atualizada
-            if (req.file) {
-                // Usuário enviou uma imagem na requisição
-                if (oldImageName != req.file.originalname) {
-                    // Imagem passada por requisição é diferente da imagem cadastrada antes: atualiza
-
-                    // Remove imagem antiga
-                    if (oldImage) {
-                        removeOldImage(oldImage.id);
-                    }
-
-                    // Salva nova imagem
-                    // Lendo os dados da nova imagem salvos na pasta src/upload
-                    let fileContent = utils.base64_encode(req.file.filename);
-
-                    // Salvando imagem no banco
-                    newImage = await database.image.create({
-                        data: {
-                            fileName: req.file.originalname,
-                            fileExt: req.file.mimetype,
-                            file: fileContent
-                        }
-                    });
-                }
-            } else {
-                if (oldImage) {
-                    removeOldImage(oldImage.id);
-                    newImage = null;
-                }
+            if (req.file?.originalname != oldItem.imageName) {
+                // Usuário enviou uma imagem e há uma imagem cadastrada
+                // Apaga imagem antiga e multer irá inserir a nova
+                fs.unlinkSync(process.env.UPLOADS_PATH + '/images/' + oldItem.imageName);
             }
 
             // Atualizando dados do item
             const updatedItem = await database.item.update({
                 where: { numberOfPatrimony: Number(numberOfPatrimonyParam) },
                 data: {
-                    numberOfPatrimony: Number(numberOfPatrimonyParam),
-                    name: name,
-                    description: description,
-                    localization: localization,
-                    hasResponsible: _hasResponsible,
-                    responsibleRegistration: _hasResponsible ? _responsibleRegistration : null,
-                    isOnProject: _isOnProject,
-                    projectName: _isOnProject ? projectName : null,
-                    imageId: newImage ? newImage.id : null
+                    name,
+                    description,
+                    locationId,
+                    responsibleRegistration: responsibleRegistration,
+                    projectId,
+                    imageName: req.file ? req.file.originalname : null
                 }
             });
 
@@ -117,7 +74,7 @@ class UpdateItemController {
         } catch (error) {
             console.error(error);
             throw error;
-        }*/
+        }
     }
 }
 
