@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { CreateUserController } from "../controllers/user/CreateUserController";
+import { CreateUserControllerCommom } from "../controllers/user/CreateUserControllerCommom";
+import { CreateUserControllerAdmin } from "../controllers/user/CreateUserControllerAdmin";
 import { LoginController } from "../controllers/user/LoginController";
 import { AuthorizationJWTCommom } from "../middleware/AuthorizationJWTCommom";
 import { LogoffController } from "../controllers/user/LogoffController";
@@ -17,16 +18,15 @@ const upload = multer({dest: './src/upload'});
 
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
+router.post('/user', new CreateUserControllerCommom().handle);
 
-// Rotas públicas, mas que mudam de comportamento dependendo se usuário está ou não logado
-router.post('/user', new SetUserRole().handle, new CreateUserController().handle);
-
-// Rotas que requerem autorização comum
+// Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTCommom().handle, upload.single('image'), new UpdateItemController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 
-// Rotas que requerem autorização de administrador
+// Rotas que requerem autorização de administrador (autenticado e administrador)
+router.post('/item', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
 router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
