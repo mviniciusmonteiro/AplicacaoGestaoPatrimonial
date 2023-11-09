@@ -68,7 +68,7 @@ model Item {
   locationId Int // Chave estrangeira
   responsibleRegistration Int? // Chave estrangeira
   projectId Int? // Chave estrangeira
-  imagePath String?
+  imageName String?
 
   // Campos de relacionamento
   responsibleForItem Employee? @relation(fields: [responsibleRegistration], references: [registration])

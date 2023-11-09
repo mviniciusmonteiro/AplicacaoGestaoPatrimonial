@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { database } from '../../database';
 
-const utils = require('../../utils/index.js');
-
 class CreateItemController {
     async handle(req: Request | any, res: Response) {
         try {
@@ -66,21 +64,6 @@ class CreateItemController {
                 }
             }
 
-            // let newImage = null;
-            // if (req.file) {
-            //     // Lendo o arquivo salvo na pasta src/upload
-            //     let fileContent = utils.base64_encode(req.file.filename);
-
-            //     // Salvando arquivo no banco
-            //     newImage = await database.image.create({
-            //         data: {
-            //             fileName: req.file.originalname,
-            //             fileExt: req.file.mimetype,
-            //             file: fileContent
-            //         }
-            //     });
-            // }
-
             // Cadastrando informações do item
             const newItem = await database.item.create({
                 data: {
@@ -90,7 +73,7 @@ class CreateItemController {
                     locationId,
                     responsibleRegistration,
                     projectId,
-                    imagePath: ""
+                    imageName: req.file ? req.file.originalname : null
                 }
             });
             return res.status(201).json({

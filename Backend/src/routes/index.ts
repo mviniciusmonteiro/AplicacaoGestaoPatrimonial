@@ -13,8 +13,8 @@ import { UpdateItemController } from "../controllers/item/UpdateItemController";
 import { GetItemsReportController } from "../controllers/report/item/GetItemsReportController";
 
 const router = Router();
-const multer = require('multer');
-const upload = multer({dest: './src/upload'});
+
+const multer = require('../config/multer');
 
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
@@ -26,7 +26,7 @@ router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController(
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
-router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
+router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new CreateItemController().handle);
 // router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 // router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, upload.single('image'), new UpdateItemController().handle);
 // router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
