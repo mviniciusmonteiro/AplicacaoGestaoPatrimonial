@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { database } from "../../../database";
 
 class GetItemsReportController {
-    async handle(req: Request | any, res: Response) {
+    async handle(req: Request | any, res: Response) {/*
         try {
             const { numberOfPatrimony, name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
 
@@ -86,7 +86,7 @@ class GetItemsReportController {
         } catch (error) {
             console.error(error);
             throw error;
-        }
+        }*/
     }
 }
 

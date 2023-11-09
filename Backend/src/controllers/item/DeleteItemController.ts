@@ -3,7 +3,7 @@ import { database } from "../../database";
 
 
 class DeleteItemController {
-    async handle(req: Request, res: Response) {
+    async handle(req: Request, res: Response) {/*
         try {
             const numberOfPatrimony = req.params.numberOfPatrimony;
             
@@ -36,7 +36,7 @@ class DeleteItemController {
         } catch (error) {
             console.error(error);
             throw error;
-        }
+        }*/
     }
 }
 

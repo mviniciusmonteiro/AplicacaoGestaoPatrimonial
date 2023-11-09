@@ -4,7 +4,7 @@ import { database } from "../../database";
 const utils = require('../../utils/index.js');
 
 class GetItemByNumberOfPatrimony {
-    async handle(req: Request, res: Response) {
+    async handle(req: Request, res: Response) {/*
         try {
             const numberOfPatrimony = req.params.numberOfPatrimony;
 
@@ -43,7 +43,7 @@ class GetItemByNumberOfPatrimony {
         } catch (error) {
             console.error(error);
             throw error;
-        }
+        }*/
     }
 }
 

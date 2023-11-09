@@ -4,7 +4,7 @@ import { database } from "../../database";
 const utils = require('../../utils/index.js');
 
 class UpdateItemController {
-    async handle(req: Request | any, res: Response) {
+    async handle(req: Request | any, res: Response) {/*
         try {
             const numberOfPatrimonyParam = req.params.numberOfPatrimony;
             
@@ -117,7 +117,7 @@ class UpdateItemController {
         } catch (error) {
             console.error(error);
             throw error;
-        }
+        }*/
     }
 }
 

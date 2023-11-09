@@ -40,7 +40,7 @@ class CreateUserControllerCommom {
             } else {
                 // Matrícula é única: verifica se email está vinculado a outro funcionário
                 const emailAlreadyExist = await database.employee.findUnique({
-                    where: email
+                    where: { email }
                 });
                 if (emailAlreadyExist) {
                     return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesmo email"});

@@ -4,24 +4,24 @@ import { database } from '../../database';
 const utils = require('../../utils/index.js');
 
 class CreateItemController {
-    async handle(req: Request | any, res: Response) {
+    async handle(req: Request | any, res: Response) {/*
         try {
-            const { numberOfPatrimony, name, description, localization, hasResponsible, responsibleRegistration, isOnProject, projectName } = req.body;
+            let { numberOfPatrimony, name, description, locationId, responsibleRegistration, projectId } = req.body;
 
-            if (!(numberOfPatrimony && name && description && localization && (hasResponsible != undefined)  && (isOnProject != undefined))) {
-                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição, localização, temResponsável e estaEmProjeto são obrigatórios"});
+            if (!(numberOfPatrimony && name && description && locationId)) {
+                return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição e id da localização são obrigatórios"});
             }
 
             // Variáveis com os tipos definidos (necessário pois, nesse caso, como há um arquivo, os dados do body são passados por form-data - que tipa tudo como string)
-            let _numberOfPatrimony = Number(numberOfPatrimony);
-            let _hasResponsible = hasResponsible == "true" ? true : false;
-            let _responsibleRegistration = Number(responsibleRegistration);
-            let _isOnProject = isOnProject == "true" ? true : false;
+            numberOfPatrimony = Number(numberOfPatrimony);
+            responsibleRegistration = responsibleRegistration ? Number(responsibleRegistration) : null;
+            projectId = projectId ? Number(projectId) : null;
+            locationId = Number(locationId);
 
             // Verificando se há item com mesmo número de patrimônio
             const itemAlreadyExist = await database.item.findUnique({
                 where: {
-                    numberOfPatrimony: _numberOfPatrimony
+                    numberOfPatrimony: numberOfPatrimony
                 }
             });
 
@@ -29,46 +29,68 @@ class CreateItemController {
                 return res.status(400).json({mensagem: "Já existe um item com mesmo número de patrimônio"});
             }
 
-            // Verificando se há um responsável e se sua matrícula é válida
-            if (_hasResponsible) {
-                const registrationIsValid = await database.user.findFirst({
+            // Verificando se id do local é válido
+            const localIsValid = await database.local.findUnique({
+                where: {
+                    id: locationId
+                }
+            });
+            
+            if (!localIsValid) {
+                return res.status(400).json({mensagem: "O id do local é inválido"});
+            }
+
+            // Verificando se há um funcionário responsável e se sua matrícula é válida
+            if (responsibleRegistration) {
+                const registrationIsValid = await database.employee.findFirst({
                     where: {
-                        userRegistration: _responsibleRegistration
+                        registration: responsibleRegistration
                     }
                 });
 
                 if (!registrationIsValid) {
                     return res.status(400).json({mensagem: "A matrícula do responsável pelo item é inválida"});
                 }
-            }
+            } else {
+                // Verificando se item está vinculado a projeto e se id do projeto é válido
+                if (projectId) {
+                    const projectIsValid = await database.project.findUnique({
+                        where: {
+                            id: projectId
+                        }
+                    });
 
-            let newImage = null;
-            if (req.file) {
-                // Lendo o arquivo salvo na pasta src/upload
-                let fileContent = utils.base64_encode(req.file.filename);
-
-                // Salvando arquivo no banco
-                newImage = await database.image.create({
-                    data: {
-                        fileName: req.file.originalname,
-                        fileExt: req.file.mimetype,
-                        file: fileContent
+                    if (!projectIsValid) {
+                        return res.status(400).json({mensagem: "O id do projeto ao qual item está vinculado é inválido"});
                     }
-                });
+                }
             }
+
+            // let newImage = null;
+            // if (req.file) {
+            //     // Lendo o arquivo salvo na pasta src/upload
+            //     let fileContent = utils.base64_encode(req.file.filename);
+
+            //     // Salvando arquivo no banco
+            //     newImage = await database.image.create({
+            //         data: {
+            //             fileName: req.file.originalname,
+            //             fileExt: req.file.mimetype,
+            //             file: fileContent
+            //         }
+            //     });
+            // }
 
             // Cadastrando informações do item
             const newItem = await database.item.create({
                 data: {
-                    numberOfPatrimony: _numberOfPatrimony,
+                    numberOfPatrimony,
                     name,
                     description,
-                    localization,
-                    hasResponsible: _hasResponsible,
-                    responsibleRegistration: _hasResponsible ? _responsibleRegistration : null,
-                    isOnProject: _isOnProject,
-                    projectName: _isOnProject ? projectName : null,
-                    imageId: newImage == null ? null : newImage.id
+                    locationId,
+                    responsibleRegistration,
+                    projectId,
+                    imagePath: ""
                 }
             });
             return res.status(201).json({
@@ -76,7 +98,7 @@ class CreateItemController {
             });
         } catch (error) {
             throw error;
-        }
+        }*/
     }
 }
 

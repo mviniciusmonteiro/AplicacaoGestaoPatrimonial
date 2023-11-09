@@ -18,17 +18,17 @@ const upload = multer({dest: './src/upload'});
 
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
-router.post('/user', new CreateUserControllerCommom().handle);
+router.post('/sign-up', new CreateUserControllerCommom().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
-router.put('/item/:numberOfPatrimony', new AuthorizationJWTCommom().handle, upload.single('image'), new UpdateItemController().handle);
-router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
+// router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
-router.post('/item', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
-router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
-router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
-router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
+router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
+// router.post('/item', new AuthorizationJWTAdmin().handle, upload.single('image'), new CreateItemController().handle);
+// router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
+// router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, upload.single('image'), new UpdateItemController().handle);
+// router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
 
 export { router };
