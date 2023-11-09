@@ -57,6 +57,20 @@ class CreateUserControllerAdmin {
                         email
                     }
                 });
+            } else {
+                // Atualiza dados do funcionário
+                if (employee.name.toLowerCase() != name || employee.email.toLowerCase() != email) {
+                    const updatedEmployee = await database.employee.update({
+                        where: {
+                            registration
+                        },
+                        data: {
+                            registration,
+                            name,
+                            email
+                        }
+                    });
+                }
             }
             // Dados do funcionário
             const newUser = await database.user.create({
