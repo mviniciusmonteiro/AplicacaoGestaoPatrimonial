@@ -9,7 +9,7 @@ type FileNameCallback = (error: Error | null, filename: String) => void;
 
 export const imageStorage = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: DestinationCallback) => {
-        cb(null, './src/uploads/images');
+        cb(null, process.env.UPLOADS_PATH +  '/images');
     },
     filename: (req: Request, file: Express.Multer.File, cb: FileNameCallback) => {
         cb(null, file.originalname);
