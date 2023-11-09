@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { database } from "../../database";
 
-const utils = require('../../utils/index.js');
-
 class GetItemByNumberOfPatrimony {
-    async handle(req: Request, res: Response) {/*
+    async handle(req: Request, res: Response) {
         try {
             const numberOfPatrimony = req.params.numberOfPatrimony;
 
@@ -20,30 +18,16 @@ class GetItemByNumberOfPatrimony {
             });
 
             if (!item) {
-                return res.status(200).json({});
+                return res.status(200).json({mensagem: "Item não encontrado"});
             }
 
-            let image = null;
-            // Buscando a imagem associada ao item
-            if (item.imageId) {
-                image = await database.image.findUnique({
-                    where: {
-                        id: item.imageId
-                    }
-                });
-                // TODO: Verificar necessidade
-                // if (image) {
-                //     utils.base64_decode(image.file, image.fileName);
-                // }
-            }
             return res.status(200).json({
-                item,
-                image
+                item
             });
         } catch (error) {
             console.error(error);
             throw error;
-        }*/
+        }
     }
 }
 
