@@ -56,14 +56,17 @@ class CreateUserControllerCommom {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Dados do funcionário
-            const newEmployee = await database.employee.create({
-                data: {
-                    registration,
-                    name,
-                    email
-                }
-            });
+            if (!employee) {
+                // Cadastra dados do novo funcionário
+                const newEmployee = await database.employee.create({
+                    data: {
+                        registration,
+                        name,
+                        email
+                    }
+                });
+            }
+
             // Dados do funcionário
             const newUser = await database.user.create({
                 data: {
