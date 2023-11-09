@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { database } from "../../database";
 
+const fs = require('fs');
 
 class DeleteItemController {
-    async handle(req: Request, res: Response) {/*
+    async handle(req: Request, res: Response) {
         try {
             const numberOfPatrimony = req.params.numberOfPatrimony;
             
@@ -20,10 +21,8 @@ class DeleteItemController {
             }
 
             // Deletando imagem
-            if (item.imageId) {
-                await database.image.delete({
-                    where: {id: item.imageId}
-                });
+            if (item.imageName) {
+                fs.unlinkSync(process.env.UPLOADS_PATH + '/images/' + item.imageName);
             }
             // Deletando item
             await database.item.delete({
@@ -36,7 +35,7 @@ class DeleteItemController {
         } catch (error) {
             console.error(error);
             throw error;
-        }*/
+        }
     }
 }
 
