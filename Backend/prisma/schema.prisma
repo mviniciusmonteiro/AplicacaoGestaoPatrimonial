@@ -16,23 +16,48 @@ model User {
   password String
   isAdmin Boolean @default(false)
   createdAt DateTime @default(now())
-  userRegistration Int // Chave estrangeira
+  employeeRegistration Int // Chave estrangeira
 
-  // Campos do relacionamento: apenas definem conexão, não existem no banco
-  userData ProfileData @relation(fields: [userRegistration], references: [registration]) 
-  associatedItem Item[]
+  // Campo do relacionamento: apenas define conexão, não existe no banco
+  isAn Employee @relation(fields: [employeeRegistration], references: [registration])
 
   @@map("users")
 }
 
-model ProfileData {
+model Employee {
   registration Int @unique
   name String
   email String @unique
 
-  ownerOfData User[] // Campo do relacionamento: apenas define conexão, não existe no banco
+  // Campos do relacionamento: apenas definem relacionamento, não existem no banco
+  linkedUser User[]
+  coordinates Project[]
+  responsibleTo Item[]
 
-  @@map("profile_data")
+  @@map("employees")
+}
+
+model Local {
+  id Int @id @default(autoincrement())
+  departmentBuilding String // Bloco
+  room String
+
+  // Campo de relacionamento
+  linkedItems Item[]
+
+  @@map("locations")
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+  name String
+  coordinateRegistration Int
+
+  // Campos de relacionamento: apenas definem relacionamento, não existem no banco
+  coordinatedBy Employee @relation(fields: [coordinateRegistration], references: [registration])
+  linkedItems Item[]
+
+  @@map("projects")
 }
 
 model Item {
@@ -40,27 +65,15 @@ model Item {
   numberOfPatrimony Int @unique
   name String
   description String
-  localization String
-  hasResponsible Boolean
+  locationId Int // Chave estrangeira
   responsibleRegistration Int? // Chave estrangeira
-  isOnProject Boolean
-  projectName String?
-  imageId Int? // Chave estrangeira
+  projectId Int? // Chave estrangeira
+  imagePath String?
 
-  // Campo de relacionamento
-  itemImage Image? @relation(fields: [imageId], references: [id])
-  responsibleForItem User? @relation(fields: [responsibleRegistration], references: [id])
+  // Campos de relacionamento
+  responsibleForItem Employee? @relation(fields: [responsibleRegistration], references: [registration])
+  linkedProject Project? @relation(fields: [projectId], references: [id])
+  locatedAt Local @relation(fields: [locationId], references: [id])
 
   @@map("items")
-}
-
-model Image {
-  id Int @id @default(autoincrement())
-  fileName String @db.VarChar(255)
-  fileExt String @db.VarChar(255)
-  file String?
-
-  ownerOfImage Item[] // Campo de relacionamento
-
-  @@map("images")
 }
