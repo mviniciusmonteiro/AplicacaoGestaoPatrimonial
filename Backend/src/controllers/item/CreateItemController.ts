@@ -4,7 +4,7 @@ import { database } from '../../database';
 const utils = require('../../utils/index.js');
 
 class CreateItemController {
-    async handle(req: Request | any, res: Response) {/*
+    async handle(req: Request | any, res: Response) {
         try {
             let { numberOfPatrimony, name, description, locationId, responsibleRegistration, projectId } = req.body;
 
@@ -98,7 +98,7 @@ class CreateItemController {
             });
         } catch (error) {
             throw error;
-        }*/
+        }
     }
 }
 
