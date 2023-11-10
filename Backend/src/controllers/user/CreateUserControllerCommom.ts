@@ -14,15 +14,18 @@ class CreateUserControllerCommom {
                 return res.status(400).json({mensagem: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios"});
             }
 
-            // Verificando se já existe usuário com mesmo username
-            const usernameAlreadyExist = await database.user.findUnique({
+            // Verificando se já existe usuário com mesmo username ou se matrícula do funcionário já está vinculada a um usuário
+            const userAlreadyExistOrEmpAlreadyLinked = await database.user.findFirst({
                 where: {
-                    username
+                    OR: [
+                        { username },
+                        { employeeRegistration: registration }
+                    ]
                 }
             });
 
-            if (usernameAlreadyExist) {
-                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
+            if (userAlreadyExistOrEmpAlreadyLinked) {
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário ou matrícula informada já está vinculada a um usuário"});
             }
 
             // Verificando se já existe um funcionário com mesma matrícula
@@ -34,7 +37,7 @@ class CreateUserControllerCommom {
 
             if (employee) {
                 // Há funcionário cadastrado com mesma matrícula. Verifica se os dados inseridos são diferentes dos dados do funcionário cadastrado. Se sim, informa erro
-                if (employee.name.toLowerCase() != name.toLowerCase() && employee.email.toLowerCase() != email.toLower()) {
+                if (employee.name.toLowerCase() != name.toLowerCase() || employee.email.toLowerCase() != email.toLowerCase()) {
                     return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesma matrícula, mas com nome e email diferentes dos que foram informados pelo usuário. Contacte o administrador"});
                 }
             } else {

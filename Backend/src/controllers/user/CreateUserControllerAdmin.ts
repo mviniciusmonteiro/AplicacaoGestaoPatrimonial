@@ -14,15 +14,18 @@ class CreateUserControllerAdmin {
                 return res.status(400).json({mensagem: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios"});
             }
 
-            // Verificando se já existe usuário com mesmo username
-            const usernameAlreadyExist = await database.user.findUnique({
+            // Verificando se já existe usuário com mesmo username ou se matrícula do funcionário já está vinculada a um usuário
+            const userAlreadyExistOrEmpAlreadyLinked = await database.user.findFirst({
                 where: {
-                    username
+                    OR: [
+                        { username },
+                        { employeeRegistration: registration }
+                    ]
                 }
             });
 
-            if (usernameAlreadyExist) {
-                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
+            if (userAlreadyExistOrEmpAlreadyLinked) {
+                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário ou matrícula informada já está vinculada a um usuário"});
             }
 
             // Verificando se já existe um funcionário com mesma matrícula
@@ -32,12 +35,33 @@ class CreateUserControllerAdmin {
                 }
             });
 
-            if (!employee) {
-                // Usuário administrador irá cadastrar um novo funcionário: verifica se email informado é único
-                const emailAlreadyExist = await database.employee.findUnique({
-                    where: {
-                        email
+            if (employee) {
+                // Atualiza dados do funcionário
+                if (employee.name.toLowerCase() != name.toLowerCase() || employee.email.toLowerCase() != email.toLowerCase()) {
+                    // Verificando se email pertence a outro funcionário
+                    const emailOfOtherEmployee = await database.employee.findFirst({
+                        where: {
+                            registration: {not: registration},
+                            email
+                        }
+                    });
+                    if (!emailOfOtherEmployee) {
+                        // Atualiza os dados do funcionário com base nos dados repassados na requisição
+                        const updatedEmployee = await database.employee.update({
+                            where: {registration},
+                            data: {
+                                name,
+                                email
+                            }
+                        });
+                    } else {
+                        return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesmo email"});
                     }
+                }
+            } else {
+                // Matrícula é única (funcionário não cadastrado): verifica se email está vinculado a outro funcionário
+                const emailAlreadyExist = await database.employee.findUnique({
+                    where: { email }
                 });
                 if (emailAlreadyExist) {
                     return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesmo email"});
@@ -57,21 +81,8 @@ class CreateUserControllerAdmin {
                         email
                     }
                 });
-            } else {
-                // Atualiza dados do funcionário
-                if (employee.name.toLowerCase() != name || employee.email.toLowerCase() != email) {
-                    const updatedEmployee = await database.employee.update({
-                        where: {
-                            registration
-                        },
-                        data: {
-                            registration,
-                            name,
-                            email
-                        }
-                    });
-                }
             }
+
             // Dados do funcionário
             const newUser = await database.user.create({
                 data: {
