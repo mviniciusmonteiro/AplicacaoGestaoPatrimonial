@@ -10,6 +10,11 @@ import { GetItemByNumberOfPatrimony } from "../controllers/item/GetItemByNumberO
 import { DeleteItemController } from "../controllers/item/DeleteItemController";
 import { UpdateItemController } from "../controllers/item/UpdateItemController";
 import { GetItemsReportController } from "../controllers/report/item/GetItemsReportController";
+import { CreateLocalController } from "../controllers/local/CreateLocalController";
+import { GetLocalById } from "../controllers/local/GetLocalByIdController";
+import { GetAllLocationsController } from "../controllers/local/GetAllLocationsController";
+import { UpdateLocalController } from "../controllers/local/UpdateLocalController";
+import { DeleteLocalController } from "../controllers/local/DeleteLocalController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -28,5 +33,10 @@ router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.sing
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new UpdateItemController().handle);
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
+router.post('/local', new AuthorizationJWTAdmin().handle, new CreateLocalController().handle);
+router.get('/local/:locationId', new AuthorizationJWTAdmin().handle, new GetLocalById().handle);
+router.get('/local', new AuthorizationJWTAdmin().handle, new GetAllLocationsController().handle);
+router.put('/local/:locationId', new AuthorizationJWTAdmin().handle, new UpdateLocalController().handle);
+router.delete('/local/:locationId', new AuthorizationJWTAdmin().handle, new DeleteLocalController().handle);
 
 export { router };
