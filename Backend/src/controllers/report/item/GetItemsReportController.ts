@@ -16,6 +16,14 @@ class GetItemsReportController {
                 return res.status(200).json({mensagem: "Nenhum item cadastrado"});
             }
 
+            // Garantindo que usuário comum irá filtrar apenas itens que ele é responsável ou que estejam vinculados a projetos que ele coordena
+            if (req.userRole == "commom") {
+                let loggedUser = await database.user.findUnique({
+                    where: {id: req.userId}
+                });
+                responsibleRegistration = loggedUser?.employeeRegistration;
+            }            
+
             // Filtrando por número de patrimônio (correspondência exata)
             if (numberOfPatrimony) {
                 filteredItems = filteredItems.filter((item) => {
@@ -26,9 +34,6 @@ class GetItemsReportController {
             // Matrícula do responsável (correspondência exata)
             if (responsibleRegistration) {
                 filteredItems = filteredItems.filter((item) => {
-                    if (req.userRole == "commom") {
-                        return (item.responsibleRegistration == req.userId); // Usuário comum só pode filtrar itens que ele é responsável
-                    }
                     return (item.responsibleRegistration == responsibleRegistration);
                 });
             }
