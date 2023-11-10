@@ -15,6 +15,7 @@ import { GetLocalById } from "../controllers/local/GetLocalByIdController";
 import { GetAllLocationsController } from "../controllers/local/GetAllLocationsController";
 import { UpdateLocalController } from "../controllers/local/UpdateLocalController";
 import { DeleteLocalController } from "../controllers/local/DeleteLocalController";
+import { CreateProjectController } from "../controllers/project/CreateProjectController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -38,5 +39,6 @@ router.post('/local', new AuthorizationJWTAdmin().handle, new CreateLocalControl
 router.get('/local/:locationId', new AuthorizationJWTAdmin().handle, new GetLocalById().handle);
 router.put('/local/:locationId', new AuthorizationJWTAdmin().handle, new UpdateLocalController().handle);
 router.delete('/local/:locationId', new AuthorizationJWTAdmin().handle, new DeleteLocalController().handle);
+router.post('/project', new AuthorizationJWTAdmin().handle, new CreateProjectController().handle);
 
 export { router };
