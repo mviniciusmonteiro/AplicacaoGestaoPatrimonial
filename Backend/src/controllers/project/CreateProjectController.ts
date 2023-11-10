@@ -31,7 +31,7 @@ class CreateProjectController {
             const newProject = await database.project.create({
                 data: {
                     name,
-                    coordinateRegistration: coordinatorRegistration
+                    coordinatorRegistration
                 }
             });
 

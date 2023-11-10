@@ -62,7 +62,7 @@ class CreateItemController {
                     if (!projectIsValid) {
                         return res.status(400).json({mensagem: "O id do projeto ao qual item está vinculado é inválido"});
                     } else {
-                        coordinatorRegistration = projectIsValid.coordinateRegistration;
+                        coordinatorRegistration = projectIsValid.coordinatorRegistration;
                     }
                 }
             }
