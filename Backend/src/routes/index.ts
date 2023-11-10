@@ -4,6 +4,7 @@ import { CreateUserControllerAdmin } from "../controllers/user/CreateUserControl
 import { LoginController } from "../controllers/user/LoginController";
 import { AuthorizationJWTCommom } from "../middleware/AuthorizationJWTCommom";
 import { LogoffController } from "../controllers/user/LogoffController";
+import { SetUserRole } from "../middleware/SetUserRole";
 import { CreateItemController } from "../controllers/item/CreateItemController";
 import { AuthorizationJWTAdmin } from "../middleware/AuthorizationJWTAdmin";
 import { GetItemByNumberOfPatrimony } from "../controllers/item/GetItemByNumberOfPatrimonyController";
@@ -21,7 +22,7 @@ router.post('/sign-up', new CreateUserControllerCommom().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
-router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
+// router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
