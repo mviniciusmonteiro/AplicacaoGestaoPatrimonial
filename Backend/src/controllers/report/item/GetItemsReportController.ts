@@ -6,11 +6,7 @@ class GetItemsReportController {
         try {
             let { numberOfPatrimony, name, description, locationId, status, responsibleRegistration, projectId } = req.body;
 
-            let filteredItems = await database.item.findMany({
-                where: {
-                    id: {gt: 0} // Retorna os itens com id > 0 (todos os itens)
-                }
-            });
+            let filteredItems = await database.item.findMany();
 
             if (!filteredItems) {
                 return res.status(200).json({mensagem: "Nenhum item cadastrado"});

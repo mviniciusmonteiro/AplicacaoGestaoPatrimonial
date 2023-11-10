@@ -16,6 +16,10 @@ import { GetAllLocationsController } from "../controllers/local/GetAllLocationsC
 import { UpdateLocalController } from "../controllers/local/UpdateLocalController";
 import { DeleteLocalController } from "../controllers/local/DeleteLocalController";
 import { CreateProjectController } from "../controllers/project/CreateProjectController";
+import { GetProjectById } from "../controllers/project/GetProjectByIdController";
+import { UpdateProjectController } from "../controllers/project/UpdateProjectController";
+import { DeleteProjectController } from "../controllers/project/DeleteProjectController";
+import { GetAllProjectsController } from "../controllers/project/GetAllProjectsController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -23,7 +27,8 @@ const multer = require('../config/multer');
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
-router.get('/local', new AuthorizationJWTAdmin().handle, new GetAllLocationsController().handle);
+router.get('/local', new GetAllLocationsController().handle);
+router.get('/project', new GetAllProjectsController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
@@ -40,5 +45,8 @@ router.get('/local/:locationId', new AuthorizationJWTAdmin().handle, new GetLoca
 router.put('/local/:locationId', new AuthorizationJWTAdmin().handle, new UpdateLocalController().handle);
 router.delete('/local/:locationId', new AuthorizationJWTAdmin().handle, new DeleteLocalController().handle);
 router.post('/project', new AuthorizationJWTAdmin().handle, new CreateProjectController().handle);
+router.get('/project/:projectId', new AuthorizationJWTAdmin().handle, new GetProjectById().handle);
+router.put('/project/:projectId', new AuthorizationJWTAdmin().handle, new UpdateProjectController().handle);
+router.delete('/project/:projectId', new AuthorizationJWTAdmin().handle, new DeleteProjectController().handle);
 
 export { router };
