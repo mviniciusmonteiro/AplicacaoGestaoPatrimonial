@@ -5,6 +5,7 @@ class CreateItemController {
     async handle(req: Request | any, res: Response) {
         try {
             let { numberOfPatrimony, name, description, locationId, responsibleRegistration, projectId } = req.body;
+            let coordinatorRegistration = null; // Matrícula do coordenador do projeto
 
             if (!(numberOfPatrimony && name && description && locationId)) {
                 return res.status(400).json({mensagem: "Os campos número de patrimônio, nome, descrição e id da localização são obrigatórios"});
@@ -60,6 +61,8 @@ class CreateItemController {
 
                     if (!projectIsValid) {
                         return res.status(400).json({mensagem: "O id do projeto ao qual item está vinculado é inválido"});
+                    } else {
+                        coordinatorRegistration = projectIsValid.coordinateRegistration;
                     }
                 }
             }
@@ -71,7 +74,7 @@ class CreateItemController {
                     name,
                     description,
                     locationId,
-                    responsibleRegistration,
+                    responsibleRegistration: coordinatorRegistration ? coordinatorRegistration : responsibleRegistration,
                     projectId,
                     imageName: req.file ? req.file.originalname : null
                 }
