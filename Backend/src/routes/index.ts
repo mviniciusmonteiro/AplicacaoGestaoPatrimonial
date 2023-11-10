@@ -22,6 +22,7 @@ const multer = require('../config/multer');
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
+router.get('/local', new AuthorizationJWTAdmin().handle, new GetAllLocationsController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
@@ -35,7 +36,6 @@ router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multe
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
 router.post('/local', new AuthorizationJWTAdmin().handle, new CreateLocalController().handle);
 router.get('/local/:locationId', new AuthorizationJWTAdmin().handle, new GetLocalById().handle);
-router.get('/local', new AuthorizationJWTAdmin().handle, new GetAllLocationsController().handle);
 router.put('/local/:locationId', new AuthorizationJWTAdmin().handle, new UpdateLocalController().handle);
 router.delete('/local/:locationId', new AuthorizationJWTAdmin().handle, new DeleteLocalController().handle);
 
