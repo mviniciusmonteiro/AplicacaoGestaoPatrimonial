@@ -12,7 +12,6 @@ import { UpdateItemController } from "../controllers/item/UpdateItemController";
 import { GetItemsReportController } from "../controllers/report/item/GetItemsReportController";
 
 const router = Router();
-
 const multer = require('../config/multer');
 
 // Rotas públicas (não requerem autorização)

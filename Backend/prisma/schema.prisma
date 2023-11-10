@@ -50,7 +50,7 @@ model Local {
 
 model Project {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   coordinateRegistration Int
 
   // Campos de relacionamento: apenas definem relacionamento, não existem no banco
