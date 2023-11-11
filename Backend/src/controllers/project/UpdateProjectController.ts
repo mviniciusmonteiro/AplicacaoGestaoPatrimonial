@@ -26,7 +26,9 @@ class UpdateProjectController {
 
             // Verificando se já existe projeto com mesmo nome
             const nameAlreadyExist = await database.project.findFirst({
-                where: { name }
+                where: { 
+                    id: {not: Number(projectId)},
+                    name: {equals: name, mode: 'insensitive'}} // Busca por correspondência exata, sem diferenciar maiúsculas de minúsculas
             });
 
             if (nameAlreadyExist) {

@@ -13,8 +13,8 @@ class CreateLocalController {
             // Verificando se já existe um local (bloco, sala) cadastrada
             const localAlreadyExist = await database.local.findFirst({
                 where: {
-                    departmentBuilding,
-                    room
+                    departmentBuilding: { equals: departmentBuilding, mode: 'insensitive' }, // Busca por correspondência exata, sem diferenciar maiúsculas de minúsculas
+                    room: { equals: room, mode: 'insensitive' }
                 }
             });
 

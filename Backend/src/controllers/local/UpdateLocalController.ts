@@ -28,8 +28,9 @@ class UpdateLocalController {
             // Verificando se já existe um local com mesmo bloco e sala cadastrados
             const localAlreadyExist = await database.local.findFirst({
                 where: {
-                    departmentBuilding,
-                    room
+                    id: {not: Number(locationId)},
+                    departmentBuilding: { equals: departmentBuilding, mode: 'insensitive' }, // Busca por correspondência exata, sem diferenciar maiúsculas de minúsculas
+                    room: { equals: room, mode: 'insensitive' }
                 }
             });
 
