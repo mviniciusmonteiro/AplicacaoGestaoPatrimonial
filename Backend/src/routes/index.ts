@@ -20,6 +20,10 @@ import { GetProjectById } from "../controllers/project/GetProjectByIdController"
 import { UpdateProjectController } from "../controllers/project/UpdateProjectController";
 import { DeleteProjectController } from "../controllers/project/DeleteProjectController";
 import { GetAllProjectsController } from "../controllers/project/GetAllProjectsController";
+import { UpdateUserController } from "../controllers/user/UpdateUserController";
+import { GetUserByUsernameController } from "../controllers/user/GetUserByUsernameController";
+import { GetAllUsersController } from "../controllers/user/GetAllUsersController";
+import { DeleteUserController } from "../controllers/user/DeleteUserController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -33,9 +37,13 @@ router.get('/project', new GetAllProjectsController().handle);
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
+router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
+router.get('/user/:username', new AuthorizationJWTAdmin().handle, new GetUserByUsernameController().handle);
+router.get('/user', new AuthorizationJWTAdmin().handle, new GetAllUsersController().handle);
+router.delete('/user/:username', new AuthorizationJWTAdmin().handle, new DeleteUserController().handle);
 router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new CreateItemController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new UpdateItemController().handle);

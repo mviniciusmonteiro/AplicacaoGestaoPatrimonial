@@ -18,7 +18,7 @@ class CreateUserControllerAdmin {
             const userAlreadyExistOrEmpAlreadyLinked = await database.user.findFirst({
                 where: {
                     OR: [
-                        { username },
+                        { username: { equals: username, mode: 'insensitive' } },
                         { employeeRegistration: registration }
                     ]
                 }
@@ -29,7 +29,7 @@ class CreateUserControllerAdmin {
             }
 
             // Verificando se já existe um funcionário com mesma matrícula
-            const employee = await database.employee.findFirst({
+            const employee = await database.employee.findUnique({
                 where: {
                     registration
                 }
@@ -42,7 +42,7 @@ class CreateUserControllerAdmin {
                     const emailOfOtherEmployee = await database.employee.findFirst({
                         where: {
                             registration: {not: registration},
-                            email
+                            email: { equals: email, mode: 'insensitive' }
                         }
                     });
                     if (!emailOfOtherEmployee) {
@@ -60,8 +60,8 @@ class CreateUserControllerAdmin {
                 }
             } else {
                 // Matrícula é única (funcionário não cadastrado): verifica se email está vinculado a outro funcionário
-                const emailAlreadyExist = await database.employee.findUnique({
-                    where: { email }
+                const emailAlreadyExist = await database.employee.findFirst({
+                    where: { email: { equals: email, mode: 'insensitive' } }
                 });
                 if (emailAlreadyExist) {
                     return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesmo email"});
