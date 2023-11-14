@@ -24,6 +24,11 @@ import { UpdateUserController } from "../controllers/user/UpdateUserController";
 import { GetUserByUsernameController } from "../controllers/user/GetUserByUsernameController";
 import { GetAllUsersController } from "../controllers/user/GetAllUsersController";
 import { DeleteUserController } from "../controllers/user/DeleteUserController";
+import { CreateEmployeeController } from "../controllers/employee/CreateEmployeeController";
+import { GetEmployeeByRegistrationController } from "../controllers/employee/GetEmployeeByRegistrationController";
+import { GetAllEmployeesController } from "../controllers/employee/GetAllEmployeesController";
+import { UpdateEmployeeController } from "../controllers/employee/UpdateEmployeeController";
+import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployeeController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -56,5 +61,10 @@ router.post('/project', new AuthorizationJWTAdmin().handle, new CreateProjectCon
 router.get('/project/:projectId', new AuthorizationJWTAdmin().handle, new GetProjectById().handle);
 router.put('/project/:projectId', new AuthorizationJWTAdmin().handle, new UpdateProjectController().handle);
 router.delete('/project/:projectId', new AuthorizationJWTAdmin().handle, new DeleteProjectController().handle);
+router.post('/employee', new AuthorizationJWTAdmin().handle, new CreateEmployeeController().handle);
+router.get('/employee/:registration', new AuthorizationJWTAdmin().handle, new GetEmployeeByRegistrationController().handle);
+router.get('/employee', new AuthorizationJWTAdmin().handle, new GetAllEmployeesController().handle);
+router.put('/employee/:registration', new AuthorizationJWTAdmin().handle, new UpdateEmployeeController().handle);
+router.delete('/employee/:registration', new AuthorizationJWTAdmin().handle, new DeleteEmployeeController().handle);
 
 export { router };
