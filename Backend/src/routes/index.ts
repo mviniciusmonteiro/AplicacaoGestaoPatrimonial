@@ -32,6 +32,7 @@ import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployee
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
 import { ValidateRecoveryCode } from "../middleware/ValidateRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
+import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -50,6 +51,7 @@ router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsRep
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
+router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);

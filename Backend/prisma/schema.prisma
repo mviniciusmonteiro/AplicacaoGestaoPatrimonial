@@ -33,6 +33,8 @@ model Employee {
   linkedUser User[]
   coordinates Project[]
   responsibleTo Item[]
+  send ReportRequest[] @relation(name: "isRequested")
+  answer ReportRequest[] @relation(name: "isAnswered")
 
   @@map("employees")
 }
@@ -76,4 +78,21 @@ model Item {
   locatedAt Local @relation(fields: [locationId], references: [id])
 
   @@map("items")
+}
+
+model ReportRequest {
+  id Int @id @default(autoincrement())
+  requestedBy Int?
+  answeredBy Int?
+  description String
+  motiveOfRequest String?
+  solicitedAt DateTime @default(now())
+  status String
+  motiveOfIndefer String?
+
+  // Campos de relacionamento
+  isRequested Employee? @relation(fields: [requestedBy], references: [registration], name: "isRequested")
+  isAnswered Employee? @relation(fields: [answeredBy], references: [registration], name: "isAnswered")
+
+  @@map("report_requests")
 }
