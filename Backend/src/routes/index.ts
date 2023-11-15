@@ -36,13 +36,13 @@ const multer = require('../config/multer');
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
-router.get('/local', new GetAllLocationsController().handle);
-router.get('/project', new GetAllProjectsController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
+router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);
+router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
