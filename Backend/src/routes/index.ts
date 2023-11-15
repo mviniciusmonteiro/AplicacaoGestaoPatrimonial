@@ -34,6 +34,7 @@ import { ValidateRecoveryCode } from "../middleware/ValidateRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
+import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -77,5 +78,6 @@ router.get('/employee/:registration', new AuthorizationJWTAdmin().handle, new Ge
 router.get('/employee', new AuthorizationJWTAdmin().handle, new GetAllEmployeesController().handle);
 router.put('/employee/:registration', new AuthorizationJWTAdmin().handle, new UpdateEmployeeController().handle);
 router.delete('/employee/:registration', new AuthorizationJWTAdmin().handle, new DeleteEmployeeController().handle);
+router.get('/pendent-report-request', new AuthorizationJWTAdmin().handle, new GetCountPendentReportReqController().handle);
 
 export { router };
