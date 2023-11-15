@@ -15,17 +15,8 @@ class UpdateUserController {
                 return res.status(400).json({mensagem: "Nome de usuário, senha, nome e email são campos obrigatórios"});
             }
 
-            // Verificando se usuário existe
-            const user = await database.user.findFirst({
-                where: { username: {equals: usernameParam, mode: 'insensitive' } }
-            });
-
-            if (!user) {
-                return res.status(400).json({mensagem: "Usuário não encontrado"});
-            }
-
-            // Garantindo que usuário comum só atualiza os próprios dados
-            if (!usernameParam) {
+            // Garantindo que usuário comum só atualiza os próprios dados e que se um parâmetro não for passado então edita os dados do usuário logado
+            if (!usernameParam || req.userRole == "commom") {
                 // Obtendo username do usuário logado
                 const loggedUser = await database.user.findUnique({
                     where: { id: Number(req.userId) }
@@ -36,24 +27,33 @@ class UpdateUserController {
                 }
             }
 
+            // Verificando se usuário existe
+            const user = await database.user.findFirst({
+                where: { username: {equals: usernameParam, mode: 'insensitive' } }
+            });
+
+            if (!user) {
+                return res.status(400).json({mensagem: "Usuário não encontrado"});
+            }
+
             // Verificando se já existe usuário com mesmo username
-            const userAlreadyExistOrEmpAlreadyLinked = await database.user.findFirst({
+            const userAlreadyExist = await database.user.findFirst({
                 where: {
                     id: {not: user.id},
                     username: { equals: username, mode: 'insensitive' }
                 }
             });
 
-            if (userAlreadyExistOrEmpAlreadyLinked) {
+            if (userAlreadyExist) {
                 return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
             }
 
-            // Atualizando dados do funcionário (nome e email)
             const employee = await database.employee.findFirst({
                 where: {
                     registration: user.employeeRegistration
                 }
             });
+
             if (employee?.name.toLowerCase() != name.toLowerCase() || employee?.email.toLowerCase() != email.toLowerCase()) {
                 // Verificando se email pertence a outro funcionário
                 const emailOfOtherEmployee = await database.employee.findFirst({
@@ -72,14 +72,7 @@ class UpdateUserController {
                         }
                     });
                 } else {
-                    // Atualiza os dados do funcionário
-                    const updatedEmployee = await database.employee.update({
-                        where: { registration: user.employeeRegistration },
-                        data: {
-                            name,
-                            email
-                        }
-                    });                    
+                    return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo email"});
                 }
             }
 
@@ -89,7 +82,7 @@ class UpdateUserController {
 
             // Dados do funcionário
             const updatedUser = await database.user.update({
-                where: { username: usernameParam },
+                where: { id: user.id },
                 data: {
                     username,
                     password: hashedPassword,
