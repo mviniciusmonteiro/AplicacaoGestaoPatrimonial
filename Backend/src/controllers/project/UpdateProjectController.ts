@@ -5,9 +5,9 @@ class UpdateProjectController {
     async handle(req: Request, res: Response) {
         try {
             const { name, coordinatorRegistration } = req.body;
-            const projectId = req.params.projectId;
+            const projectName = req.params.name;
 
-            if (!projectId) {
+            if (!projectName) {
                 return res.status(400).json({mensagem: "O id do projeto é obrigatório"});
             }
 
@@ -16,8 +16,8 @@ class UpdateProjectController {
             }
 
             // Verificando se há um projeto com id buscado
-            const oldProject = await database.project.findUnique({
-                where: { id: Number(projectId) }
+            const oldProject = await database.project.findFirst({
+                where: { name: { equals: projectName, mode: 'insensitive' } }
             });
 
             if (!oldProject) {
@@ -27,7 +27,7 @@ class UpdateProjectController {
             // Verificando se já existe projeto com mesmo nome
             const nameAlreadyExist = await database.project.findFirst({
                 where: { 
-                    id: {not: Number(projectId)},
+                    id: { not: oldProject.id },
                     name: {equals: name, mode: 'insensitive'}} // Busca por correspondência exata, sem diferenciar maiúsculas de minúsculas
             });
 
@@ -45,7 +45,7 @@ class UpdateProjectController {
             }
 
             const updatedProject = await database.project.update({
-                where: { id: Number(projectId)},
+                where: { id: oldProject.id },
                 data: {
                     name,
                     coordinatorRegistration

@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { database } from "../../database";
 
-class GetProjectById {
+class GetProjectByNameController {
     async handle(req: Request, res: Response) {
         try {
-            const projectId = req.params.projectId;
+            const projectName = req.params.name;
 
-            const project = await database.project.findUnique({
-                where: {id: Number(projectId)}
+            const project = await database.project.findFirst({
+                where: { name: { equals: projectName, mode: 'insensitive' } }
             });
 
             if (!project) {
@@ -22,4 +22,4 @@ class GetProjectById {
     }
 }
 
-export { GetProjectById }
+export { GetProjectByNameController }

@@ -4,14 +4,14 @@ import { database } from "../../database";
 class DeleteProjectController {
     async handle(req: Request, res: Response) {
         try {
-            const projectId = req.params.projectId;
+            const projectName = req.params.name;
 
-            if (!projectId) {
-                return res.status(404).json({mensagem: "O id do projeto é obrigatório"});
+            if (!projectName) {
+                return res.status(404).json({mensagem: "O nome do projeto é obrigatório"});
             }
 
-            const project = await database.project.findUnique({
-                where: { id: Number(projectId) }
+            const project = await database.project.findFirst({
+                where: { name: { equals: projectName, mode: 'insensitive' } }
             });
 
             if (!project) {
@@ -19,7 +19,7 @@ class DeleteProjectController {
             }
 
             const deletedProject = await database.project.delete({
-                where: {id: Number(projectId)}
+                where: { id: project.id }
             });
 
             return res.status(200).json({deletedProject});

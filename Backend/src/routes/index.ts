@@ -16,7 +16,7 @@ import { GetAllLocationsController } from "../controllers/local/GetAllLocationsC
 import { UpdateLocalController } from "../controllers/local/UpdateLocalController";
 import { DeleteLocalController } from "../controllers/local/DeleteLocalController";
 import { CreateProjectController } from "../controllers/project/CreateProjectController";
-import { GetProjectById } from "../controllers/project/GetProjectByIdController";
+import { GetProjectByNameController } from "../controllers/project/GetProjectByNameController";
 import { UpdateProjectController } from "../controllers/project/UpdateProjectController";
 import { DeleteProjectController } from "../controllers/project/DeleteProjectController";
 import { GetAllProjectsController } from "../controllers/project/GetAllProjectsController";
@@ -58,9 +58,9 @@ router.get('/local/:locationId', new AuthorizationJWTAdmin().handle, new GetLoca
 router.put('/local/:locationId', new AuthorizationJWTAdmin().handle, new UpdateLocalController().handle);
 router.delete('/local/:locationId', new AuthorizationJWTAdmin().handle, new DeleteLocalController().handle);
 router.post('/project', new AuthorizationJWTAdmin().handle, new CreateProjectController().handle);
-router.get('/project/:projectId', new AuthorizationJWTAdmin().handle, new GetProjectById().handle);
-router.put('/project/:projectId', new AuthorizationJWTAdmin().handle, new UpdateProjectController().handle);
-router.delete('/project/:projectId', new AuthorizationJWTAdmin().handle, new DeleteProjectController().handle);
+router.get('/project/:name', new AuthorizationJWTAdmin().handle, new GetProjectByNameController().handle);
+router.put('/project/:name', new AuthorizationJWTAdmin().handle, new UpdateProjectController().handle);
+router.delete('/project/:name', new AuthorizationJWTAdmin().handle, new DeleteProjectController().handle);
 router.post('/employee', new AuthorizationJWTAdmin().handle, new CreateEmployeeController().handle);
 router.get('/employee/:registration', new AuthorizationJWTAdmin().handle, new GetEmployeeByRegistrationController().handle);
 router.get('/employee', new AuthorizationJWTAdmin().handle, new GetAllEmployeesController().handle);
