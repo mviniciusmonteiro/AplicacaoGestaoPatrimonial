@@ -48,7 +48,7 @@ class RequestRecoveryCodeController {
             const code = recoveryCode();
             // Criptografando código (hash)
             const salt = await bcrypt.genSalt(10);
-            const hashedCode = await bcrypt.hash(code, salt);
+            const hashedCode = { code: await bcrypt.hash(code, salt), status: 'sended'};
             
             // Enviando código para email do usuário
             const mailOptions = {
