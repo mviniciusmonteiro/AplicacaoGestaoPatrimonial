@@ -35,6 +35,8 @@ import { RedefinePasswordController } from "../controllers/password-recovery/Red
 import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
+import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
+import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -43,6 +45,8 @@ const multer = require('../config/multer');
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
 router.get('/request-recovery-code', new RequestRecoveryCodeController().handle);
+router.get('/user-count', new GetCountOfUsersController().handle);
+router.get('/item-count', new GetCountOfItemsController().handle);
 
 // Rota de recuperação de senha (requer validação do código de recuperação)
 router.post('/redefine-password', new ValidateRecoveryCode().handle, new RedefinePasswordController().handle);
