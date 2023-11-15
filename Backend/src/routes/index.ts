@@ -30,6 +30,8 @@ import { GetAllEmployeesController } from "../controllers/employee/GetAllEmploye
 import { UpdateEmployeeController } from "../controllers/employee/UpdateEmployeeController";
 import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployeeController";
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
+import { ValidateRecoveryCode } from "../middleware/ValidateRecoveryCode";
+import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -38,6 +40,9 @@ const multer = require('../config/multer');
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
 router.get('/request-recovery-code', new RequestRecoveryCodeController().handle);
+
+// Rota de recuperação de senha (requer validação do código de recuperação)
+router.post('/redefine-password', new ValidateRecoveryCode().handle, new RedefinePasswordController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
