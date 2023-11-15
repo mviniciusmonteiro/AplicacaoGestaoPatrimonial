@@ -18,7 +18,7 @@ class ReportRequestController {
                     requestedBy,
                     description,
                     motiveOfRequest,
-                    status: 'Pendente',
+                    status: 'Pendente'
                 }
             });
             return res.status(201).json({newReportRequest});
