@@ -12,7 +12,17 @@ class DeleteEmployeeController {
             });
 
             if (!employee) {
-                res.status(400).json({mensagem: "Funcionário não encontrado"});
+                return res.status(400).json({mensagem: "Funcionário não encontrado"});
+            }
+
+            const employeeIsUser = await database.user.findFirst({
+                where: {
+                    employeeRegistration: employee?.registration
+                }
+            });
+
+            if (employeeIsUser) {
+                return res.status(400).json({mensagem: "Funcionário está vinculado a usuário. Para apagar seus dados, acesse a página de exclusão de usuário"});
             }
 
             const deletedEmployee = await database.employee.delete({

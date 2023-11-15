@@ -17,12 +17,13 @@ class UpdateEmployeeController {
             });
 
             if (!employee) {
-                return res.status(200).json({mensagem: "Funcionário não encontrado"});
+                return res.status(400).json({mensagem: "Funcionário não encontrado"});
             }
 
             // Verificando se já existe funcionário com mesmo email
             const registrationAlreadyExist = await database.employee.findFirst({
                 where: {
+                    registration: { not: employee.registration},
                     email : { equals: email, mode: 'insensitive' }
                 }
             });
