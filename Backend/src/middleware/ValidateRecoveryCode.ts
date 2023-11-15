@@ -14,7 +14,7 @@ class ValidateRecoveryCode {
             }
 
             if (!tokenOnCookie) {
-                res.status(403).json({mensagem: "Acesso não autorizado: código de recuperação de senha é inválido. Para tentar novamente solicite um novo código"});
+                return res.status(403).json({mensagem: "Acesso não autorizado: código de recuperação de senha é inválido. Para tentar novamente solicite um novo código"});
             }
 
             // Validando código de recuperação de senha
