@@ -56,7 +56,7 @@ class RequestRecoveryCodeController {
                 from: process.env.SUPER_EMAIL,
                 to: employee.email,
                 subject: 'Recuperação de Senha - GuardeiUFC',
-                html: "<p>Prezado (a), <b>" + employee.name.toUpperCase() +  "</b>,<br><br>seu código de recuperação de senha é <b>" + code + "</b>.<br><br>Se você <b>não</b> solicitou recuperação de senha, por favor <b>não repasse</b> esse código a ninguém!<br><br><b>Este é um email automático, por favor não responda.<b/>"
+                html: "<p>Prezado (a) <b>" + employee.name.toUpperCase() +  "</b>,<br><br>seu código de recuperação de senha é <b>" + code + "</b>.<br><br>Se você <b>não</b> solicitou recuperação de senha, por favor <b>não repasse</b> esse código a ninguém!<br><br><b>Este é um email automático, por favor não responda.<b/>"
             };
 
             await transporter.sendMail(mailOptions, function(error: Error) {

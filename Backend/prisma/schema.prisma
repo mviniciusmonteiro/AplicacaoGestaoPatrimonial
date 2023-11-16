@@ -87,6 +87,7 @@ model ReportRequest {
   description String
   motiveOfRequest String?
   solicitedAt DateTime @default(now())
+  answeredAt DateTime?
   status String
   motiveOfIndefer String?
   filePath String?
