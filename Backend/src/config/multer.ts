@@ -1,9 +1,9 @@
 import { FileFilterCallback } from "multer";
 
 const multer = require('multer');
+const moment = require('moment');
 
 type DestinationCallback = (error: Error | null, destination: String) => void;
-
 type FileNameCallback = (error: Error | null, filename: String) => void;
 
 export const imageStorage = multer.diskStorage({
@@ -34,14 +34,15 @@ export const pdfStorage = multer.diskStorage({
         cb(null, process.env.UPLOADS_PATH +  '/pdf');
     },
     filename: (req: Request, file: Express.Multer.File, cb: FileNameCallback) => {
-        cb(null, file.originalname);
+        const ext = file.mimetype.split("/")[1];
+        const filename = file.originalname.split(".")[0];
+        const now = moment().format('DD-MM-YYYY hh-mm-ss');
+        cb(null, `${filename} ${now}.${ext}`);
     }
 });
 
 export const pdfFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-    if (
-        file.mimetype === 'pdf'
-    ) {
+    if (file.mimetype === 'application/pdf') {
         cb(null, true);
     } else {
         cb(null, false);

@@ -37,6 +37,8 @@ import { GetReportRequestByStatusController } from "../controllers/report/item/G
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
 import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
 import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
+import { uploadPdf } from '../config/multer';
+import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -83,5 +85,6 @@ router.get('/employee', new AuthorizationJWTAdmin().handle, new GetAllEmployeesC
 router.put('/employee/:registration', new AuthorizationJWTAdmin().handle, new UpdateEmployeeController().handle);
 router.delete('/employee/:registration', new AuthorizationJWTAdmin().handle, new DeleteEmployeeController().handle);
 router.get('/pendent-report-request', new AuthorizationJWTAdmin().handle, new GetCountPendentReportReqController().handle);
+router.put('/respond-report-request/:id', new AuthorizationJWTAdmin().handle, multer.uploadPdf.single('report'), new RespondToReportRequest().handle);
 
 export { router };
