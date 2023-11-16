@@ -37,7 +37,6 @@ import { GetReportRequestByStatusController } from "../controllers/report/item/G
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
 import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
 import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
-import { uploadPdf } from '../config/multer';
 import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
 
 const router = Router();
