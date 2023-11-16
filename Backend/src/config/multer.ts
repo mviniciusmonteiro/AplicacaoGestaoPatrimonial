@@ -27,7 +27,7 @@ export const imageFilter = (req: Request, file: Express.Multer.File, cb: FileFil
     }
 }
 
-export const uploadImage = multer({storage: imageStorage});
+export const uploadImage = multer({storage: imageStorage, fileFilter: imageFilter});
 
 export const pdfStorage = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: DestinationCallback) => {
@@ -49,4 +49,4 @@ export const pdfFilter = (req: Request, file: Express.Multer.File, cb: FileFilte
     }
 }
 
-export const uploadPdf = multer({storage: pdfStorage});
+export const uploadPdf = multer({storage: pdfStorage, fileFilter: pdfFilter});
