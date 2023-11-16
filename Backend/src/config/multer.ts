@@ -1,4 +1,3 @@
-import { Express } from "express";
 import { FileFilterCallback } from "multer";
 
 const multer = require('multer');
@@ -29,3 +28,24 @@ export const imageFilter = (req: Request, file: Express.Multer.File, cb: FileFil
 }
 
 export const uploadImage = multer({storage: imageStorage});
+
+export const pdfStorage = multer.diskStorage({
+    destination: (req: Request, file: Express.Multer.File, cb: DestinationCallback) => {
+        cb(null, process.env.UPLOADS_PATH +  '/pdf');
+    },
+    filename: (req: Request, file: Express.Multer.File, cb: FileNameCallback) => {
+        cb(null, file.originalname);
+    }
+});
+
+export const pdfFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    if (
+        file.mimetype === 'pdf'
+    ) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+
+export const uploadPdf = multer({storage: pdfStorage});

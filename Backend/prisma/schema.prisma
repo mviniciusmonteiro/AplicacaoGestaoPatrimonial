@@ -89,6 +89,7 @@ model ReportRequest {
   solicitedAt DateTime @default(now())
   status String
   motiveOfIndefer String?
+  filePath String?
 
   // Campos de relacionamento
   isRequested Employee? @relation(fields: [requestedBy], references: [registration], name: "isRequested")
