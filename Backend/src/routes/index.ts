@@ -38,6 +38,7 @@ import { GetCountPendentReportReqController } from "../controllers/report/item/G
 import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
 import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
 import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
+import { DownloadPDFReportController } from "../controllers/report/DownloadPDFReportController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -60,6 +61,7 @@ router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsCon
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
 router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
 router.get('/report-request/:status?', new AuthorizationJWTCommom().handle, new GetReportRequestByStatusController().handle);
+router.get('/pdf-report', new AuthorizationJWTCommom().handle, new DownloadPDFReportController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
