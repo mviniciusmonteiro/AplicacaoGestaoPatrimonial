@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createTable } from "../../config/pdfkit";
 
 const fs = require('fs');
+const moment = require('moment');
 
 interface Item {
     numberOfPatrimony: number,
@@ -32,9 +33,9 @@ class DownloadPDFReportController {
                 formatedStrDataList.push(itemStrDataList);
             });
             // Cria o arquivo PDF com tabela
-            const filename = createTable('GuardeiUFC - Relatório de Itens', formatedStrDataList);
-            // Baixando o arquivo gerado
-            const path = process.env.UPLOADS_PATH + '/pdf/' + filename + '.pdf';
+            const filename = 'report ' + moment().format("DD-MM-YYYY HH-mm-ss");
+            const path = process.env.UPLOADS_PATH + '/pdf/' + filename + '.pdf';            
+            createTable('GuardeiUFC - Relatório de Itens', path, formatedStrDataList);
             const file = fs.createReadStream(path);
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', 'attachment: filename="' + filename + '.pdf"');

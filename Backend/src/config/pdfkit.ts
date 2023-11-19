@@ -10,11 +10,9 @@ const blockSizeItemDic : {[key: number]: number}  = {
 	4: 50
 }
 
-export function createTable(title: String, data: String[][]) {
+export function createTable(title: String, path: String, data: String[][]) {
 	const margin = 20;
 	const pdfDoc = new PDFDocument({size: 'A4', printing: 'highResolution', copying: true, margin: margin });
-	const filename = 'report ' + moment().format("DD-MM-YYYY HH-mm-ss");
-	const path = process.env.UPLOADS_PATH + '/pdf/' + filename + '.pdf';
 	pdfDoc.pipe(fs.createWriteStream(path));
 
     let startY = pdfDoc.y,
@@ -56,8 +54,6 @@ export function createTable(title: String, data: String[][]) {
 	});
 	pdfDoc.text('Relatório gerado em ' + moment().format(`DD/MM/YYYY - HH:mm`).replace('-', 'às'), 0, pdfDoc.page.height - 35, { align: 'center' });
 	pdfDoc.end();
-
-	return filename;
 }
 
 export { PDFDocument }
