@@ -66,7 +66,6 @@ class CreateItemController {
                     }
                 }
             }
-
             // Cadastrando informações do item
             const newItem = await database.item.create({
                 data: {
@@ -76,7 +75,7 @@ class CreateItemController {
                     locationId,
                     responsibleRegistration: coordinatorRegistration ? coordinatorRegistration : responsibleRegistration,
                     projectId,
-                    imageName: req.file ? req.file.originalname : null
+                    imageName: req.file ? req.file.filename : null
                 }
             });
             return res.status(201).json({

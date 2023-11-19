@@ -88,7 +88,7 @@ class UpdateItemController {
                     locationId,
                     responsibleRegistration: coordinatorRegistration ? coordinatorRegistration : responsibleRegistration,
                     projectId,
-                    imageName: req.file ? req.file.originalname : null
+                    imageName: req.file ? req.file.filename : null
                 }
             });
 
