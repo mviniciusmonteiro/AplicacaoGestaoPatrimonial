@@ -56,7 +56,7 @@ class RequestRecoveryCodeController {
                 from: process.env.SUPER_EMAIL,
                 to: employee.email,
                 subject: 'Recuperação de Senha - GuardeiUFC',
-                html: "<p>Prezado (a), <b>" + employee.name.toUpperCase() +  "</b>,<br><br>seu código de recuperação de senha é <b>" + code + "</b>.<br><br>Se você <b>não</b> solicitou recuperação de senha, por favor <b>não repasse</b> esse código a ninguém!<br><br><b>Este é um email automático, por favor não responda.<b/>"
+                html: "<p>Prezado (a), <b>" + employee.name.toUpperCase() +  "</b>,<br><br>seu código de recuperação de senha é <b>" + code + "</b> e expira em <b>" + (Number(process.env.RECOVERY_CODE_DURATION)/60).toString() +" minutos</b>.<br><br>Se você <b>não</b> solicitou recuperação de senha, por favor <b>não repasse</b> esse código a ninguém!<br><br>" + "<b>Este é um email automático, por favor não responda.<b/>"
             };
 
             await transporter.sendMail(mailOptions, function(error: Error) {
@@ -65,7 +65,8 @@ class RequestRecoveryCodeController {
                 } else {
                     const recovery_token = jwt.sign(
                         {id: user.id, code: hashedCode},
-                        process.env.JWT_SECRET_KEY
+                        process.env.JWT_SECRET_KEY,
+                        { expiresIn: process.env.RECOVERY_CODE_DURATION }
                     );
 
                     // Salvando nos cookies

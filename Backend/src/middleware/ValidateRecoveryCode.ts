@@ -27,6 +27,9 @@ class ValidateRecoveryCode {
                 return res.clearCookie("recovery_token").status(403).json({mensagem: "Acesso não autorizado: código de recuperação de senha é inválido. Para tentar novamente solicite um novo código"});
             }
         } catch (error) {
+            if (error instanceof Error && error.name === 'TokenExpiredError') {
+                return res.clearCookie("recovery_token").status(403).json({mensagem: "Acesso não autorizado: código de recuperação de senha expirado. Para tentar novamente solicite um novo código"});
+            }
             console.error(error);
             throw(error);
         }
