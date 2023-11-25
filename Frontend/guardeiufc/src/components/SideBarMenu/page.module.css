@@ -1,0 +1,63 @@
+.sidebar {
+  display: flex;
+  height: 100vh;
+  width: 35px;
+  background-color: #105a4c;
+}
+
+.toggle-btn {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+}
+
+.menu {
+  background-color: #379080;
+  color: #fff;
+  width: 5%;
+  transition: transform 0.3s ease;
+  transform: translateX(-250px);
+}
+
+.nomeMenu {
+  background-color: #105a4c;
+  align-items: center;
+  padding:16px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  padding: 15px;
+  border-bottom: 1px solid #881414;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.iconMenu{
+  font-size: 25px;
+  margin-top:14px;
+  color: white;
+  margin-left: 3px;
+}
+
+.menu li:hover {
+  background-color: #555;
+}
+
+.menuAberto {
+  transform: translateX(0);
+  width: 100%;
+}
+
+.sidebar.menuAberto {
+  width: 100%; 
+}

@@ -1,0 +1,185 @@
+.fixedheader {
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #379080;
+    width: 100%;
+    padding: 1em 1.2em; 
+    margin-bottom: 2em;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.titulo {
+    font-size: 2em;
+    color: #f9faf9;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+}
+
+.menuItem, .menuItemLogin {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.2em;
+    margin: 0 10px; /* Adicione margens para espaçamento entre os itens do menu */
+}
+
+.menuItemLogin {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 1.5%;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.telaPrincipal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #020101;
+    margin-top: 7%;
+}
+
+.conteudo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white; /* Cor de fundo da div de conteúdo, ajuste conforme necessário */
+}
+
+.tituloTela {
+    font-size: 4em;
+    color: #379080; /* Cor do título, ajuste conforme necessário */
+    text-align: center;
+    margin: 0;
+}
+
+.textos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.descricao {
+    font-size: 3em;
+    color: #666; /* Cor do subtítulo, ajuste conforme necessário */
+    margin: 0;
+}
+
+.segundaTela{
+    background-color: #379080;
+}
+
+.contsegundaTela{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tituloRecursos{
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: 0.5em;;
+}
+
+.item{
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.2em;
+    margin: 0;
+    background-color: #f6f6f6;
+    text-align: center;
+    transition: transform 0.3s ease-in-out; 
+}
+
+.funcionalidades{
+    background-color: #379080;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+}
+
+.caixaFuncionalidade {
+    margin-top: 20px;
+  }
+
+  .caixaFuncionalidade:nth-child(odd) .funcionalidade {
+    background-color: #8d1717;
+  }
+  
+  /* Adiciona um estilo diferente para cada funcionalidade par */
+  .caixaFuncionalidade:nth-child(even) .funcionalidade {
+    background-color: #c21212;
+  }
+  
+  /* Adiciona um recuo horizontal para criar o efeito de escada */
+  .caixaFuncionalidade:nth-child(2n) .funcionalidade {
+    margin-left: 30px;
+  }
+  /* Efeito de hover para destacar a funcionalidade quando o mouse passa sobre ela */
+.item:hover {
+    transform: scale(1.05); /* Aumenta ligeiramente o tamanho da funcionalidade */
+}
+
+.terceiraTela{
+    background-color: #05362d;
+}
+
+.contterceiraTela{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.textosSobre{
+    margin-left: 0.5em;;
+    color: white;
+    line-height: 1.5; /* Ajuste conforme necessário para o espaçamento desejado entre linhas */
+    text-align: justify; /* Alinha o texto justificado */
+    margin-top: 20px;
+    margin-bottom: 15px; 
+    max-width: 600px;
+}
+
+.textosSobre p:empty {
+    padding: 8px; /* Adiciona preenchimento interno de 10 pixels para parágrafos vazios */
+    background-color: #05362d;
+  }
+  
+
+.Logo{
+    font-size: 2em; /* Exemplo: ajuste o tamanho da fonte para o título do logo */
+    font-weight: bold; /* Exemplo: negrito para o título do logo */
+    text-align: center; /* Alinha o texto no centro */
+    margin: 0;
+    color: white;
+    margin-right: 50px;
+}
+
+@media (max-width: 768px) {
+    .tituloTela {
+        font-size: 2em; /* Tamanho menor para telas menores */
+    }
+
+    .descricao {
+        font-size: 1.6em; /* Tamanho menor para telas menores */
+    }
+}
+
+
+
