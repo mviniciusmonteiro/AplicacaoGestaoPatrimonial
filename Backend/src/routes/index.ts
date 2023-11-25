@@ -29,15 +29,16 @@ import { GetEmployeeByRegistrationController } from "../controllers/employee/Get
 import { GetAllEmployeesController } from "../controllers/employee/GetAllEmployeesController";
 import { UpdateEmployeeController } from "../controllers/employee/UpdateEmployeeController";
 import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployeeController";
-import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
-import { ValidateRecoveryCode } from "../middleware/ValidateRecoveryCode";
-import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
 import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
 import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
 import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
+import { ValidateRecoveryCodeController } from "../controllers/password-recovery/ValidateRecoveryCodeController";
+import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
+import { VerifyRecoveryCode } from "../middleware/VerifyRecoveryCode";
+import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -45,12 +46,11 @@ const multer = require('../config/multer');
 // Rotas públicas (não requerem autorização)
 router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
-router.get('/request-recovery-code', new RequestRecoveryCodeController().handle);
-router.get('/user-count', new GetCountOfUsersController().handle);
-router.get('/item-count', new GetCountOfItemsController().handle);
+router.post('/request-recovery-code', new RequestRecoveryCodeController().handle);
+router.post('/validate-recovery-code', new ValidateRecoveryCodeController().handle);
 
-// Rota de recuperação de senha (requer validação do código de recuperação)
-router.post('/redefine-password', new ValidateRecoveryCode().handle, new RedefinePasswordController().handle);
+// Rota de recuperação de senha (requer verificação do código de recuperação)
+router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefinePasswordController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
 router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
