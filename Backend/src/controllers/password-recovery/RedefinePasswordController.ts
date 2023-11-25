@@ -14,7 +14,7 @@ class RedefinePasswordController {
             }
 
             if (!req.userId) {
-                return res.clearCookie("recovery_token").status(500).json({mensagem: "Ocorreu um erro interno inesperado ao alterar senha. Tente solicitar um novo código mais tarde"});
+                return res.clearCookie('valid_recovery_token').status(500).json({mensagem: "Ocorreu um erro interno inesperado ao alterar senha. Tente solicitar um novo código mais tarde"});
             }
 
             // Criptografando nova senha (hashed password)
@@ -29,8 +29,7 @@ class RedefinePasswordController {
                     password: hashedPWD
                 }
             });
-
-            return res.clearCookie("recovery_token").status(200).json({mensagem: "Senha atualizada com sucesso"});
+            return res.clearCookie('valid_recovery_token').status(200).json({mensagem: "Senha atualizada com sucesso"});
         } catch (error) {
             console.error(error);
             throw(error);
