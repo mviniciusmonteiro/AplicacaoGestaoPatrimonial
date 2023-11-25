@@ -50,6 +50,8 @@ router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
 router.post('/request-recovery-code', new RequestRecoveryCodeController().handle);
 router.post('/validate-recovery-code', new ValidateRecoveryCodeController().handle);
+router.get('/users-count', new GetCountOfUsersController().handle);
+router.get('/items-count', new GetCountOfItemsController().handle);
 
 // Rota de recuperação de senha (requer verificação do código de recuperação)
 router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefinePasswordController().handle);
