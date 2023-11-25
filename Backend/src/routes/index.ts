@@ -29,10 +29,16 @@ import { GetEmployeeByRegistrationController } from "../controllers/employee/Get
 import { GetAllEmployeesController } from "../controllers/employee/GetAllEmployeesController";
 import { UpdateEmployeeController } from "../controllers/employee/UpdateEmployeeController";
 import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployeeController";
+import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
+import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
+import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
+import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
+import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
+import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
+import { ValidateRecoveryCodeController } from "../controllers/password-recovery/ValidateRecoveryCodeController";
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
 import { VerifyRecoveryCode } from "../middleware/VerifyRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
-import { ValidateRecoveryCodeController } from "../controllers/password-recovery/ValidateRecoveryCodeController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -52,6 +58,8 @@ router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsRep
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
+router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
+router.get('/report-request/:status?', new AuthorizationJWTCommom().handle, new GetReportRequestByStatusController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
@@ -75,5 +83,7 @@ router.get('/employee/:registration', new AuthorizationJWTAdmin().handle, new Ge
 router.get('/employee', new AuthorizationJWTAdmin().handle, new GetAllEmployeesController().handle);
 router.put('/employee/:registration', new AuthorizationJWTAdmin().handle, new UpdateEmployeeController().handle);
 router.delete('/employee/:registration', new AuthorizationJWTAdmin().handle, new DeleteEmployeeController().handle);
+router.get('/pendent-report-request', new AuthorizationJWTAdmin().handle, new GetCountPendentReportReqController().handle);
+router.put('/respond-report-request/:id', new AuthorizationJWTAdmin().handle, multer.uploadPdf.single('report'), new RespondToReportRequest().handle);
 
 export { router };
