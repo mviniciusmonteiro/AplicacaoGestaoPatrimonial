@@ -39,6 +39,8 @@ import { ValidateRecoveryCodeController } from "../controllers/password-recovery
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
 import { VerifyRecoveryCode } from "../middleware/VerifyRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
+import { DownloadPDFReportController } from "../controllers/report/DownloadPDFReportController";
+import { DownloadAnexedPDFController } from "../controllers/report/DownloadAnexedPDFController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -60,6 +62,8 @@ router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsCon
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
 router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
 router.get('/report-request/:status?', new AuthorizationJWTCommom().handle, new GetReportRequestByStatusController().handle);
+router.get('/pdf-report', new AuthorizationJWTCommom().handle, new DownloadPDFReportController().handle);
+router.get('/download-anexed-pdf/:requestId', new AuthorizationJWTCommom().handle, new DownloadAnexedPDFController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
