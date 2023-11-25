@@ -9,3 +9,71 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  isAdmin Boolean @default(false)
+  createdAt DateTime @default(now())
+  employeeRegistration Int // Chave estrangeira
+
+  // Campo do relacionamento: apenas define conexão, não existe no banco
+  isAn Employee @relation(fields: [employeeRegistration], references: [registration])
+
+  @@map("users")
+}
+
+model Employee {
+  registration Int @unique
+  name String
+  email String @unique
+
+  // Campos do relacionamento: apenas definem relacionamento, não existem no banco
+  linkedUser User[]
+  coordinates Project[]
+  responsibleTo Item[]
+
+  @@map("employees")
+}
+
+model Local {
+  id Int @id @default(autoincrement())
+  departmentBuilding String // Bloco
+  room String
+
+  // Campo de relacionamento
+  linkedItems Item[]
+
+  @@map("locations")
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+  name String @unique
+  coordinatorRegistration Int? // Chave estrangeira
+
+  // Campos de relacionamento: apenas definem relacionamento, não existem no banco
+  coordinatedBy Employee? @relation(fields: [coordinatorRegistration], references: [registration])
+  linkedItems Item[]
+
+  @@map("projects")
+}
+
+model Item {
+  id Int @id @default(autoincrement())
+  numberOfPatrimony Int @unique
+  name String
+  description String
+  locationId Int // Chave estrangeira
+  responsibleRegistration Int? // Chave estrangeira
+  projectId Int? // Chave estrangeira
+  imageName String?
+
+  // Campos de relacionamento
+  responsibleForItem Employee? @relation(fields: [responsibleRegistration], references: [registration])
+  linkedProject Project? @relation(fields: [projectId], references: [id])
+  locatedAt Local @relation(fields: [locationId], references: [id])
+
+  @@map("items")
+}
