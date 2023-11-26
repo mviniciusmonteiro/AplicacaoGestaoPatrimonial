@@ -4,19 +4,18 @@ import styles from "./page.module.css";
 import image from "/public/Computer login-rafiki (1).png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 interface FormData {
-  nome: string;
-  senha: string;
-}
+    username: string;
+    email: string;
+  }
 
-function TelaLogin() {
+function TelaSolicitacaoCodigo() {
   const [formData, setFormData] = useState<FormData>({
-    nome: "",
-    senha: "",
+    username: "",
+    email: ""
   });
   const router = useRouter();
 
@@ -29,39 +28,34 @@ function TelaLogin() {
     }));
   };
 
-  const validateData = (username: String, password: String) => {
-    if (username == '' || password == '') {
+  const validateData = (username: String, email: String) => {
+    if (username == '' || email == '') {
       return false;
     }
     return true;
   }
 
-  const handleLogin = (): void => {
-    const dataIsValid = validateData(formData.nome, formData.senha);
+  const handleRequestCode = (): void => {
+    const dataIsValid = validateData(formData.username, formData.email);
     if (!dataIsValid) {
       Swal.fire({
         icon: 'warning',
-        text: 'Informe nome de usuário e senha para realizar login!'
+        text: 'Informe nome de usuário e email para solicitar o código de recuperação de senha!'
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/login', {
-      username: formData.nome,
-      password: formData.senha
+    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/request-recovery-code', {
+      username: formData.username,
+      email: formData.email
     }).then((response) => {
-      if (response.status == 200) {
-        if (response.data.isAdmin) {
-          router.push('/TelaAdministrador');
-        } else {
-          // router.push('/TelaComum');
-        }
+      if (response.status == 200) {      
+        router.push('/TelaValidacaoCodigo');
       }
     }).catch((error) => {
       if (error.response.status == 400) {
         Swal.fire({
           icon: 'error',
-          text: 'Nome de usuário e/ou senha incorretos. Tente novamente!',
-          footer: '<a href="/TelaSolicitacaoCodigo">Esqueceu sua senha?</a>'
+          text: 'Nome de usuário e/ou email não correspondem aos dados cadastrados. Tente novamente!'
         });
       } else {
         Swal.fire({
@@ -86,43 +80,41 @@ function TelaLogin() {
           />
         </div>
         <div className={styles.containerEntrada}>
-          <h2 className={styles.titulo}>ENTRE NA SUA CONTA</h2>
-          <div className={styles.dadosEntrada}>
-            <p className={styles.Nomes}>Nome de Usuário</p>
+          <h2 className={styles.titulo}>Solicitar Código de Recuperação de Senha</h2>
+          <p className={styles.estilosubtitulo}>
+            Preencha os campos de acordo com seu cadastro.
+          </p>
+          <form className={styles.dadosEntrada}>
+            <p className={styles.nomes}>Nome de Usuário</p>
             <input
               type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
+              id="username"
+              name="username"
+              value={formData.username}
               placeholder="Digite seu nome de usuário"
               onChange={handleInputChange}
               className={styles.input}
               tabIndex={0}
+              required
             />
-            <p className={styles.Nomes}>Senha</p>
+            <p className={styles.nomes}>Email</p>
             <input
-              type="password"
-              id="senha"
-              name="senha"
-              placeholder="Digite sua senha"
-              value={formData.senha}
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Digite seu email"
+              value={formData.email}
               className={styles.input}
               onChange={handleInputChange}
               tabIndex={0}
+              required
             />
-          </div>
-          <div className={styles.botaoLogin} tabIndex={0}>
-            <p className={styles.textoBotao} onClick={handleLogin}>Login</p>
-          </div>
-          <div className={styles.textosSaida}>
-            <Link href = "/TelaSolicitacaoCodigo" tabIndex={0}>Esqueceu a senha?</Link>
-            <br></br>
-            <Link href = "/TelaCadastro" tabIndex={0}>Não possui uma conta? Cadastre-se</Link>
-          </div>
+            <p className={styles.estiloBotao} onClick={handleRequestCode} tabIndex={0}>Solicitar Código</p>
+          </form>
         </div>
       </div>
     </div>
   );
 }
 
-export default TelaLogin;
+export default TelaSolicitacaoCodigo;
