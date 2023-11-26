@@ -8,14 +8,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 interface FormData {
-    username: string;
-    email: string;
+    code: string;
   }
 
 function TelaSolicitacaoCodigo() {
   const [formData, setFormData] = useState<FormData>({
-    username: "",
-    email: ""
+    code: ""
   });
   const router = useRouter();
 
@@ -28,41 +26,41 @@ function TelaSolicitacaoCodigo() {
     }));
   };
 
-  const validateData = (username: String, email: String) => {
-    if (username == '' || email == '') {
+  const validateData = (code: String) => {
+    if (code == '') {
       return false;
     }
     return true;
   }
 
-  const handleRequestCode = (): void => {
-    const dataIsValid = validateData(formData.username, formData.email);
+  const handleValidateCode = (): void => {
+    const dataIsValid = validateData(formData.code);
     if (!dataIsValid) {
       Swal.fire({
         icon: 'warning',
-        text: 'Informe nome de usuário e email para solicitar o código de recuperação de senha!'
+        text: 'Informe o código de recuperação de senha!'
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/request-recovery-code', {
-      username: formData.username,
-      email: formData.email
+    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/validate-recovery-code', {
+      username: formData.code,
     }).then((response) => {
-      if (response.status == 200) {      
-        router.push('/TelaValidacaoCodigo');
+      if (response.status == 200) {
+        // Vai para tela de alteração de senha
       }
     }).catch((error) => {
       if (error.response.status == 400) {
         Swal.fire({
           icon: 'error',
-          text: 'Nome de usuário e/ou email não correspondem aos dados cadastrados. Tente novamente!'
+          text: 'Código de recuperação de senha é inválido. Para tentar novamente solicite um novo código!'
         });
       } else {
         Swal.fire({
           icon: 'error',
-          text: `Ocorreu um erro ao tentar solicitar código de recuperação de senha.\nStatus do erro: (${error.response.status})`
+          text: `Ocorreu um erro ao tentar validar código de recuperação de senha.\nStatus do erro: (${error.response.status})`
         });
       }
+      router.push('/TelaSolicitacaoCodigo');
       console.error(error);
     });
   };
@@ -80,36 +78,24 @@ function TelaSolicitacaoCodigo() {
           />
         </div>
         <div className={styles.containerEntrada}>
-          <h2 className={styles.titulo}>Solicitar Código de Recuperação de Senha</h2>
+          <h2 className={styles.titulo}>Validar Código de Recuperação de Senha</h2>
           <p className={styles.estilosubtitulo}>
-            Preencha os campos de acordo com seu cadastro.
+            Informe o código de seis dígitos enviado para seu email.
           </p>
           <form className={styles.dadosEntrada}>
-            <p className={styles.nomes}>Nome de Usuário</p>
+            <p className={styles.nomes}>Código</p>
             <input
               type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              placeholder="Digite seu nome de usuário"
+              id="code"
+              name="code"
+              value={formData.code}
+              placeholder="Digite o código enviado por email"
               onChange={handleInputChange}
               className={styles.input}
               tabIndex={0}
               required
             />
-            <p className={styles.nomes}>Email</p>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Digite seu email"
-              value={formData.email}
-              className={styles.input}
-              onChange={handleInputChange}
-              tabIndex={0}
-              required
-            />
-            <p className={styles.estiloBotao} onClick={handleRequestCode} tabIndex={0}>Solicitar Código</p>
+            <p className={styles.estiloBotao} onClick={handleValidateCode} tabIndex={0}>Validar Código</p>
           </form>
         </div>
       </div>
