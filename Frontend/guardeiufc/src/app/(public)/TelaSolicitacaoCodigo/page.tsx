@@ -4,8 +4,9 @@ import styles from "./page.module.css";
 import image from "/public/Computer login-rafiki (1).png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { axios } from '@/config/axios';
+import { AxiosResponse,  AxiosError } from 'axios';
 
 interface FormData {
     username: string;
@@ -35,7 +36,7 @@ function TelaSolicitacaoCodigo() {
     return true;
   }
 
-  const handleRequestCode = (): void => {
+  const handleRequestCode = async () => {
     const dataIsValid = validateData(formData.username, formData.email);
     if (!dataIsValid) {
       Swal.fire({
@@ -44,27 +45,28 @@ function TelaSolicitacaoCodigo() {
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/request-recovery-code', {
-      username: formData.username,
-      email: formData.email
-    }).then((response) => {
-      if (response.status == 200) {      
-        router.push('/TelaValidacaoCodigo');
-      }
-    }).catch((error) => {
-      if (error.response.status == 400) {
-        Swal.fire({
-          icon: 'error',
-          text: 'Nome de usuário e/ou email não correspondem aos dados cadastrados. Tente novamente!'
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          text: `Ocorreu um erro ao tentar solicitar código de recuperação de senha.\nStatus do erro: (${error.response.status})`
-        });
-      }
-      console.error(error);
-    });
+    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/request-recovery-code', 
+      {
+        username: formData.username,
+        email: formData.email
+      }).then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          router.push('/TelaValidacaoCodigo');
+        }
+      }).catch((error: AxiosError) => {
+        if (error.response?.status == 400) {
+          Swal.fire({
+            icon: 'error',
+            text: 'Nome de usuário e/ou email não corresponde(m) aos dados cadastrados. Tente novamente!'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            text: `Ocorreu um erro ao tentar solicitar o código de recuperação.\nCódigo do erro: ${error.response?.status}`
+          });
+        }
+        console.error(error);
+      });
   };
 
   return (

@@ -5,8 +5,9 @@ import image from "/public/Computer login-rafiki (1).png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { axios } from '@/config/axios';
+import { AxiosResponse, AxiosError } from 'axios';
 
 interface FormData {
   nome: string;
@@ -48,7 +49,7 @@ function TelaLogin() {
     axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/login', {
       username: formData.nome,
       password: formData.senha
-    }).then((response) => {
+    }).then((response: AxiosResponse) => {
       if (response.status == 200) {
         if (response.data.isAdmin) {
           router.push('/TelaAdministrador');
@@ -56,8 +57,8 @@ function TelaLogin() {
           // router.push('/TelaComum');
         }
       }
-    }).catch((error) => {
-      if (error.response.status == 400) {
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 400) {
         Swal.fire({
           icon: 'error',
           text: 'Nome de usuário e/ou senha incorretos. Tente novamente!',
@@ -66,7 +67,7 @@ function TelaLogin() {
       } else {
         Swal.fire({
           icon: 'error',
-          text: `Ocorreu um erro ao tentar fazer login.\nStatus do erro: (${error.response.status})`
+          text: `Ocorreu um erro ao tentar fazer login.\nCódigo do erro: ${error.response?.status}`
         });
       }
       console.error(error);

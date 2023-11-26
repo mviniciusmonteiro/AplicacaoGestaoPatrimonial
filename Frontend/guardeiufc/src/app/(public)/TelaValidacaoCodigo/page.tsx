@@ -4,14 +4,15 @@ import styles from "./page.module.css";
 import image from "/public/Computer login-rafiki (1).png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { axios } from '@/config/axios';
+import { AxiosResponse, AxiosError } from 'axios';
 
 interface FormData {
     code: string;
-  }
+}
 
-function TelaSolicitacaoCodigo() {
+function TelaValidacaoCodigo() {
   const [formData, setFormData] = useState<FormData>({
     code: ""
   });
@@ -43,13 +44,13 @@ function TelaSolicitacaoCodigo() {
       return;
     }
     axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/validate-recovery-code', {
-      username: formData.code,
-    }).then((response) => {
+      code: formData.code
+    }).then((response: AxiosResponse) => {
       if (response.status == 200) {
-        // Vai para tela de alteração de senha
+        router.push('/TelaAlteracaoSenha');
       }
-    }).catch((error) => {
-      if (error.response.status == 400) {
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 400) {
         Swal.fire({
           icon: 'error',
           text: 'Código de recuperação de senha é inválido. Para tentar novamente solicite um novo código!'
@@ -57,7 +58,7 @@ function TelaSolicitacaoCodigo() {
       } else {
         Swal.fire({
           icon: 'error',
-          text: `Ocorreu um erro ao tentar validar código de recuperação de senha.\nStatus do erro: (${error.response.status})`
+          text: `Ocorreu um erro ao tentar validar código de recuperação de senha.\nCódigo do erro: ${error.response?.status}`
         });
       }
       router.push('/TelaSolicitacaoCodigo');
@@ -103,4 +104,4 @@ function TelaSolicitacaoCodigo() {
   );
 }
 
-export default TelaSolicitacaoCodigo;
+export default TelaValidacaoCodigo;
