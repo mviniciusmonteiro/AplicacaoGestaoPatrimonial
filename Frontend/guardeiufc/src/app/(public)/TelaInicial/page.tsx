@@ -56,10 +56,10 @@ function TelaInicial() {
               <div className={styles.item}>Gerar relatórios de itens vinculados</div>
             </div>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Solicitar relatórios mais detalhados de itens</div>
+              <div className={styles.item}>Solicitar relatórios mais detalhados** de itens</div>
             </div>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Acompanhar solicitações de relatórios mais detalhados** de itens</div>
+              <div className={styles.item}>Acompanhar solicitações de relatórios mais detalhados de itens</div>
             </div>
           </div>
         </div>

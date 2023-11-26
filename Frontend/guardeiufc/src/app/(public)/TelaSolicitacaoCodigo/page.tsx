@@ -87,7 +87,7 @@ function TelaSolicitacaoCodigo() {
             Preencha os campos de acordo com seu cadastro.
           </p>
           <form className={styles.dadosEntrada}>
-            <p className={styles.nomes}>Nome de Usuário</p>
+            <p className={styles.nomes}>Nome de Usuário*</p>
             <input
               type="text"
               id="username"
@@ -99,7 +99,7 @@ function TelaSolicitacaoCodigo() {
               tabIndex={0}
               required
             />
-            <p className={styles.nomes}>Email</p>
+            <p className={styles.nomes}>Email*</p>
             <input
               type="email"
               id="email"

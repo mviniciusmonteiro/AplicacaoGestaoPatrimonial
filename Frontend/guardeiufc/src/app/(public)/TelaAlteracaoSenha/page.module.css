@@ -63,6 +63,11 @@
     border-radius: 4px;
 }
 
+.sinalizadorSenhasDiferentes {
+    color: red;
+    display: none;
+}
+
 .estiloBotao {
     background-color: #379080;
     color: #fff;

@@ -11,13 +11,20 @@ import { AxiosResponse, AxiosError } from 'axios';
 interface FormData {
     password: string;
     passwordConfirmation: string;
-  }
+}
+
+interface FormPassword {
+  equals: boolean;
+}
 
 function TelaAlteracaoSenha() {
   const [formData, setFormData] = useState<FormData>({
     password: "",
     passwordConfirmation: ""
   });
+  const [formPassword, setFormPassword] = useState<FormPassword>({
+    equals: false
+  });  
   const router = useRouter();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,11 +38,17 @@ function TelaAlteracaoSenha() {
     // Verificando se as senhas são iguais
     const inputPass = document.getElementsByName(name)[0] as HTMLInputElement;
     const inputPassConfirm = document.getElementsByName(name == "password" ? 'passwordConfirmation' : "password")[0] as HTMLInputElement;
-
+    const sinalizador = document.getElementById('sinalizadorSenhasDiferentes');
     if (inputPass.value.length == 0 || inputPass.value != inputPassConfirm.value) {
-      document.getElementById('btnAlterar')?.addEventListener ("click", ()=>{}, false);
+      if (sinalizador) {
+        sinalizador.style.display = 'block';
+      }
+      setFormPassword({equals: false});
     } else {
-      document.getElementById('btnAlterar')?.addEventListener ("click", handleAlterarSenha, false);
+      if (sinalizador) {
+        sinalizador.style.display = 'none';
+      }
+      setFormPassword({equals: true});
     }
   }
 
@@ -47,7 +60,6 @@ function TelaAlteracaoSenha() {
   }
 
   const handleAlterarSenha = (): void => {
-    alert('ENTREI');
     const dataIsValid = validateData(formData.password, formData.passwordConfirmation);
     if (!dataIsValid) {
       Swal.fire({
@@ -118,8 +130,9 @@ function TelaAlteracaoSenha() {
               tabIndex={0}
               required
             />
+            <p id={'sinalizadorSenhasDiferentes'} className={styles.sinalizadorSenhasDiferentes}>As senhas não correspondem!</p><br></br>
           </form>
-          <div id={'btnAlterar'}className={styles.estiloBotao} tabIndex={0}>Alterar Senha</div>
+          <div id={'btnAlterar'}className={styles.estiloBotao} onClick={formPassword.equals ? handleAlterarSenha : ()=>{}} tabIndex={0}>Alterar Senha</div>
         </div>
       </div>
     </div>
