@@ -50,19 +50,21 @@ function TelaInicial() {
           </div>
           <div className={styles.funcionalidades}>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Editar itens do patrimônio</div>
+              <div className={styles.item}>Filtrar itens vinculados*</div>
             </div>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Filtrar itens vinculados</div>
+              <div className={styles.item}>Gerar relatórios de itens vinculados</div>
             </div>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Solicitar relatório detalhado</div>
+              <div className={styles.item}>Solicitar relatórios mais detalhados de itens</div>
             </div>
             <div className={styles.caixaFuncionalidade}>
-              <div className={styles.item}>Acompanhar solicitações</div>
+              <div className={styles.item}>Acompanhar solicitações de relatórios mais detalhados** de itens</div>
             </div>
           </div>
         </div>
+        <p className={styles.contExplicacao}>*Itens sob responsabilidade do usuário ou vinculados a projetos que ele coordena</p>
+        <p className={styles.contExplicacao}>**Relatórios contendo itens que não estão sob responsabilidade do usuário ou que não estão vinculados a projetos que ele coordena</p>
       </div>
 
       <div className = {styles.terceiraTela} id = "TelaSobre">
@@ -71,7 +73,7 @@ function TelaInicial() {
           <div className={styles.textosSobre}>
             <p>GuardeiUFC é uma ferramenta concebida e desenvolvida ao longo da disciplina de Desenvolvimento de Software para Web (CK0207 - 2023.2).</p>
             <p></p>
-            <p>A proposta da aplicação é que ela ofereça serviços de gestão do patrimônio vinculado ao Departamento de Computação da Universidade Federal do Ceará, agilizando e facilitando esse gerenciamento.</p>
+            <p>A proposta dessa aplicação web é que ela ofereça serviços de gestão do patrimônio vinculado ao Departamento de Computação da Universidade Federal do Ceará, agilizando e facilitando esse gerenciamento.</p>
           </div>
           <div className={styles.Logo}>
             <p>GuardeiUFC</p>
