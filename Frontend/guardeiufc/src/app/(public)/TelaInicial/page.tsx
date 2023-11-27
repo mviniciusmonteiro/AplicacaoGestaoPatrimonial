@@ -7,6 +7,13 @@ import { FaUser } from "react-icons/fa";
 import { FaFolderOpen } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
+import { axios } from '@/config/axios';
+import { AxiosError } from 'axios';
+
+interface Response {
+  itemsQuantity: number;
+  usersQuantity: number;
+}
 
 function TelaInicial() {
   const [usuariosCadastrados, setUsuariosCadastrados] = useState(0);
@@ -19,12 +26,15 @@ function TelaInicial() {
   };
 
   useEffect(() => {
-    // Teste com valores de exemplo
-    const testeUsuariosCadastrados = 50;
-    const testeItensCadastrados = 2000;
-
-    // Inicia a animacao usando os valores de teste
-    animateCounters(testeUsuariosCadastrados, testeItensCadastrados);
+    axios.get<Response>(process.env.NEXT_PUBLIC_BASE_URL + '/our-numbers')
+    .then(response => {
+      if (response.status == 200) {
+        animateCounters(response.data.usersQuantity, response.data.itemsQuantity);
+      }
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+    });
   }, []);
 
   const animateCounters = (end1: number, end2: number) => {
@@ -82,13 +92,13 @@ function TelaInicial() {
               <div className={styles.containerInfos}>
                 <div className={styles.circle}>
                   <FaUser className={styles.usericon} />
-                  <p className={styles.count}>+{usuariosCadastrados}</p>
+                  <p className={styles.count}>{usuariosCadastrados}</p>
                   <p className={styles.label}>Usuários</p>
                   <p className={styles.label}>Cadastrados</p>
                 </div>
                 <div className={styles.circle}>
                   <FaFolderOpen className={styles.usericon} />
-                  <p className={styles.count}>+{itensCadastrados}</p>
+                  <p className={styles.count}>{itensCadastrados}</p>
                   <p className={styles.label}>Itens</p>
                   <p className={styles.label}>Cadastrados</p>
                 </div>

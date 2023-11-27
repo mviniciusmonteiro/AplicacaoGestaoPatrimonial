@@ -32,8 +32,6 @@ import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployee
 import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
-import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
-import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
 import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
 import { ValidateRecoveryCodeController } from "../controllers/password-recovery/ValidateRecoveryCodeController";
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
@@ -41,6 +39,7 @@ import { VerifyRecoveryCode } from "../middleware/VerifyRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 import { DownloadPDFReportController } from "../controllers/report/DownloadPDFReportController";
 import { DownloadAnexedPDFController } from "../controllers/report/DownloadAnexedPDFController";
+import { GetOurNumbersController } from "../controllers/report/user/GetOurNumbersController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -50,8 +49,7 @@ router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
 router.post('/request-recovery-code', new RequestRecoveryCodeController().handle);
 router.post('/validate-recovery-code', new ValidateRecoveryCodeController().handle);
-router.get('/users-count', new GetCountOfUsersController().handle);
-router.get('/items-count', new GetCountOfItemsController().handle);
+router.get('/our-numbers', new GetOurNumbersController().handle);
 
 // Rota de recuperação de senha (requer verificação do código de recuperação)
 router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefinePasswordController().handle);
