@@ -105,6 +105,16 @@
   margin-bottom: 12px;
 }
 
+.areaDeferimento {
+  cursor: pointer;
+}
+
+.areaDeferimento > p {
+  display: inline;
+  color: white;
+  cursor: pointer;
+}
+
 .input:focus {
   outline: none;
   border-color: #4caf50; 
@@ -183,6 +193,11 @@
 .tabela{
   width: 90%;
   height: 100%;
+}
+
+.downloadIcon {
+  color: white;
+  cursor: pointer;
 }
 
 @media (max-width: 780px) {

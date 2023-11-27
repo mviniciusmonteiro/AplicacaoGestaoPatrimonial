@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Table from "react-bootstrap/Table";
+import { FaFilePdf } from "react-icons/fa6";
 
 interface Item {
   matSolicitante: string;
@@ -13,10 +14,13 @@ interface Item {
 }
 
 export default function AcompanharSolicitacoes() {
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState('');
   const [visualizar, setVisualizar] = useState(false);
-  const handleOptionChange = (value: string) => {
-    setSelectedOption(value);
+  const [selectedRequestStatus, setSelectedRequestStatus] = useState('');
+
+  const handleOptionChange = (status: string) => {
+    setSelectedOption(status);
+    alert(`Requisita à API as requisições com parâmetro de busca = ${status}`);
   };
 
   const [formState, setFormState] = useState({
@@ -38,6 +42,7 @@ export default function AcompanharSolicitacoes() {
       motivoI: row.motivoIndeferimento,
       status: row.status,
     });
+    setSelectedRequestStatus(row.status);
     setVisualizar(true);
   };
 
@@ -48,6 +53,10 @@ export default function AcompanharSolicitacoes() {
     handleVisualizar(row);
   };
 
+  const handleDownloadPDFReport = (filename: string) => {
+    alert(`Enviar requisição para aixar arquivo com nome ${filename}`);
+  }
+
   //Exemplo de dados para receber
   const [dados, setDados] = useState<Item[]>([
     {
@@ -55,7 +64,7 @@ export default function AcompanharSolicitacoes() {
       descricao: "Relatório 1",
       motivo: "Motivo 1",
       data: "01/01/2023",
-      status: "pendente",
+      status: "Pendente",
       motivoIndeferimento: "",
     },
     {
@@ -63,7 +72,7 @@ export default function AcompanharSolicitacoes() {
       descricao: "Relatório 2",
       motivo: "Motivo 2",
       data: "02/01/2023",
-      status: "deferida",
+      status: "Deferida",
       motivoIndeferimento: "",
     },
     {
@@ -71,31 +80,22 @@ export default function AcompanharSolicitacoes() {
       descricao: "Relatório 3",
       motivo: "Motivo 3",
       data: "03/01/2023",
-      status: "indeferida",
+      status: "Indeferida",
       motivoIndeferimento: "Motivo indeferimento 3",
     },
   ]);
 
-  const dadosFiltrados =
-    selectedOption === "todas"
-      ? dados
-      : dados.filter((item) => {
-          if (selectedOption === "pendentes") {
-            return item.status.toLowerCase() === "pendente";
-          } else if (selectedOption === "deferidas") {
-            return item.status.toLowerCase() === "deferida";
-          } else if (selectedOption === "indeferidas") {
-            return item.status.toLowerCase() === "indeferida";
-          }
-          return false;
-        });
+  useEffect(() => {
+    setSelectedOption('Todas');
+    alert('Enviar requisição para obter todas as solicitações ao iniciar página');
+  }, []);
 
   return (
     <div>
       <div className={styles.main}>
         <div className={styles.Principal}>
           <p className={styles.estilotitulo}>
-            Acompanhar Solicitação de Relatórios
+            Acompanhar Solicitações de Relatórios
           </p>
           <p className={styles.estilosubtitulo}>
             Veja abaixo o status dos seus relatórios solicitados
@@ -105,8 +105,8 @@ export default function AcompanharSolicitacoes() {
               <input
                 type="radio"
                 value="pendentes"
-                checked={selectedOption === "pendentes"}
-                onChange={() => handleOptionChange("pendentes")}
+                checked={selectedOption == 'Pendentes'}
+                onChange={() => { handleOptionChange('Pendentes') }}
               />
               Pendentes
             </label>
@@ -114,8 +114,8 @@ export default function AcompanharSolicitacoes() {
               <input
                 type="radio"
                 value="deferidas"
-                checked={selectedOption === "deferidas"}
-                onChange={() => handleOptionChange("deferidas")}
+                checked={selectedOption == 'Deferidas'}
+                onChange={() => { handleOptionChange('Deferidas') }}
               />
               Deferidas
             </label>
@@ -123,8 +123,8 @@ export default function AcompanharSolicitacoes() {
               <input
                 type="radio"
                 value="indeferidas"
-                checked={selectedOption === "indeferidas"}
-                onChange={() => handleOptionChange("indeferidas")}
+                checked={selectedOption == 'Indeferidas'}
+                onChange={() => { handleOptionChange('Indeferidas') }}
               />
               Indeferidas
             </label>
@@ -132,8 +132,8 @@ export default function AcompanharSolicitacoes() {
               <input
                 type="radio"
                 value="todas"
-                checked={selectedOption === "todas"}
-                onChange={() => handleOptionChange("todas")}
+                checked={selectedOption == 'Todas'}
+                onChange={() => { handleOptionChange('Todas') }}
               />
               Todas
             </label>
@@ -153,7 +153,7 @@ export default function AcompanharSolicitacoes() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dadosFiltrados.map((row, index) => (
+                  {dados.map((row, index) => (
                     <tr key={index}>
                       <td>{row.matSolicitante}</td>
                       <td>{row.descricao}</td>
@@ -205,15 +205,24 @@ export default function AcompanharSolicitacoes() {
                   value={formState.descricaoR}
                   readOnly
                 />
-
-                <p className={styles.Nomes}>Motivo do indeferimento</p>
-                <textarea
-                  id="motivoI"
-                  name="motivoI"
-                  className={styles.textarea}
-                  value={formState.motivoI}
-                  readOnly
-                />
+                { selectedRequestStatus == 'Indeferida' && (
+                <div className={'areaIndeferimento'}>
+                  <p className={styles.Nomes}>Motivo do indeferimento</p>
+                  <textarea
+                    id="motivoI"
+                    name="motivoI"
+                    className={styles.textarea}
+                    value={formState.motivoI}
+                    readOnly
+                  />
+                </div>
+                )}
+                { selectedRequestStatus == 'Deferida' && (
+                <div className={styles.areaDeferimento}>
+                  <FaFilePdf className={styles.downloadIcon} onClick={() => handleDownloadPDFReport('Nome do relatório.pdf')}/>
+                  <p onClick={() => handleDownloadPDFReport('Nome do relatório.pdf')}> Baixar relatório</p>
+                </div>
+                )}
               </div>
             </div>
           )}
