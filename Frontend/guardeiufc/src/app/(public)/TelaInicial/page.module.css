@@ -1,185 +1,310 @@
 .fixedheader {
-    position: fixed;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #379080;
-    width: 100%;
-    padding: 1em 1.2em; 
-    margin-bottom: 2em;
+  position: fixed;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #379080;
+  width: 100%;
+  padding: 1em 1.2em;
+  margin-bottom: 2em;
+  z-index: 2;
 }
 
 .main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+.imagemContainer {
+  width:60%;
+  z-index: 1;
+
+  .div {
+    position: unset !important;
+  }
+
+  .image {
+    object-fit: contain;
+    width: 100% !important;
+    position: relative !important;
+    height: unset !important;
+  }
 }
 
 .titulo {
-    font-size: 2em;
-    color: #f9faf9;
+  font-size: 1.5em;
+  color: #f9faf9;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .menu {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
-.menuItem, .menuItemLogin {
-    text-decoration: none;
-    color: #333;
-    font-size: 1.2em;
-    margin: 0 10px; /* Adicione margens para espaçamento entre os itens do menu */
+.menuItem,
+.menuItemLogin {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 1.2em;
+  margin: 0 10px; /* Adicione margens para espaçamento entre os itens do menu */
 }
 
 .menuItemLogin {
-    background-color: #ffffff;
-    color: #000000;
-    padding: 1.5%;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 20px;
+  background-color: #3F5259; 
+  color: #F2F2F2; 
+  padding: 9px 15px; 
+  border-radius: 5px; 
+  text-decoration: none; 
+  font-size: 1.2em; 
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.menuItemLogin:hover {
+  background-color: #F8F8F8;
+  color:#3F5259; 
 }
 
 .telaPrincipal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #020101;
-    margin-top: 7%;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  margin-top: 4%;
 }
 
 .conteudo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: white; /* Cor de fundo da div de conteúdo, ajuste conforme necessário */
+  display: flex;
+  justify-content: space-between;
 }
 
 .tituloTela {
-    font-size: 4em;
-    color: #379080; /* Cor do título, ajuste conforme necessário */
-    text-align: center;
-    margin: 0;
+  font-size: 3.7em;
+  color: #379080;
+  margin: 0;
+  font-weight: bold;
 }
 
 .textos {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10%;
+  margin-left: 2%;
 }
 
 .descricao {
-    font-size: 3em;
-    color: #666; /* Cor do subtítulo, ajuste conforme necessário */
-    margin: 0;
+  font-size: 2.2em;
+  color: #666;
+  margin: 0;
 }
 
-.segundaTela{
-    background-color: #379080;
+.segundaTela {
+  background-color: #3F5259;
 }
 
-.contsegundaTela{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.contsegundaTela {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  background-color: #3F5259;
 }
 
-.tituloRecursos{
-    color: white;
-    font-size: 2em;
-    font-weight: bold;
-    margin-left: 0.5em;;
+.tituloRecursos {
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  margin-left: 0.5em;
 }
 
-.item{
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1.2em;
-    margin: 0;
-    background-color: #f6f6f6;
-    text-align: center;
-    transition: transform 0.3s ease-in-out; 
+.item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.2em;
+  margin: 0;
+  font-weight: 550;
+  background-color: #C4F2D0;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
 }
 
-.funcionalidades{
-    background-color: #379080;
-    padding: 20px;
-    margin: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 80%;
+.funcionalidades {
+  background-color: #8FD9A1;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
 }
 
 .caixaFuncionalidade {
-    margin-top: 20px;
-  }
+  margin-top: 20px;
+}
 
-  .caixaFuncionalidade:nth-child(odd) .funcionalidade {
-    background-color: #8d1717;
-  }
-  
-  /* Adiciona um estilo diferente para cada funcionalidade par */
-  .caixaFuncionalidade:nth-child(even) .funcionalidade {
-    background-color: #c21212;
-  }
-  
-  /* Adiciona um recuo horizontal para criar o efeito de escada */
-  .caixaFuncionalidade:nth-child(2n) .funcionalidade {
-    margin-left: 30px;
-  }
-  /* Efeito de hover para destacar a funcionalidade quando o mouse passa sobre ela */
+.caixaFuncionalidade:nth-child(odd) .funcionalidade {
+  background-color: #8d1717;
+}
+
+.caixaFuncionalidade:nth-child(even) .funcionalidade {
+  background-color: #c21212;
+}
+
+.caixaFuncionalidade:nth-child(2n) .funcionalidade {
+  margin-left: 30px;
+}
 .item:hover {
-    transform: scale(1.05); /* Aumenta ligeiramente o tamanho da funcionalidade */
+  transform: scale(1.05);
 }
 
-.terceiraTela{
-    background-color: #05362d;
+.terceiraTela {
+  background-color: #387672;
 }
 
-.contterceiraTela{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.contterceiraTela {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.textosSobre{
-    margin-left: 0.5em;;
-    color: white;
-    line-height: 1.5; /* Ajuste conforme necessário para o espaçamento desejado entre linhas */
-    text-align: justify; /* Alinha o texto justificado */
-    margin-top: 20px;
-    margin-bottom: 15px; 
-    max-width: 600px;
+.textosSobre {
+  margin-left: 0.5em;
+  color: white;
+  line-height: 1.5; /* Ajuste conforme necessário para o espaçamento desejado entre linhas */
+  text-align: justify; /* Alinha o texto justificado */
+  margin-top: 20px;
+  margin-bottom: 15px;
+  max-width: 600px;
 }
 
 .textosSobre p:empty {
-    padding: 8px; /* Adiciona preenchimento interno de 10 pixels para parágrafos vazios */
-    background-color: #05362d;
-  }
-  
+  padding: 8px; /* Adiciona preenchimento interno de 10 pixels para parágrafos vazios */
+  background-color: #387672;
+}
 
-.Logo{
-    font-size: 2em; /* Exemplo: ajuste o tamanho da fonte para o título do logo */
-    font-weight: bold; /* Exemplo: negrito para o título do logo */
-    text-align: center; /* Alinha o texto no centro */
-    margin: 0;
-    color: white;
-    margin-right: 50px;
+.Logo {
+  font-size: 2em; /* Exemplo: ajuste o tamanho da fonte para o título do logo */
+  font-weight: bold; /* Exemplo: negrito para o título do logo */
+  text-align: center; /* Alinha o texto no centro */
+  margin: 0;
+  color: white;
+  margin-right: 60px;
+}
+
+.containerInfos {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 6%;
+  margin-left: 3%;
+}
+
+.circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 4px;
+  background-color: #379080;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 80px;
+  line-height: 1.5;
+  transition: transform 0.3s ease;
+}
+
+.circle:hover {
+  transform: scale(1.1); /* Aumentando a escala ao passar o mouse */
+}
+
+.usericon {
+  font-size: 32px;
+  color: #d9dbdb;
+  margin-bottom: 10px;
+}
+
+.count {
+  font-size: 30px; /* Tamanho do número */
+  color: #fff6f6;
+  font-weight: bold; /* Cor do número */
+}
+
+.label {
+  font-size: 20px; /* Tamanho do texto de rótulo */
+  color: #3F5259;
+  font-weight: bold; /* Cor do texto de rótulo */
+}
+
+.aviso {
+  display: none;
+  position: absolute;
+  background-color: #F2F2F2;
+  color: #3F5259;
+  padding: 3px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  left: 1%;
+}
+
+.item:hover .aviso {
+  display: block;
 }
 
 @media (max-width: 768px) {
-    .tituloTela {
-        font-size: 2em; /* Tamanho menor para telas menores */
-    }
+  .conteudo {
+    align-items: center; 
+  }
 
-    .descricao {
-        font-size: 1.6em; /* Tamanho menor para telas menores */
-    }
+  .imagemContainer {
+    display: none; 
+  }
+
+  .textos {
+    margin-top: 5%;
+    align-items: center; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .tituloTela {
+    font-size: 2.5em; 
+    text-align: center;
+  }
+
+  .descricao {
+    font-size: 1.6em; 
+  }
+
+  .circle {
+    margin-right: 15px;
+    margin-bottom: 20px;
+  }
+
+  .funcionalidades{
+    width: 100%;
+  }
+
+  .containerInfos { 
+    align-items: center; 
+    
+  }
+  .contterceiraTela{
+    display: flex;
+    flex-direction: column;
+  }
+  .Logo{
+    margin-right: 0;
+  }
+  .textosSobre {
+    margin:2%;
+  }
 }
-
-
-

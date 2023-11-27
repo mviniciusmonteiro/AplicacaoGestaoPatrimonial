@@ -72,3 +72,25 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+.estiloBotao:active{
+  transform: translateY(2px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+@media (max-width: 768px) {
+    .main {
+      flex-direction: column; /* Altera para layout de coluna em telas menores */
+      align-items: center; 
+    }
+  
+    .imagemContainer {
+      margin-bottom: 15px; /* Adiciona margem para separar os elementos */
+    }
+  
+    .containerEntrada {
+      width: 90%; /* Ajusta a largura do formulário */
+      height: auto;
+      margin-bottom: 2%; /* Ajusta a altura automaticamente com base no conteúdo */
+    }
+  }

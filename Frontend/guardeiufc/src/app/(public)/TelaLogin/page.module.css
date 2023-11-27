@@ -66,6 +66,11 @@
     cursor: pointer;
 }
 
+.botaoLogin:active{
+  transform: translateY(2px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
 .textoBotao{
     font-size: 1.2em;
     font-weight: bold;;

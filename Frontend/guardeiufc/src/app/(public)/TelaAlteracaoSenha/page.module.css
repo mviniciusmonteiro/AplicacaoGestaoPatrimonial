@@ -77,3 +77,21 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+.estiloBotao:active{
+    transform: translateY(2px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+
+  @media (max-width: 768px) {
+    .divisao {
+      flex-direction: column;
+    }
+  
+    .inputContainer,
+    .inputContainer1,
+    .inputContainer2 {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  }
