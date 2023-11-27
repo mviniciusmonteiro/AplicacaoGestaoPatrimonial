@@ -52,9 +52,9 @@ function TelaLogin() {
     }).then((response: AxiosResponse) => {
       if (response.status == 200) {
         if (response.data.isAdmin) {
-          router.push('/TelaAdministrador');
+          router.push('/Administrador/TelaAdministrador');
         } else {
-          // router.push('/TelaComum');
+          router.push('/Usuario/TelaFuncionario');
         }
       }
     }).catch((error: AxiosError) => {
