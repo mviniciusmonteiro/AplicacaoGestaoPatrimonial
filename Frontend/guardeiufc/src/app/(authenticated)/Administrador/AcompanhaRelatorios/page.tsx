@@ -44,7 +44,7 @@ export default function AcompanharRelatorios() {
   };
 
   const handleAction = (row: Item) => {
-    // Implemente a lógica da ação aqui
+    //teste para o envio
     console.log(`Ação realizada para o solicitante ${row.matSolicitante}`);
     // Abre os contêineres do formulário
     handleVisualizar(row);
@@ -91,9 +91,10 @@ export default function AcompanharRelatorios() {
           }
           return false;
         });
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Lógica para lidar com a mudança nos campos de entrada
+  const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    // Lógica para lidar com a mudança no campo de textarea
     const { name, value } = event.target;
     setFormState((prevState) => ({
       ...prevState,
@@ -113,10 +114,11 @@ export default function AcompanharRelatorios() {
       ...formState,
       status: selectedOption, // Usar o status do radio button
       arquivo: arquivo, // Adicionar o arquivo
+      motivoI: formState.motivoI
     };
     console.log("Dados para envio:", dadosParaEnvio);
 
-    // Limpar o formulário ou realizar ações adicionais, se necessário
+    // Limpar o formulário
     setVisualizar(false);
   };
 
@@ -260,46 +262,63 @@ export default function AcompanharRelatorios() {
                   readOnly
                 />
               </div>
-                <div className={styles.containerSecundario}>
-                  <div className={styles.divisao}>
-                    <div>
-                      <p className={styles.Nomes}>Status</p>
-                      <div className={styles.radioGroup}>
-                        <label>
-                          <input
-                            type="radio"
-                            value="solicitacaodeferida"
-                            checked={selectedOption === "solicitacaodeferida"}
-                            onChange={() =>
-                              handleOptionChange("solicitacaodeferida")
-                            }
-                          />
-                          Deferida
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            value="solicitacaoindeferida"
-                            checked={selectedOption === "solicitacaoindeferida"}
-                            onChange={() =>
-                              handleOptionChange("solicitacaoindeferida")
-                            }
-                          />
-                          Indeferida
-                        </label>
-                      </div>
-                    </div>
-                    <div>
-                      <p className={styles.Nomes}>Anexar relatório</p>
-                      <input type="file" onChange={handleFileChange}></input>
+              <div className={styles.containerSecundario}>
+                <div className={styles.divisao}>
+                  <div>
+                    <p className={styles.Nomes}>Status</p>
+                    <div className={styles.radioGroup}>
+                      <label>
+                        <input
+                          type="radio"
+                          value="solicitacaodeferida"
+                          checked={selectedOption === "solicitacaodeferida"}
+                          onChange={() =>
+                            handleOptionChange("solicitacaodeferida")
+                          }
+                        />
+                        Deferida
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          value="solicitacaoindeferida"
+                          checked={selectedOption === "solicitacaoindeferida"}
+                          onChange={() =>
+                            handleOptionChange("solicitacaoindeferida")
+                          }
+                        />
+                        Indeferida
+                      </label>
                     </div>
                   </div>
-                  <div className={styles.botoesInferiores}>
-                    <p className={styles.estiloBotao} onClick={enviarRelatorio}>
-                      Enviar Relatório
-                    </p>
+                  <div>
+                    {/* Condicionalmente renderizar o input de arquivo */}
+                    {selectedOption === "solicitacaodeferida" && (
+                      <>
+                        <p className={styles.Nomes}>Anexar relatório</p>
+                        <input type="file" onChange={handleFileChange}></input>
+                      </>
+                    )}
+                    {selectedOption === "solicitacaoindeferida" && (
+                      <>
+                        <p className={styles.Nomes}>Motivo do indeferimento</p>
+                        <textarea
+                          id="indeferimento"
+                          name="motivoI"
+                          className={styles.textareaEstilizado}
+                          value={formState.motivoI}
+                          onChange={handleTextareaChange}
+                          ></textarea>
+                      </>
+                    )}
                   </div>
                 </div>
+              </div>
+              <div className={styles.botoesInferiores}>
+                <p className={styles.estiloBotao} onClick={enviarRelatorio}>
+                  Responder Solicitação
+                </p>
+              </div>
             </div>
           )}
         </div>

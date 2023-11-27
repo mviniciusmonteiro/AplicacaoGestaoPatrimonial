@@ -4,7 +4,6 @@ import { FaCircleUser } from "react-icons/fa6";
 import { FaUserEdit } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
 import styles from "./page.module.css";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
@@ -16,7 +15,7 @@ export default function Header() {
   const router = useRouter();
 
   const handleNavigation = () => {
-    router.push("/TelaAdministrador");
+    router.push("/Administrador/TelaAdministrador");
   };
 
   return (
