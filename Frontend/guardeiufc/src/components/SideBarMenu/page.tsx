@@ -1,20 +1,31 @@
 // SidebarMenu.js
 import React, { useState } from "react";
-import { FaBars, FaHome, FaUser, FaCog } from "react-icons/fa";
+import {
+  FaBars,
+  FaSearchLocation,
+  FaCircle,
+  FaUsers,
+} from "react-icons/fa";
 import { VscFileSubmodule } from "react-icons/vsc";
-import styles from "./page.module.css"; 
-import {useRouter} from "next/navigation"
+import { FaComputer } from "react-icons/fa6";
+import { TbReportSearch } from "react-icons/tb";
+import { TbReport } from "react-icons/tb";
+import { FiBell } from "react-icons/fi";
+import { RiUserSettingsLine } from "react-icons/ri";
+import styles from "./page.module.css";
+import { useRouter } from "next/navigation";
 
 const SidebarMenu = () => {
   const [menuAberto, setMenuAberto] = useState(false);
-  const router = useRouter()
+  const [verSolicitacoesAtivo, setVerSolicitacoesAtivo] = useState(true);
+  const router = useRouter();
 
   const toggleMenu = () => {
     setMenuAberto(!menuAberto);
   };
 
   return (
-    <div className={`${styles.sidebar} ${menuAberto ? styles.menuAberto : ''}`}>
+    <div className={`${styles.sidebar} ${menuAberto ? styles.menuAberto : ""}`}>
       <div className={styles.toggleBtn} onClick={toggleMenu}>
         <FaBars className={styles.iconMenu} />
       </div>
@@ -23,26 +34,44 @@ const SidebarMenu = () => {
           <p className={styles.nomeMenu}>Menu</p>
         </div>
         <ul>
-          <li onClick={() => router.push('/GerenciarItens')}>
-            <VscFileSubmodule className = {styles.iconsMenu}/> Gerenciar itens do patrimônio
+          <li onClick={() => router.push("/Administrador/GerenciarItens")}>
+            <VscFileSubmodule className={styles.iconsMenu} /> Gerenciar itens do
+            patrimônio
           </li>
-          <li onClick={() => router.push('/GerenciarRelatorios')}>
-            <FaUser /> Gerenciar relatórios de itens
+          <li onClick={() => router.push("/Administrador/GerenciarRelatorios")}>
+            <TbReportSearch className={styles.iconsMenu} /> Gerenciar relatórios
+            de itens
           </li>
-          <li onClick={() => router.push('/AcompanhaRelatorios')}>
-            <FaCog /> Ver solicitações de relatórios
+          <li
+            onClick={() => {
+              router.push("/Administrador/AcompanhaRelatorios");
+              setVerSolicitacoesAtivo(true);
+            }}
+            className={verSolicitacoesAtivo ? styles.menuAtivo : ""}
+          >
+            <TbReport className={styles.iconsMenu} />
+            Ver solicitações de relatórios
+            {verSolicitacoesAtivo && (
+              <FaCircle className={styles.notificacaoIcone} />
+            )}
           </li>
-          <li onClick={() => router.push('/GerenciarUsuarios')}>
-            <FaCog /> Gerenciar usuários
+          <li onClick={() => router.push("/Administrador/GerenciarUsuarios")}>
+            <FaUsers className={styles.iconsMenu} /> Gerenciar usuários
           </li>
-          <li>
-            <FaCog /> Gerenciar localizações
+          <li
+            onClick={() => router.push("/Administrador/GerenciarLocalizacoes")}
+          >
+            <FaSearchLocation className={styles.iconsMenu} /> Gerenciar
+            localizações
           </li>
-          <li>
-            <FaCog /> Gerenciar projetos
+          <li onClick={() => router.push("/Administrador/GerenciarProjetos")}>
+            <FaComputer className={styles.iconsMenu} /> Gerenciar projetos
           </li>
-          <li>
-            <FaCog /> Gerenciar responsáveis
+          <li
+            onClick={() => router.push("/Administrador/GerencirResponsaveis")}
+          >
+            <RiUserSettingsLine className={styles.iconsMenu} /> Gerenciar
+            responsáveis
           </li>
         </ul>
       </nav>

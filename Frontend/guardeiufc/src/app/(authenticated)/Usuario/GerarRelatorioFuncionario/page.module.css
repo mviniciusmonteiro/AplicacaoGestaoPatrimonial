@@ -95,7 +95,7 @@
   color: white;
 }
 
-/* Estilo para inputs padrão */
+
 .input {
   width: 100%;
   padding: 10px;
@@ -107,16 +107,40 @@
 
 .input:focus {
   outline: none;
-  border-color: #4caf50; /* Cor ao focar */
+  border-color: #4caf50; 
 }
 
-/* Estiliza a placeholder do input */
 .input::placeholder {
   color: #000000;
 }
 
-/* Adiciona estilo ao hover do input */
+
 .input:hover {
+  border-color: #555;
+}
+
+.textarea {
+  height: 70px;
+  max-height: 100px;
+  resize: none; 
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ccc;
+  margin-bottom: 12px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.textarea::placeholder {
+  color: #000000;
+}
+
+.textarea:hover {
   border-color: #555;
 }
 

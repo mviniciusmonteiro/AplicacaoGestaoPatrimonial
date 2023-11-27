@@ -161,12 +161,11 @@ export default function SolicitarRelatorios() {
               <div className={styles.divisao}>
                 <div className={styles.inputContainer}>
                   <p className={styles.Nomes}>Descrição</p>
-                  <input
-                    type="text"
+                  <textarea
                     id="descricao"
                     name="descricao"
                     placeholder="Informe uma descrição para o patrimônio"
-                    className={styles.input}
+                    className={styles.textarea}
                     onChange={(e) =>
                       setFormData((prevFormData) => ({
                         ...prevFormData,
