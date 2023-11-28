@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import fileDownload from 'js-file-download'
 import Loader from "@/components/Loader/page";
+import { PiMagnifyingGlassDuotone } from "react-icons/pi";
 
 interface ReportRequest {
   requestedBy: string;
@@ -210,9 +211,9 @@ export default function AcompanharSolicitacoes() {
                       <td>{row.status}</td>
                       <td>{row.motiveOfIndefer}</td>
                       <td>
-                        <button onClick={() => handleVisualizar(row)}>
-                          Visualizar
-                        </button>
+                        <div className={styles.areaVisualizar}>
+                          <PiMagnifyingGlassDuotone className={styles.lupa} onClick={() => handleVisualizar(row)}/>
+                        </div>
                       </td>
                     </tr>
                   ))}

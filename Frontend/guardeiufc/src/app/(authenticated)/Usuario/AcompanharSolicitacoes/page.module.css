@@ -206,6 +206,14 @@
   height: 100%;
 }
 
+.areaVisualizar {
+  text-align: center;
+}
+
+.lupa {
+  cursor: pointer;
+}
+
 .downloadIcon {
   color: white;
   cursor: pointer;
