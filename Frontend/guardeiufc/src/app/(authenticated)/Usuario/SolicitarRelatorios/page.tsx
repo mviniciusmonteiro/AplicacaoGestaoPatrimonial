@@ -12,8 +12,6 @@ interface FormData {
 }
 
 function SolicitarRelatorios() {
-  // const [descricao, setDescricao] = useState("");
-  // const [motivo, setMotivo] = useState("");
   const [formData, setFormData] = useState<FormData>({ descricao: '', motivo: ''});
   const router = useRouter();
 
@@ -88,7 +86,7 @@ function SolicitarRelatorios() {
     <div>
       <div className={styles.main}>
         <div className={styles.estiloCadastro}>
-          <p>Solicitar relatório mais detalhado</p>
+          <p>Solicitar Relatório Mais Detalhado</p>
         </div>
         <div className={styles.containersubtitulo}>
         <p className={styles.estilosubtitulo}>Solicite ao administrador um relatório mais detalhado, ou seja, que contenha itens que não estejam vinculados à sua matrícula ou que não estejam alocados a projetos que você coordena.<br/> A busca feita pelo administrador pode retornar quaisquer itens cadastrados.</p>
