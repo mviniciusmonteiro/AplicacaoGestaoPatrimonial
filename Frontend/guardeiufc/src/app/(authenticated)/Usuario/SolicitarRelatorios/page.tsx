@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import Swal from "sweetalert2";
 import { axios } from '@/config/axios';
 import { AxiosResponse, AxiosError } from 'axios';
+import { useRouter } from "next/navigation";
 
 interface FormData {
   descricao: string;
@@ -11,9 +12,10 @@ interface FormData {
 }
 
 function SolicitarRelatorios() {
-  const [descricao, setDescricao] = useState("");
-  const [motivo, setMotivo] = useState("");
+  // const [descricao, setDescricao] = useState("");
+  // const [motivo, setMotivo] = useState("");
   const [formData, setFormData] = useState<FormData>({ descricao: '', motivo: ''});
+  const router = useRouter();
 
   const handleClear = () => {
     const descElement = document.getElementById('descricao') as HTMLTextAreaElement;
@@ -62,13 +64,23 @@ function SolicitarRelatorios() {
           icon: 'info',
           text: 'Solicitação de relatório cadastrada com sucesso!'
         });
-        handleClear();   
+        handleClear();
       }
     }).catch((error: AxiosError) => {
-      Swal.fire({
-        icon: 'error',
-        text: `Ocorreu um erro ao tentar cadastrar solicitação de relatório.\nCódigo do erro ${error.response?.status}`
-      });
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para solicitar relatório!'
+        }).then(() => {
+          handleClear();
+          router.push('/TelaLogin');
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar cadastrar solicitação de relatório.\nCódigo do erro ${error.response?.status}`
+        });
+      }
       console.error(error);
     });
   };
