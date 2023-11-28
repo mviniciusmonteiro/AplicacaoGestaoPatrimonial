@@ -212,6 +212,10 @@
   height: 100%;
 }
 
+.sinalizadorCampoNumInvalido {
+  color: white;
+}
+
 @media (max-width: 780px) {
   .divisao {
     flex-direction: column;

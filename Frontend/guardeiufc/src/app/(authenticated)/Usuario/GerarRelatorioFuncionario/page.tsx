@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Tabela, { Item } from "@/components/Table/page";
 import { useRouter } from "next/navigation";
@@ -57,14 +57,19 @@ export default function SolicitarRelatorios() {
     responsibleRegistration: 0,
     projectId: 0
   }]);
+  const [numFieldIsValid, setNumFieldIsValid] = useState(true);
+
+  const handleValidateNumericField = (number: string) => {
+    setNumFieldIsValid(/^[0-9]*$/.test(number));
+  }
 
   const handleFilterItems = () => {
-
+    alert(`Parâmetros:\nnPatrimony: ${formData.numberOfPatrimony}\nnome: ${formData.name}\ndescrição: ${formData.description}\nlocationId: ${formData.locationId}\nprojectId: ${formData.projectId}`);
     setTabelaVisivel(true);
   }
 
   useEffect(() => {
-    // Obtendos todos os locais
+    // Obtendo todos os locais
     axios.get<ResponseLocalReq>(process.env.NEXT_PUBLIC_BASE_URL + '/local')
     .then(response => {
       if (response.status == 200) {
@@ -88,7 +93,7 @@ export default function SolicitarRelatorios() {
       }
       console.error(error);
     });
-    // Obtendos todos os projetos
+    // Obtendo todos os projetos
     axios.get<ResponseProjectReq>(process.env.NEXT_PUBLIC_BASE_URL + '/project')
     .then(response => {
       if (response.status == 200) {
@@ -136,16 +141,18 @@ export default function SolicitarRelatorios() {
                   <div className={styles.inputContainer1}>
                     <p className={styles.Nomes}>Número de Patrimônio</p>
                     <input
-                      type="text"
-                      id="id"
+                      type="number"
+                      id="numberOfPatrimony"
                       name="id"
                       placeholder="Filtrar número de patrimônio"
                       className={styles.input}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const { id, value } = e.target;
+                        handleValidateNumericField(value);
                         setFormData((prevFormData) => ({
                           ...prevFormData,
-                          id: e.target.value,
-                        }))
+                          [id]: value
+                        }))}
                       }
                     />
                   </div>
@@ -153,15 +160,16 @@ export default function SolicitarRelatorios() {
                     <p className={styles.Nomes}>Nome</p>
                     <input
                       type="text"
-                      id="nome"
+                      id="name"
                       name="nome"
                       placeholder="Filtrar nome do item"
                       className={styles.input}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
-                          nome: e.target.value,
-                        }))
+                          [id]: value,
+                        }))}
                       }
                     />
                   </div>
@@ -170,14 +178,15 @@ export default function SolicitarRelatorios() {
                   <div className={styles.inputContainer2}>
                     <p className={styles.Nomes}>Localização</p>
                     <select
-                      id="localizacao"
+                      id="locationId"
                       name="localizacao"
                       className={styles.input}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
-                          localizacao: e.target.value,
-                        }))
+                          [id]: value,
+                        }))}
                       }
                     >
                       <option value="">Selecione a localização</option>
@@ -191,14 +200,15 @@ export default function SolicitarRelatorios() {
                   <div className={styles.inputContainer1}>
                     <p className={styles.Nomes}>Projeto Vinculado</p>
                     <select
-                      id="projeto"
+                      id="projectId"
                       name="projeto"
                       className={styles.input}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
-                          projeto: e.target.value,
-                        }))
+                          [id]: value,
+                        }))}
                       }
                     >
                       <option value="">Selecione o projeto vinculado</option>
@@ -214,22 +224,28 @@ export default function SolicitarRelatorios() {
                   <div className={styles.inputContainer}>
                     <p className={styles.Nomes}>Descrição</p>
                     <textarea
-                      id="descricao"
+                      id="description"
                       name="descricao"
                       placeholder="Filtrar descrição do item"
                       className={styles.textarea}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
-                          descricao: e.target.value,
-                        }))
+                          [id]: value,
+                        }))}
                       }
                     />
                   </div>
                 </div>
+                { !numFieldIsValid && (
+                    <div>
+                      <p className={styles.sinalizadorCampoNumInvalido}>O campo número de patrimônio deve ser numérico!</p>
+                    </div>
+                  )}
               </div>
               <div className={styles.botoesInferiores}>
-                <p className={styles.estiloBotao} onClick={() => { handleFilterItems }}>
+                <p className={styles.estiloBotao} onClick={numFieldIsValid ? () => { handleFilterItems() } : () => {}}>
                   Buscar Itens
                 </p>
               </div>
