@@ -65,6 +65,7 @@ export default function AcompanharSolicitacoes() {
 
   const handleGetRequestByStatus = (status: string) => {
     setSelectedOption(status);
+    setVisualizar(false);
 
     axios.get<Response>(process.env.NEXT_PUBLIC_BASE_URL + `/report-request/${status}`)
     .then(response => {
@@ -76,8 +77,10 @@ export default function AcompanharSolicitacoes() {
         Swal.fire({
           icon: 'error',
           text: 'Faça login para visualizar suas solicitações de relatório!'
-        }).then(() => {
-          router.push('/TelaLogin');
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
         });
       } else {      
         Swal.fire({
@@ -118,6 +121,10 @@ export default function AcompanharSolicitacoes() {
         Swal.fire({
           icon: 'error',
           text: 'Faça login para baixar um relatório anexado a uma solicitação!'
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
         });
       } else {
         Swal.fire({
