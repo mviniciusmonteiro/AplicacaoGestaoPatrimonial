@@ -8,6 +8,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import fileDownload from 'js-file-download'
+import Loader from "@/components/Loader/page";
 
 interface ReportRequest {
   requestedBy: string;
@@ -54,6 +55,7 @@ export default function AcompanharSolicitacoes() {
     }
   ]);
   const [fileNameDownload, setFileNameDownload] = useState('');
+  const [loader, setLoader] = useState(true);
 
   const formatDate = (date: string) => {
     var date_ = new Date(date);
@@ -129,10 +131,15 @@ export default function AcompanharSolicitacoes() {
   useEffect(() => {
     setSelectedOption('Todas');
     handleGetRequestByStatus('Todas');
+    setLoader(false);
   }, []);
 
   return (
     <div>
+    { loader && (
+      <Loader></Loader>
+    )}
+    {!loader && (
       <div className={styles.main}>
         <div className={styles.Principal}>
           <p className={styles.estilotitulo}>
@@ -189,8 +196,8 @@ export default function AcompanharSolicitacoes() {
                     <th>Motivo da Solicitação</th>
                     <th>Data Solicitação</th>
                     <th>Status</th>
-                    <th>Motivo indeferimento</th>
-                    <th>Acão</th>
+                    <th>Motivo Indeferimento</th>
+                    <th>Ação</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -296,6 +303,7 @@ export default function AcompanharSolicitacoes() {
           )}
         </div>
       </div>
+    )}
     </div>
   );
 }
