@@ -4,9 +4,10 @@ import styles from "./page.module.css";
 import Table from "react-bootstrap/Table";
 import { FaFilePdf } from "react-icons/fa6";
 import { axios } from '@/config/axios';
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import fileDownload from 'js-file-download'
 
 interface ReportRequest {
   requestedBy: string;
@@ -52,6 +53,7 @@ export default function AcompanharSolicitacoes() {
       filePath: ""
     }
   ]);
+  const [fileNameDownload, setFileNameDownload] = useState('');
 
   const formatDate = (date: string) => {
     var date_ = new Date(date);
@@ -96,19 +98,32 @@ export default function AcompanharSolicitacoes() {
       status: row.status,
       nomeArquivo: row.filePath
     });
+    row.status == 'Deferida' ? setFileNameDownload(row.filePath) : setFileNameDownload('');
     setSelectedRequestStatus(row.status);
     setVisualizar(true);
   };
 
-  const handleAction = (row: ReportRequest) => {
-    // TODO
-    // Abre os contêineres do formulário
-    handleVisualizar(row);
-  };
-
-  const handleDownloadPDFReport = (filename: string) => {
-    // TODO
-    alert(`Enviar requisição para baixar arquivo com nome ${filename}`);
+  const handleDownloadPDFReport = async () => {
+    axios.get(process.env.NEXT_PUBLIC_BASE_URL + `/download-anexed-pdf/${fileNameDownload}`,
+    { responseType: 'blob'
+    }).then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        fileDownload(response.data, fileNameDownload);
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para baixar um relatório anexado a uma solicitação!'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar baixar o relatório anexado. Por favor, tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);        
+    })
   }
 
   useEffect(() => {
@@ -188,7 +203,7 @@ export default function AcompanharSolicitacoes() {
                       <td>{row.status}</td>
                       <td>{row.motiveOfIndefer}</td>
                       <td>
-                        <button onClick={() => handleAction(row)}>
+                        <button onClick={() => handleVisualizar(row)}>
                           Visualizar
                         </button>
                       </td>
@@ -214,7 +229,7 @@ export default function AcompanharSolicitacoes() {
                     />
                   </div>
                 </div>
-                <p className={styles.Nomes}>Motivo da solicitação</p>
+                <p className={styles.Nomes}>Motivo da Solicitação</p>
                 <textarea
                   id="motivoS"
                   name="motivoS"
@@ -222,7 +237,7 @@ export default function AcompanharSolicitacoes() {
                   value={formState.motivoS}
                   readOnly
                 />
-                <p className={styles.Nomes}>Descrição do relatório</p>
+                <p className={styles.Nomes}>Descrição do Relatório</p>
                 <textarea
                   id="descricaoR"
                   name="descricaoR"
@@ -260,7 +275,7 @@ export default function AcompanharSolicitacoes() {
                 )}
                 { selectedRequestStatus == 'Indeferida' && (
                 <div className={'areaIndeferimento'}>
-                  <p className={styles.Nomes}>Motivo do indeferimento</p>
+                  <p className={styles.Nomes}>Motivo do Indeferimento</p>
                   <textarea
                     id="motivoI"
                     name="motivoI"
@@ -272,8 +287,8 @@ export default function AcompanharSolicitacoes() {
                 )}
                 { selectedRequestStatus == 'Deferida' && (
                 <div className={styles.areaDeferimento}>
-                  <FaFilePdf className={styles.downloadIcon} onClick={() => handleDownloadPDFReport('Nome do relatório.pdf')}/>
-                  <p onClick={() => handleDownloadPDFReport('Nome do relatório.pdf')}> Baixar relatório</p>
+                  <FaFilePdf className={styles.downloadIcon} onClick={handleDownloadPDFReport}/>
+                  <p onClick={handleDownloadPDFReport}> Baixar relatório</p>
                 </div>
                 )}
               </div>
