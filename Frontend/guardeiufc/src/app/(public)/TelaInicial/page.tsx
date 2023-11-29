@@ -108,7 +108,6 @@ function TelaInicial() {
               <Image
                 src={imagem}
                 className={styles.image}
-                objectFit="cover"
                 fill
                 alt="Imagem de Exemplo Gerenciamento de arquivos"
               />
@@ -123,7 +122,6 @@ function TelaInicial() {
               <Image
                 src={imagem2}
                 className={styles.image}
-                objectFit="cover"
                 fill
                 alt="Imagem de Exemplo Computador com arquivos"
               />

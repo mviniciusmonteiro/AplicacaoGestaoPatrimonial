@@ -1,0 +1,201 @@
+.main {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .containerPrincipal {
+    width: 70%;
+    margin: 0 auto; /* Centraliza o container na página */
+    padding: 2%;
+    border-radius: 10px;
+    background-color: #379080;
+  }
+  
+  .estiloCadastro {
+    margin-top: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #379080;
+  }
+  
+  .divisao {
+    display: flex;
+    width: 100%;
+  }
+  
+  .inputContainer {
+    flex-grow: 1;
+    flex-direction: column;
+  }
+  
+  .Nomes {
+    margin-bottom: 5px;
+    color: white;
+    font-weight: 500;
+  }
+  .conteudo {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    margin-bottom: 12px;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #4caf50; /* Cor ao focar */
+  }
+  
+  /* Estiliza a placeholder do input */
+  .input::placeholder {
+    color: #000000;
+  }
+  
+  .input:hover {
+    border-color: #555;
+  }
+  
+  .estiloBotao:hover {
+    background-color: #4586a0;
+  }
+  
+  .botaoBuscar:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .botoesInferiores {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .estiloBotao {
+    margin-top: 2%;
+    background-color: #17a4cf;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    width: 50vw;
+    border-radius: 15px;
+  }
+  
+  .estiloBotao:active {
+    background-color: #128c7e;
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .estiloBotaoBuscar {
+    background-color: #17a4cf;
+    color: #fff;
+    padding: 15px;
+    width: 100%;
+    margin-top: 21%;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  .entrada {
+    margin-bottom: 4%;
+  }
+  .estiloBotaoExcluir {
+    background-color: #cf1717;
+    margin-bottom: 5%;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    width: 50vw;
+    border-radius: 15px;
+  }
+  
+  .estiloBotaoExcluir:active {
+    background-color: #8c3512;
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .divisao {
+      flex-direction: column;
+    }
+  
+    .inputContainer,
+    .inputContainer1,
+    .inputContainer2 {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  }
+  
+  .EstilobotaoMenu {
+    background-color: #128c7e;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 3%;
+    cursor: pointer;
+    border-radius: 15px;
+  }
+  
+  
+  .EspacoBotoes {
+    width: 80%;
+    height: 90%;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .botoes {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 2%;
+  }
+  
+  .containerBuscar {
+    width: 70%;
+    height: 90%;
+    background-color: #379080;
+    padding: 2%;
+    border-radius: 10px;
+    margin-bottom: 1.5%;
+  }
+  .inputContainerPatrimonio {
+    width: 40%;
+    margin-right: 4%;
+    flex-direction: column;
+  }
+  .buttonSelected {
+    background-color: #3F5259; /* Adapte a cor conforme necessário */
+    color: white;
+  }
+  
+  .buttonUnselected {
+    background-color: #379080; /* Adapte a cor conforme necessário */
+    color: white;
+  }
+  

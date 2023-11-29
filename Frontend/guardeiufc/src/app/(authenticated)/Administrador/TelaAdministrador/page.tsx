@@ -6,14 +6,14 @@ import Image from "next/image";
 import imagem from "/public/imagemHome.png";
 
 function TelaAdministrador() {
-
   return (
     <div>
+      <div className={styles.container}>
+        <div className={styles.containerMenu}>
+            <SidebarMenu />
+            </div>
       <div className={styles.main}>
         <div className={styles.telaPrincipal}>
-          <div className={styles.menuLateral}>
-            <SidebarMenu />
-          </div>
           <div className={styles.telaSecundaria}>
             <div className={styles.textoPrincipal}>
               <p>Gerencie e organize o sistema</p>
@@ -33,6 +33,7 @@ function TelaAdministrador() {
               alt="Imagem de um computador sistema de arquivos"
             />
           </div>
+        </div>
         </div>
       </div>
     </div>

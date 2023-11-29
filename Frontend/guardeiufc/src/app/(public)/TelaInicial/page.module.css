@@ -19,19 +19,19 @@
 }
 
 .imagemContainer {
-  width:60%;
+  width: 60%;
   z-index: 1;
+}
 
-  .div {
-    position: unset !important;
-  }
+.imagemContainer .div {
+  position: unset !important;
+}
 
-  .image {
-    object-fit: contain;
-    width: 100% !important;
-    position: relative !important;
-    height: unset !important;
-  }
+.imagemContainer .image {
+  object-fit: contain;
+  width: 100% !important;
+  position: relative !important;
+  height: unset !important;
 }
 
 .titulo {

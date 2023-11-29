@@ -82,8 +82,14 @@
   cursor: pointer;
   border-radius: 15px;
 }
-.EstilobotaoMenu:hover {
-  background-color: #45a049;
+.buttonSelected {
+  background-color: #3F5259; 
+  color: white;
+}
+
+.buttonUnselected {
+  background-color: #379080; 
+  color: white;
 }
 
 .EspacoBotoes {
@@ -97,13 +103,21 @@
 }
 
 .containerCriacao {
-  width: 80%;
+  width: 100%;
   height: 90%;
   background-color: #379080;
   padding: 2%;
   border-radius: 10px;
 }
 
+.ContainerPrincipalCriacao {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
 .ContainerPrincipalEdicao {
   width: 100%;
   height: 90%;
@@ -177,7 +191,6 @@
   color: white;
 }
 
-/* Estilo para inputs padrão */
 .input {
   width: 100%;
   padding: 10px;
@@ -221,7 +234,6 @@
 }
 
 .estiloBotaoExcluir{
-  margin-top: 2%;
   background-color: #cf1717;
   margin-bottom: 5%;
   color: #fff;
