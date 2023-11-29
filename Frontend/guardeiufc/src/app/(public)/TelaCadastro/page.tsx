@@ -89,8 +89,7 @@ function TelaCadastro() {
         Swal.fire({
           icon: 'info',
           text: 'Cadastro realizado com sucesso!'
-        });
-        router.push('/TelaLogin');
+        }).then(() => { router.push('/TelaLogin'); });
       }
     }).catch((error: AxiosError) => {
       let mensagem = JSON.stringify(error.response?.data);

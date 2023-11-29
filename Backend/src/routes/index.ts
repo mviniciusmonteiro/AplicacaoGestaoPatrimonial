@@ -63,7 +63,7 @@ router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsCo
 router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
 router.get('/report-request/:status?', new AuthorizationJWTCommom().handle, new GetReportRequestByStatusController().handle);
 router.get('/pdf-report', new AuthorizationJWTCommom().handle, new DownloadPDFReportController().handle);
-router.get('/download-anexed-pdf/:requestId', new AuthorizationJWTCommom().handle, new DownloadAnexedPDFController().handle);
+router.get('/download-anexed-pdf/:filename', new AuthorizationJWTCommom().handle, new DownloadAnexedPDFController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);

@@ -78,6 +78,17 @@
   flex-direction: column;
 }
 
+.verticalContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.horizontalContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 5%;
+}
+
 .textarea {
   height: 70px;
   max-height: 100px;
@@ -193,6 +204,14 @@
 .tabela{
   width: 90%;
   height: 100%;
+}
+
+.areaVisualizar {
+  text-align: center;
+}
+
+.lupa {
+  cursor: pointer;
 }
 
 .downloadIcon {
