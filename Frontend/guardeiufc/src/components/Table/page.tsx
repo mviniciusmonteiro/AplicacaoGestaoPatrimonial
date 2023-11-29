@@ -3,12 +3,12 @@ import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export interface Item {
-  numberOfPatrimony: number;
-  name: string;
-  description: string;
-  locationId: number;
-  responsibleRegistration: number;
-  projectId: number;
+  numberOfPatrimony: number | null;
+  name: string | null;
+  description: string | null;
+  locationId: number | null;
+  responsibleRegistration: number | null;
+  projectId: number | null;
 }
 
 interface TabelaProps {
@@ -31,7 +31,7 @@ function ResponsiveTableExample({ data }: TabelaProps) {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
+            {data?.map((row, index) => (
               <tr key={index}>
                 <td>{row.numberOfPatrimony}</td>
                 <td>{row.name}</td>

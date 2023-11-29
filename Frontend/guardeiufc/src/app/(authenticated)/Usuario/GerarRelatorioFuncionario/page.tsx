@@ -31,6 +31,14 @@ interface ResponseItemReq {
   items: Item[];
 }
 
+interface ParametersItemReq {
+  numberOfPatrimony: string | null;
+  name: string | null;
+  description: string | null;
+  locationId: number | null;
+  projectId: number | null;
+}
+
 export default function SolicitarRelatorios() {
   const router = useRouter();
   const [loader, setLoader] = useState(true);
@@ -42,20 +50,20 @@ export default function SolicitarRelatorios() {
   ]);
   const [tabelaVisivel, setTabelaVisivel] = useState(false);
   const [formData, setFormData] = useState<Item>({
-    numberOfPatrimony: 0,
-    name: '',
-    description: '',
-    locationId: 0,
-    responsibleRegistration: 0,
-    projectId: 0
+    numberOfPatrimony: null,
+    name: null,
+    description: null,
+    locationId: null,
+    responsibleRegistration: null,
+    projectId: null
   });
   const [filteredItems, setFilteredItems] = useState<Item[]>([{
-    numberOfPatrimony: 0,
-    name: '',
-    description: '',
-    locationId: 0,
-    responsibleRegistration: 0,
-    projectId: 0
+    numberOfPatrimony: null,
+    name: null,
+    description: null,
+    locationId: null,
+    responsibleRegistration: null,
+    projectId: null
   }]);
   const [numFieldIsValid, setNumFieldIsValid] = useState(true);
 
@@ -64,8 +72,39 @@ export default function SolicitarRelatorios() {
   }
 
   const handleFilterItems = () => {
-    alert(`Parâmetros:\nnPatrimony: ${formData.numberOfPatrimony}\nnome: ${formData.name}\ndescrição: ${formData.description}\nlocationId: ${formData.locationId}\nprojectId: ${formData.projectId}`);
-    setTabelaVisivel(true);
+    const parameters = {
+      ...(formData.numberOfPatrimony && { numberOfPatrimony: formData.numberOfPatrimony.toString() }),
+      ...(formData.name && { name: formData.name }),
+      ...(formData.description && { description: formData.description }),
+      ...(formData.locationId && { locationId: formData.locationId }),
+      ...(formData.projectId && { projectId: formData.projectId }),
+      status: "1"
+    }
+
+    axios.get<ResponseItemReq>(process.env.NEXT_PUBLIC_BASE_URL + '/report/items/', { params: parameters }
+    ).then(response => {
+      if (response.status == 200) {
+        setFilteredItems(response.data.items);
+      }
+      setTabelaVisivel(true);
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para gerar relatório de itens!'
+        }).then(({value}) => {
+          if (value == true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar gerar o relatório. Tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    });
   }
 
   useEffect(() => {
@@ -144,6 +183,7 @@ export default function SolicitarRelatorios() {
                       type="number"
                       id="numberOfPatrimony"
                       name="id"
+                      tabIndex={0}
                       placeholder="Filtrar número de patrimônio"
                       className={styles.input}
                       onChange={(e) => {
@@ -162,6 +202,7 @@ export default function SolicitarRelatorios() {
                       type="text"
                       id="name"
                       name="nome"
+                      tabIndex={0}
                       placeholder="Filtrar nome do item"
                       className={styles.input}
                       onChange={(e) => {
@@ -180,6 +221,7 @@ export default function SolicitarRelatorios() {
                     <select
                       id="locationId"
                       name="localizacao"
+                      tabIndex={0}
                       className={styles.input}
                       onChange={(e) => {
                         const { id, value } = e.target;
@@ -202,6 +244,7 @@ export default function SolicitarRelatorios() {
                     <select
                       id="projectId"
                       name="projeto"
+                      tabIndex={0}
                       className={styles.input}
                       onChange={(e) => {
                         const { id, value } = e.target;
@@ -226,6 +269,7 @@ export default function SolicitarRelatorios() {
                     <textarea
                       id="description"
                       name="descricao"
+                      tabIndex={0}
                       placeholder="Filtrar descrição do item"
                       className={styles.textarea}
                       onChange={(e) => {
@@ -240,7 +284,7 @@ export default function SolicitarRelatorios() {
                 </div>
                 { !numFieldIsValid && (
                     <div>
-                      <p className={styles.sinalizadorCampoNumInvalido}>O campo número de patrimônio deve ser numérico!</p>
+                      <p className={styles.sinalizadorCampoNumInvalido} tabIndex={0}>O campo número de patrimônio deve ser numérico!</p>
                     </div>
                   )}
               </div>

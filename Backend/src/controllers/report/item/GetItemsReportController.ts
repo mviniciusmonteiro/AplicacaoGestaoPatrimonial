@@ -4,12 +4,18 @@ import { database } from "../../../database";
 class GetItemsReportController {
     async handle(req: Request | any, res: Response) {
         try {
-            let { numberOfPatrimony, name, description, locationId, status, responsibleRegistration, projectId } = req.body;
-
+            let  numberOfPatrimony = req.query.numberOfPatrimony;
+            let  name = req.query.name;
+            let  description = req.query.description;
+            let  locationId = req.query.locationId;
+            let  status = req.query.status;
+            let  responsibleRegistration = req.query.responsibleRegistration;
+            let  projectId = req.query.projectId;
+            
             let filteredItems = await database.item.findMany();
 
             if (!filteredItems) {
-                return res.status(200).json({mensagem: "Nenhum item cadastrado"});
+                return res.status(200).json({filteredItems: {}});
             }
 
             // Garantindo que usuário comum irá filtrar apenas itens que ele é responsável ou que estejam vinculados a projetos que ele coordena
@@ -76,7 +82,7 @@ class GetItemsReportController {
             }
 
             return res.status(200).json({
-                itens: filteredItems
+                items: filteredItems
             });
         } catch (error) {
             console.error(error);
