@@ -5,8 +5,9 @@ import Tabela, { Item } from "@/components/Table/page";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader/page";
 import { axios } from '@/config/axios';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import Swal from "sweetalert2";
+import fileDownload from 'js-file-download'
 
 interface Local {
   id: number;
@@ -29,14 +30,6 @@ interface ResponseProjectReq {
 
 interface ResponseItemReq {
   items: Item[];
-}
-
-interface ParametersItemReq {
-  numberOfPatrimony: string | null;
-  name: string | null;
-  description: string | null;
-  locationId: number | null;
-  projectId: number | null;
 }
 
 export default function SolicitarRelatorios() {
@@ -66,6 +59,7 @@ export default function SolicitarRelatorios() {
     projectId: null
   }]);
   const [numFieldIsValid, setNumFieldIsValid] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const handleValidateNumericField = (number: string) => {
     setNumFieldIsValid(/^[0-9]*$/.test(number));
@@ -84,9 +78,15 @@ export default function SolicitarRelatorios() {
     axios.get<ResponseItemReq>(process.env.NEXT_PUBLIC_BASE_URL + '/report/items/', { params: parameters }
     ).then(response => {
       if (response.status == 200) {
-        setFilteredItems(response.data.items);
+        if (response.data.items.length > 0) {
+          setFilteredItems(response.data.items);
+          setTabelaVisivel(true);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+          setTabelaVisivel(false);
+        }
       }
-      setTabelaVisivel(true);
     }).catch((error: AxiosError) => {
       if (error.response?.status == 403) {
         Swal.fire({
@@ -101,6 +101,35 @@ export default function SolicitarRelatorios() {
         Swal.fire({
           icon: 'error',
           text: `Ocorreu um erro ao tentar gerar o relatório. Tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    });
+  }
+
+  const handleDownloadPdfReport = () => {
+    axios.get(process.env.NEXT_PUBLIC_BASE_URL + '/pdf-report', 
+    { params: {data: filteredItems}, responseType: 'blob'}
+    ).then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        const now = new Date();
+        const fileName = `Relatório de Itens - ${((now.getDate() ))}/${((now.getMonth() + 1))}/${now.getFullYear()}.pdf`
+        fileDownload(response.data, fileName);
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para baixar relatório de itens!'
+        }).then(({value}) => {
+          if (value == true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar baixar o relatório. Tente novamente!\nCódigo do erro: ${error.response?.status}`
         });
       }
       console.error(error);
@@ -187,6 +216,8 @@ export default function SolicitarRelatorios() {
                       placeholder="Filtrar número de patrimônio"
                       className={styles.input}
                       onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
                         const { id, value } = e.target;
                         handleValidateNumericField(value);
                         setFormData((prevFormData) => ({
@@ -206,6 +237,8 @@ export default function SolicitarRelatorios() {
                       placeholder="Filtrar nome do item"
                       className={styles.input}
                       onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
                         const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
@@ -224,6 +257,8 @@ export default function SolicitarRelatorios() {
                       tabIndex={0}
                       className={styles.input}
                       onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
                         const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
@@ -247,6 +282,8 @@ export default function SolicitarRelatorios() {
                       tabIndex={0}
                       className={styles.input}
                       onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
                         const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
@@ -273,6 +310,8 @@ export default function SolicitarRelatorios() {
                       placeholder="Filtrar descrição do item"
                       className={styles.textarea}
                       onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
                         const { id, value } = e.target;
                         setFormData((prevFormData) => ({
                           ...prevFormData,
@@ -296,7 +335,12 @@ export default function SolicitarRelatorios() {
               {tabelaVisivel && (
                 <div className={styles.tabela}>
                   <Tabela data={filteredItems}></Tabela>
-                  <p className={styles.estiloBotaoGerar}>Exportar Relatório</p>
+                  <p className={styles.estiloBotaoGerar} onClick={() => {handleDownloadPdfReport()}}>Exportar Relatório</p>
+                </div>
+              )}
+              {notFound && (
+                <div>
+                  <p className={styles.notFound}><b>Nenhum item encontrado para os filtros aplicados!</b></p>
                 </div>
               )}
             </div>

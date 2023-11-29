@@ -15,7 +15,7 @@ interface Item {
 class DownloadPDFReportController {
     async handle(req: Request | any, res: Response) {
         try {
-            const data = req.body;
+            const data = req.query.data;
 
             if (!data) {
                 return res.status(200).json({});
@@ -23,7 +23,7 @@ class DownloadPDFReportController {
             // Convertendo json recebido para uma lista de listas de strings
             var formatedStrDataList: String[][] = [['Nº de Patrimônio', 'Descrição', 'Localização', 'Responsável', 'Projeto']];
             var itemStrDataList = [];
-            data.items.forEach((item: Item) => {
+            data.forEach((item: Item) => {
                 itemStrDataList = [];
                 itemStrDataList.push(item.numberOfPatrimony.toString());
                 itemStrDataList.push(item.description);
