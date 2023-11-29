@@ -6,21 +6,45 @@ import Select from "react-select";
 function EditarLocal() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
-  const [departamento, setDepartamento] = useState("");
-  const [sala, setSala] = useState("");
-  const [selectedLocal, setSelectedLocal] = useState<{
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [responsavelSelecionado, setResponsavelSelecionado] =
+    useState<boolean>(false);
+  const [selectedFuncionario, setSelectedFuncionario] = useState<{
     label: string;
     value: number;
-    bloco: string;
-    sala: string;
+    nome: string;
+    id: number;
+    email: string;
   } | null>(null);
 
   const [searchValue, setSearchValue] = useState("");
-  const [isSearchable, setIsSearchable] = useState(false);
 
-  const [localizacoes, setLocalizacoes] = useState([
-    { id: 1, bloco: "Bloco 1", sala: "Sala 1" },
-    { id: 2, bloco: "Bloco 2", sala: "Sala 2" },
+  const resetSeletores = () => {
+    console.log("Antes do reset:", {
+      selectedFuncionario,
+      nome,
+      email,
+    });
+
+    setSelectedFuncionario(null);
+    setNome("");
+    setEmail("");
+
+    console.log("Depois do reset:", {
+      selectedFuncionario,
+      nome,
+      email,
+    });
+  };
+
+  const salvarAlteracoesClicado = () => {
+    resetSeletores();
+  };
+
+  const [responsaveis, setResponsaveis] = useState([
+    { id: 123, nome: "João da Silva", email: "wdnoewfn" },
+    { id: 456, nome: "Maria Oliveira", email: "ejwfnqefjiqe" },
   ]);
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
@@ -34,6 +58,9 @@ function EditarLocal() {
   const telaEdicaoClicada = () => {
     if (!showCreate) {
       setShowEditDelete(!showEditDelete);
+      if (selectedFuncionario) {
+        setResponsavelSelecionado((prev) => !prev);
+      }
     }
   };
 
@@ -41,7 +68,7 @@ function EditarLocal() {
     <div>
       <div className={styles.main}>
         <div className={styles.estiloCadastro}>
-          <p>Gerenciar Localizações</p>
+          <p>Gerenciar Responsáveis</p>
         </div>
         <div className={styles.botoes}>
           <button
@@ -50,7 +77,7 @@ function EditarLocal() {
             }`}
             onClick={telaCriacaoClicada}
           >
-            Cadastrar Local
+            Cadastrar Responsável
           </button>
           <button
             className={`${styles.EstilobotaoMenu} ${
@@ -58,31 +85,33 @@ function EditarLocal() {
             }`}
             onClick={telaEdicaoClicada}
           >
-            Editar/Excluir Local
+            Editar/Excluir Responsável
           </button>
         </div>
         {showCreate && (
           <div>
             <div className={styles.containerPrincipal}>
               <div className={styles.inputContainer2}>
-                <p className={styles.Nomes}>Bloco</p>
+                <p className={styles.Nomes}>Nome do Responsável</p>
                 <input
                   type="text"
-                  id="departamento"
-                  name="departamento"
-                  placeholder="Digite o bloco do local (Ex: Bloco - 910)"
+                  id="nome"
+                  name="nome"
+                  placeholder="Digite o nome do funcionário"
                   className={styles.input}
+                  onChange={(e) => setNome(e.target.value)}
                 />
               </div>
               <div className={styles.divisao}>
                 <div className={styles.inputContainer}>
-                  <p className={styles.Nomes}>Sala</p>
+                  <p className={styles.Nomes}>Email do funcionário</p>
                   <input
                     type="text"
-                    id="sala"
-                    name="sala"
-                    placeholder="Digite a sala do local"
+                    id="email"
+                    name="email"
+                    placeholder="Digite o email do funcionário"
                     className={styles.input}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -97,27 +126,29 @@ function EditarLocal() {
             <div className={styles.containerBuscar}>
               <div className={styles.divisao}>
                 <div className={styles.inputContainer}>
-                  <p className={styles.Nomes}>Selecione um local</p>
+                  <p className={styles.Nomes}>Selecione um Responsável</p>
                   <Select
-                    value={selectedLocal}
+                    value={selectedFuncionario}
                     onChange={(selectedOption) => {
-                      setSelectedLocal(selectedOption);
-                      setDepartamento(selectedOption?.bloco || "");
-                      setSala(selectedOption?.sala || "");
+                      setSelectedFuncionario(selectedOption);
+                      setNome(selectedOption?.nome || "");
+                      setEmail(selectedOption?.email || "");
+                      setResponsavelSelecionado(true);
                     }}
                     options={
                       searchValue.length > 0
-                        ? localizacoes.map((localizacao) => ({
-                            label: `${localizacao.bloco} - ${localizacao.sala}`,
-                            value: localizacao.id,
-                            bloco: localizacao.bloco,
-                            sala: localizacao.sala,
+                        ? responsaveis.map((responsavel) => ({
+                            label: `${responsavel.id} - ${responsavel.nome}`,
+                            value: responsavel.id,
+                            id: responsavel.id,
+                            nome: responsavel.nome,
+                            email: responsavel.email,
                           }))
                         : []
                     }
                     onInputChange={(newValue) => setSearchValue(newValue)}
                     isSearchable
-                    placeholder="Digite ou selecione um local"
+                    placeholder="Digite ou selecione um responsável"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
                   />
                 </div>
@@ -125,34 +156,41 @@ function EditarLocal() {
             </div>
             <div className={styles.containerPrincipal}>
               <div className={styles.inputContainer}>
-                <p className={styles.Nomes}>Departamento</p>
+                <p className={styles.Nomes}>Nome</p>
                 <input
                   type="text"
-                  id="departamentoEdicao"
-                  name="departamentoEdicao"
-                  placeholder="Departamento"
-                  value={departamento}
-                  onChange={(e) => setDepartamento(e.target.value)}
+                  id="nomeEdicao"
+                  name="nomeEdicao"
+                  placeholder="Nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
                   className={styles.input}
+                  disabled={!responsavelSelecionado}
                 />
               </div>
               <div className={styles.divisao}>
                 <div className={styles.inputContainer}>
-                  <p className={styles.Nomes}>Sala</p>
+                  <p className={styles.Nomes}>Email</p>
                   <input
                     type="text"
-                    id="salaEdicao"
-                    name="salaEdicao"
-                    placeholder="Sala"
-                    value={sala}
-                    onChange={(e) => setSala(e.target.value)}
+                    id="emailEdicao"
+                    name="emailEdicao"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className={styles.input}
+                    disabled={!responsavelSelecionado}
                   />
                 </div>
               </div>
             </div>
             <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Salvar Alterações</p>
+              <p
+                className={styles.estiloBotao}
+                onClick={salvarAlteracoesClicado}
+              >
+                Salvar Alterações
+              </p>
               <p className={styles.estiloBotaoExcluir}>Excluir Local</p>
             </div>
           </div>

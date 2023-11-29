@@ -81,7 +81,6 @@ function TelaLogin() {
           <Image
             src={image}
             className={styles.image}
-            objectFit="cover"
             fill
             alt="Imagem de Exemplo Login"
           />
