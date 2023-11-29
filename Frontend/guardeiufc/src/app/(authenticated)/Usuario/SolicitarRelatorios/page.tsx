@@ -53,7 +53,7 @@ function SolicitarRelatorios() {
       return;
     }
 
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/report-request', {
+    axios.post('/report-request', {
       description: formData.descricao,
       motiveOfRequest: formData.motivo
     }).then((response: AxiosResponse) => {

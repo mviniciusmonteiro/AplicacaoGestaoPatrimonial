@@ -45,8 +45,7 @@ function TelaSolicitacaoCodigo() {
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/request-recovery-code', 
-      {
+    axios.post('/request-recovery-code', {
         username: formData.username,
         email: formData.email
       }).then((response: AxiosResponse) => {

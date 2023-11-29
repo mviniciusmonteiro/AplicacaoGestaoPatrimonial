@@ -68,15 +68,17 @@ function TelaAlteracaoSenha() {
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/redefine-password', {
-      password: formData.password
-    }).then((response: AxiosResponse) => {
+    axios.post('/redefine-password', { password: formData.password })
+    .then((response: AxiosResponse) => {
       if (response.status == 200) {
         Swal.fire({
           icon: 'info',
           text: 'Senha atualizada com sucesso!'
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
         });
-        router.push('/TelaLogin');
       }
     }).catch((error: AxiosError) => {
       Swal.fire({

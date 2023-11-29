@@ -46,10 +46,8 @@ function TelaLogin() {
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/login', {
-      username: formData.nome,
-      password: formData.senha
-    }).then((response: AxiosResponse) => {
+    axios.post('/login', { username: formData.nome, password: formData.senha })
+    .then((response: AxiosResponse) => {
       if (response.status == 200) {
         if (response.data.isAdmin) {
           router.push('/Administrador/TelaAdministrador');

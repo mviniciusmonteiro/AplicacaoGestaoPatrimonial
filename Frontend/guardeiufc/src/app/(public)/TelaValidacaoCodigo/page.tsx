@@ -43,9 +43,8 @@ function TelaValidacaoCodigo() {
       });
       return;
     }
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/validate-recovery-code', {
-      code: formData.code
-    }).then((response: AxiosResponse) => {
+    axios.post('/validate-recovery-code', { code: formData.code })
+    .then((response: AxiosResponse) => {
       if (response.status == 200) {
         router.push('/TelaAlteracaoSenha');
       }

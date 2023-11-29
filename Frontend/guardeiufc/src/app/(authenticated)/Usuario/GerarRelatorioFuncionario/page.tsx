@@ -74,8 +74,7 @@ export default function SolicitarRelatorios() {
       ...(formData.projectId && { projectId: formData.projectId }),
       status: "1"
     }
-
-    axios.get<ResponseItemReq>(process.env.NEXT_PUBLIC_BASE_URL + '/report/items/', { params: parameters }
+    axios.get<ResponseItemReq>('/report/items/', { params: parameters }
     ).then(response => {
       if (response.status == 200) {
         if (response.data.items.length > 0) {
@@ -107,10 +106,10 @@ export default function SolicitarRelatorios() {
     });
   }
 
-  const handleDownloadPdfReport = () => {
-    axios.get(process.env.NEXT_PUBLIC_BASE_URL + '/pdf-report', 
-    { params: {data: filteredItems}, responseType: 'blob'}
-    ).then((response: AxiosResponse) => {
+  const handleDownloadPdfReport = async () => {
+    axios.get('/pdf-report', 
+    { params: {data: filteredItems}, responseType: 'blob'})
+    .then((response: AxiosResponse) => {
       if (response.status == 200) {
         const now = new Date();
         const fileName = `Relatório de Itens - ${((now.getDate() ))}/${((now.getMonth() + 1))}/${now.getFullYear()}.pdf`
@@ -138,7 +137,7 @@ export default function SolicitarRelatorios() {
 
   useEffect(() => {
     // Obtendo todos os locais
-    axios.get<ResponseLocalReq>(process.env.NEXT_PUBLIC_BASE_URL + '/local')
+    axios.get<ResponseLocalReq>('/local')
     .then(response => {
       if (response.status == 200) {
         setLocalizacoes(response.data.locations);
@@ -162,7 +161,7 @@ export default function SolicitarRelatorios() {
       console.error(error);
     });
     // Obtendo todos os projetos
-    axios.get<ResponseProjectReq>(process.env.NEXT_PUBLIC_BASE_URL + '/project')
+    axios.get<ResponseProjectReq>('/project')
     .then(response => {
       if (response.status == 200) {
         setProjetos(response.data.projects);

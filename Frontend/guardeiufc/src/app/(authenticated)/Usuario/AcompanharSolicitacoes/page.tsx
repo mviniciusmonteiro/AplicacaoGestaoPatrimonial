@@ -67,7 +67,7 @@ export default function AcompanharSolicitacoes() {
     setSelectedOption(status);
     setVisualizar(false);
 
-    axios.get<Response>(process.env.NEXT_PUBLIC_BASE_URL + `/report-request/${status}`)
+    axios.get<Response>(`/report-request/${status}`)
     .then(response => {
       if (response.status == 200) {
         setDados(response.data.filteredReportReq);
@@ -110,9 +110,8 @@ export default function AcompanharSolicitacoes() {
   };
 
   const handleDownloadPDFReport = async () => {
-    axios.get(process.env.NEXT_PUBLIC_BASE_URL + `/download-anexed-pdf/${fileNameDownload}`,
-    { responseType: 'blob'
-    }).then((response: AxiosResponse) => {
+    axios.get(`/download-anexed-pdf/${fileNameDownload}`, { responseType: 'blob'})
+    .then((response: AxiosResponse) => {
       if (response.status == 200) {
         fileDownload(response.data, fileNameDownload);
       }

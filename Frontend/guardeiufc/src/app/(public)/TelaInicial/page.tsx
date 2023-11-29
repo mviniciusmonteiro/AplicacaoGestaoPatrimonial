@@ -26,7 +26,7 @@ function TelaInicial() {
   };
 
   useEffect(() => {
-    axios.get<Response>(process.env.NEXT_PUBLIC_BASE_URL + '/our-numbers')
+    axios.get<Response>('/our-numbers')
     .then(response => {
       if (response.status == 200) {
         animateCounters(response.data.usersQuantity, response.data.itemsQuantity);

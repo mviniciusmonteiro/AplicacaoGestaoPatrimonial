@@ -78,7 +78,7 @@ function TelaCadastro() {
       return;
     }
 
-    axios.post(process.env.NEXT_PUBLIC_BASE_URL + '/sign-up', {
+    axios.post('/sign-up', {
       username: formData.nomeUsuario,
       password: formData.senha,
       registration: Number(formData.matricula),
