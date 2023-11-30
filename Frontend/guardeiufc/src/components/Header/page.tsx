@@ -14,7 +14,7 @@ export default function Header() {
 
   const router = useRouter();
 
-  const handleNavigation = () => {
+  const handleBackToHome = () => {
     router.push("/Administrador/TelaAdministrador");
   };
 
@@ -22,7 +22,7 @@ export default function Header() {
     <div>
       <div className={styles.main}>
         <header className={styles.fixedheader}>
-          <div className={styles.titulo} onClick={handleNavigation}>
+          <div className={styles.titulo} onClick={handleBackToHome}>
             GuardeiUFC
           </div>
           <div className={styles.profileMenu}>
