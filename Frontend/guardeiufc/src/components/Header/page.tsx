@@ -18,6 +18,7 @@ export default function Header() {
   const router = useRouter();
 
   const handleBackToHome = () => {
+    setMenuAberto(false);
     const userRole = getStoredItem('userRole');
     if (userRole == null) {
       router.push("/TelaLogin");

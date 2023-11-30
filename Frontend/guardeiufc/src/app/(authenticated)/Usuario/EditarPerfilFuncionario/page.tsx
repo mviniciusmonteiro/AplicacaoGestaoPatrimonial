@@ -5,9 +5,10 @@ import Swal from "sweetalert2";
 import { axios } from '@/config/axios';
 import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader/page";
 
 interface FormData {
-  registration: number;
+  registration: number | null;
   username: string;
   name: string;
   email: string;
@@ -31,14 +32,15 @@ interface ErrorInfo {
 function EditarPerfilFuncionario() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    registration: 0,
+    registration: null,
     username: '',
     name: '',
     email: '',
     password: '',
     passwordConfirmation: ''
   });
-  const [passwordEquals, setPasswordEquals] = useState(true);  
+  const [passwordEquals, setPasswordEquals] = useState(true);
+  const [loader, setLoader] = useState(true);
 
   const validateFormData = () => {
     if (formData.name == '' || formData.email == '' || formData.username == '' || formData.password == '' || formData.passwordConfirmation == '') {
@@ -150,106 +152,112 @@ function EditarPerfilFuncionario() {
         console.log(error);
       }
     });
+    setLoader(false)
   }, []);
 
   return (
     <div>
-      <div className={styles.main}>
-        <div className={styles.estiloCadastro}>
-          <p>Meus Dados</p>
-        </div>
-        <div className={styles.containerPrincipal}>
-          <div className={styles.divisao}>
-            <div className={styles.inputContainer1}>
-              <p className={styles.Nomes}>Matrícula</p>
-              <input
-                type="text"
-                id="registration"
-                name="registration"
-                value={formData.registration}
-                tabIndex={0}
-                readOnly={true}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputContainer2}>
-              <p className={styles.Nomes}>Nome</p>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                tabIndex={0}
-                placeholder="Digite seu nome"
-                onChange={handleChangeInput}
-                className={styles.input}
-              />
-            </div>
+      { loader && (
+        <Loader></Loader>
+      )}
+      { !loader && (
+        <div className={styles.main}>
+          <div className={styles.estiloCadastro}>
+            <p>Meus Dados</p>
           </div>
-          <div className={styles.divisao}>
-            <div className={styles.inputContainer2}>
-              <p className={styles.Nomes}>Email</p>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                tabIndex={0}
-                placeholder="Digite seu email"
-                onChange={handleChangeInput}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputContainer1}>
-              <p className={styles.Nomes}>Nome de Usuário</p>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                tabIndex={0}
-                placeholder="Digite seu nome de usuário"
-                onChange={handleChangeInput}
-                className={styles.input}
-              />
-            </div>
-          </div>
-          <div className={styles.divisao}>
-            <div className={styles.inputContainer}>
-              <p className={styles.Nomes}>Senha</p>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                tabIndex={0}
-                placeholder="Digite sua senha"
-                onChange={handleChangeInput}
-                className={styles.input}
-              />
-            </div>
-            <div className={styles.inputContainer}>
-              <p className={styles.Nomes}>Confirmar Senha</p>
-              <input
-                type="password"
-                id="passwordConfirmation"
-                name="passwordConfirmation"
-                tabIndex={0}
-                placeholder="Confirme sua senha"
-                onChange={handleChangeInput}
-                className={styles.input}
-              />
-            </div>
-          </div>
-          { !passwordEquals && (
-              <div>
-                <p className={styles.sinalizadorDadosInvalidos}>As senhas não correspondem!</p>
+          <div className={styles.containerPrincipal}>
+            <div className={styles.divisao}>
+              <div className={styles.inputContainer1}>
+                <p className={styles.Nomes}>Matrícula</p>
+                <input
+                  type="text"
+                  id="registration"
+                  name="registration"
+                  value={formData.registration ? formData.registration : ''}
+                  tabIndex={0}
+                  readOnly={true}
+                  className={styles.input}
+                />
               </div>
-            )}
+              <div className={styles.inputContainer2}>
+                <p className={styles.Nomes}>Nome</p>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  tabIndex={0}
+                  placeholder="Digite seu nome"
+                  onChange={handleChangeInput}
+                  className={styles.input}
+                />
+              </div>
+            </div>
+            <div className={styles.divisao}>
+              <div className={styles.inputContainer2}>
+                <p className={styles.Nomes}>Email</p>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  tabIndex={0}
+                  placeholder="Digite seu email"
+                  onChange={handleChangeInput}
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.inputContainer1}>
+                <p className={styles.Nomes}>Nome de Usuário</p>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  tabIndex={0}
+                  placeholder="Digite seu nome de usuário"
+                  onChange={handleChangeInput}
+                  className={styles.input}
+                />
+              </div>
+            </div>
+            <div className={styles.divisao}>
+              <div className={styles.inputContainer}>
+                <p className={styles.Nomes}>Senha</p>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  tabIndex={0}
+                  placeholder="Digite sua senha"
+                  onChange={handleChangeInput}
+                  className={styles.input}
+                />
+              </div>
+              <div className={styles.inputContainer}>
+                <p className={styles.Nomes}>Confirmar Senha</p>
+                <input
+                  type="password"
+                  id="passwordConfirmation"
+                  name="passwordConfirmation"
+                  tabIndex={0}
+                  placeholder="Confirme sua senha"
+                  onChange={handleChangeInput}
+                  className={styles.input}
+                />
+              </div>
+            </div>
+            { !passwordEquals && (
+                <div>
+                  <p className={styles.sinalizadorDadosInvalidos}>As senhas não correspondem!</p>
+                </div>
+              )}
+          </div>
+          <div className={styles.botoesInferiores} tabIndex={0}>
+            <p className={styles.estiloBotao} onClick={passwordEquals ? handleUpdateProfile : () => {}}>Salvar Alterações</p>
+          </div>
         </div>
-        <div className={styles.botoesInferiores} onClick={passwordEquals ? handleUpdateProfile : () => {}}tabIndex={0}>
-          <p className={styles.estiloBotao}>Salvar Alterações</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
