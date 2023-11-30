@@ -199,7 +199,7 @@ export default function SolicitarRelatorios() {
             <p className={styles.estilotitulo}>Gerar Relatórios de Itens</p>
             <p className={styles.estilosubtitulo}>
               Informe abaixo os critérios de busca a serem utilizados.
-              Deixe o componente vazio ou desmarcado para não considerá-lo na
+              Deixe o componente vazio para não considerá-lo na
               busca.
             </p>
             <div className={styles.ContainerPrincipalEdicao}>
