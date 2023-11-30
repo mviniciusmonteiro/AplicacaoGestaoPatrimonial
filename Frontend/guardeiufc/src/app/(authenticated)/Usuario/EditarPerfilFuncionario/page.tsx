@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Swal from "sweetalert2";
 import { axios } from '@/config/axios';
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 
 interface FormData {
@@ -22,6 +22,10 @@ interface ResponseUser {
     name: string;
     email: string;
   }
+}
+
+interface ErrorInfo {
+  message: string;
 }
 
 function EditarPerfilFuncionario() {
@@ -74,7 +78,44 @@ function EditarPerfilFuncionario() {
       return;
     }
 
-    alert(`Novos dados:\nNome: ${formData.name}\nEmail: ${formData.email}\nNome Usuário: ${formData.username}\nSenha: ${formData.password}\n`)
+    axios.put('/user', {
+      username: formData.username,
+      password: formData.password,
+      name: formData.name,
+      email: formData.email,
+      isAdmin: false
+    }).then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Dados atualizados com sucesso!'
+        });
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para atualizar os dados do seu perfil!'
+        }).then(({value}) => {
+          if (value == true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else if (error.response?.status == 400) {
+        // Obtém a mensagem enviada do back: necessário para obter qual foi a ocorrência que gerou o erro, uma vez que o erro 400 pode ser gerado por mais de um motivo
+        const error_info  = error.response?.data as ErrorInfo;
+        Swal.fire({
+          icon: 'error',
+          text: `${error_info.message}`
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar atualizar os dados do seu perfil!\nCódigo do erro ${error.response?.status}`
+        });
+      }
+      console.log(error);
+    });
   }
   
   useEffect(() => {
@@ -177,7 +218,7 @@ function EditarPerfilFuncionario() {
             <div className={styles.inputContainer}>
               <p className={styles.Nomes}>Senha</p>
               <input
-                type="text"
+                type="password"
                 id="password"
                 name="password"
                 tabIndex={0}

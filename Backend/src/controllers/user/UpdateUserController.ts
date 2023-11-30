@@ -12,7 +12,7 @@ class UpdateUserController {
             let _isAdmin = isAdmin == undefined ? false : isAdmin;
 
             if (!(username && password && name && email)) {
-                return res.status(400).json({mensagem: "Nome de usuário, senha, nome e email são campos obrigatórios"});
+                return res.status(400).json({message: "Nome de usuário, senha, nome e email são campos obrigatórios!"});
             }
 
             // Garantindo que usuário comum só atualiza os próprios dados e que se um parâmetro não for passado então edita os dados do usuário logado
@@ -33,7 +33,7 @@ class UpdateUserController {
             });
 
             if (!user) {
-                return res.status(400).json({mensagem: "Usuário não encontrado"});
+                return res.status(400).json({message: "Usuário não encontrado!"});
             }
 
             // Verificando se já existe usuário com mesmo username
@@ -45,7 +45,7 @@ class UpdateUserController {
             });
 
             if (userAlreadyExist) {
-                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário"});
+                return res.status(400).json({message: 'Há um usuário cadastrado com mesmo nome de usuário!'});
             }
 
             const employee = await database.employee.findFirst({
@@ -72,7 +72,7 @@ class UpdateUserController {
                         }
                     });
                 } else {
-                    return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo email"});
+                    return res.status(400).json({message: "Há um usuário cadastrado com mesmo email!"});
                 }
             }
 
