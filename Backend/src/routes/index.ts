@@ -55,7 +55,7 @@ router.get('/our-numbers', new GetOurNumbersController().handle);
 router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefinePasswordController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
-router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
+router.post('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);

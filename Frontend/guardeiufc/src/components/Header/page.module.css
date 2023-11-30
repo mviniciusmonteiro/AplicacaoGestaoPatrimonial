@@ -36,11 +36,12 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.menu a {
+.menu div {
   color: #379080;
   text-decoration: none;
   padding: 10px;
   display: block;
+  cursor: pointer;
 }
 
 .iconMenu {
