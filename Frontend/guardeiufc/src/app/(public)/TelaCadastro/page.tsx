@@ -29,10 +29,13 @@ function TelaCadastro() {
     senha: '',
     senhaConfirmacao: ''
   });
-  const [formPassword, setFormPassword] = useState<FormPassword>({
-    equals: false
-  });  
   const router = useRouter();
+  const [numFieldIsValid, setNumFieldIsValid] = useState(true);
+  const [passwordEquals, setPasswordEquals] = useState(true);
+
+  const handleValidateNumericField = (number: string) => {
+    setNumFieldIsValid(/^[0-9]*$/.test(number));
+  }
 
   const validateData = (matricula: string, nome: string, email: string, nomeUsuario: string, senha: string, senhaConfirmacao: string) => {
     if (matricula == '' || nome == '' || email == '' || nomeUsuario == '' || senha == '' || senhaConfirmacao == '') {
@@ -44,26 +47,22 @@ function TelaCadastro() {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Lógica para lidar com a mudança nos campos de entrada
     const { name, value } = event.target;
+    if (name == 'matricula') {
+      handleValidateNumericField(value);
+    }
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
 
-    if ((event.target.name == 'senha' || event.target.name == 'senhaConfirmacao')) {
+    if ((name == 'senha' || name == 'senhaConfirmacao')) {
       // Verificando se as senhas são iguais
       const inputPass = document.getElementsByName('senha')[0] as HTMLInputElement;
       const inputPassConfirm = document.getElementsByName('senhaConfirmacao')[0] as HTMLInputElement;
-      const sinalizador = document.getElementById('sinalizadorSenhasDiferentes');
       if (inputPass.value.length == 0 || inputPass.value != inputPassConfirm.value) {
-        if (sinalizador) {
-          sinalizador.style.display = 'block';
-        }
-        setFormPassword({equals: false});
+        setPasswordEquals(false);
       } else {
-        if (sinalizador) {
-          sinalizador.style.display = 'none';
-        }
-        setFormPassword({equals: true});
+        setPasswordEquals(true);
       }
     }
   }
@@ -197,10 +196,21 @@ function TelaCadastro() {
               />
             </div>
           </div>
-          <p id={'sinalizadorSenhasDiferentes'} className={styles.sinalizadorSenhasDiferentes}>As senhas não correspondem!</p>
+          <div>
+            { !passwordEquals && (
+              <div>
+                <p className={styles.sinalizadorDadosInvalidos}>As senhas não correspondem!</p>
+              </div>
+            )}
+            { !numFieldIsValid && (
+              <div>
+                <p className={styles.sinalizadorDadosInvalidos} tabIndex={0}>O campo número de patrimônio deve ser numérico!</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className={styles.botoesInferiores}>
-          <p id={'btnCadastrar'} className={styles.estiloBotao} onClick={formPassword.equals ? handleCadastrar : ()=>{}} tabIndex={0}>Criar Cadastro</p>
+          <p id={'btnCadastrar'} className={styles.estiloBotao} onClick={passwordEquals && numFieldIsValid  ? handleCadastrar : ()=>{}} tabIndex={0}>Criar Cadastro</p>
           <Link href = "/TelaLogin">Já possui uma conta? Entrar</Link>
         </div>
       </div>
