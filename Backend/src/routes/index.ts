@@ -40,6 +40,7 @@ import { RedefinePasswordController } from "../controllers/password-recovery/Red
 import { DownloadPDFReportController } from "../controllers/report/DownloadPDFReportController";
 import { DownloadAnexedPDFController } from "../controllers/report/DownloadAnexedPDFController";
 import { GetOurNumbersController } from "../controllers/report/user/GetOurNumbersController";
+import { GetLoggedUserDataController } from "../controllers/user/GetLoggedUserDataController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -57,6 +58,7 @@ router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefineP
 // Rotas que requerem autorização comum (apenas autenticado)
 router.post('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
+router.get('/logged-user', new AuthorizationJWTCommom().handle, new GetLoggedUserDataController().handle);
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
