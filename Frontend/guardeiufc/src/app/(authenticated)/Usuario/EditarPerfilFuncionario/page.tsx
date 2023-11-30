@@ -41,12 +41,37 @@ function EditarPerfilFuncionario() {
   });
   const [passwordEquals, setPasswordEquals] = useState(true);
   const [loader, setLoader] = useState(true);
+  const [changePassword, setChangePassword] = useState(false);
 
   const validateFormData = () => {
-    if (formData.name == '' || formData.email == '' || formData.username == '' || formData.password == '' || formData.passwordConfirmation == '') {
+    if (changePassword) {
+      if (formData.password == '' || formData.passwordConfirmation == '') {
+        return false;
+      }
+    }
+    if (formData.name == '' || formData.email == '' || formData.username == '') {
       return false;
     }
     return true;
+  }
+
+  const handleShowPasswordArea = () => {
+    const passwordComponent = document.getElementById('password') as HTMLInputElement;
+    const passwordConfirmComponent = document.getElementById('passwordConfirmation') as HTMLInputElement;
+    // Limpa caixas de senha e confirmação de senha
+    if (passwordComponent) {
+      passwordComponent.value = '';
+    }
+    if (passwordConfirmComponent) {
+      passwordConfirmComponent.value = '';
+    }
+    // Atualiza formData
+    setFormData({
+      ...formData,
+      ...{ password: '', passwordConfirmation: '' }
+    });
+    setPasswordEquals(true);
+    setChangePassword(!changePassword);
   }
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,18 +105,21 @@ function EditarPerfilFuncionario() {
       return;
     }
 
-    axios.put('/user', {
+    const data = {
       username: formData.username,
-      password: formData.password,
+      ...(changePassword && {password: formData.password}),
       name: formData.name,
       email: formData.email,
-      isAdmin: false
-    }).then((response: AxiosResponse) => {
+      isAdmin: false      
+    }
+
+    axios.put('/user', data).then((response: AxiosResponse) => {
       if (response.status == 200) {
         Swal.fire({
           icon: 'info',
           text: 'Dados atualizados com sucesso!'
         });
+        setChangePassword(false);
       }
     }).catch((error: AxiosError) => {
       if (error.response?.status == 403) {
@@ -113,7 +141,7 @@ function EditarPerfilFuncionario() {
       } else {
         Swal.fire({
           icon: 'error',
-          text: `Ocorreu um erro ao tentar atualizar os dados do seu perfil!\nCódigo do erro ${error.response?.status}`
+          text: `Ocorreu um erro ao tentar atualizar os dados do seu perfil!\nCódigo do erro: ${error.response?.status}`
         });
       }
       console.log(error);
@@ -147,7 +175,7 @@ function EditarPerfilFuncionario() {
       } else {
         Swal.fire({
           icon: 'error',
-          text: `Ocorreu um erro ao tentar atualizar os dados do seu perfil!\nCódigo do erro ${error.response?.status}`
+          text: `Ocorreu um erro ao tentar atualizar os dados do seu perfil!\nCódigo do erro: ${error.response?.status}`
         });
         console.log(error);
       }
@@ -168,7 +196,7 @@ function EditarPerfilFuncionario() {
           <div className={styles.containerPrincipal}>
             <div className={styles.divisao}>
               <div className={styles.inputContainer1}>
-                <p className={styles.Nomes}>Matrícula</p>
+                <p className={styles.Nomes}>Matrícula*</p>
                 <input
                   type="text"
                   id="registration"
@@ -180,7 +208,7 @@ function EditarPerfilFuncionario() {
                 />
               </div>
               <div className={styles.inputContainer2}>
-                <p className={styles.Nomes}>Nome</p>
+                <p className={styles.Nomes}>Nome*</p>
                 <input
                   type="text"
                   id="name"
@@ -195,7 +223,7 @@ function EditarPerfilFuncionario() {
             </div>
             <div className={styles.divisao}>
               <div className={styles.inputContainer2}>
-                <p className={styles.Nomes}>Email</p>
+                <p className={styles.Nomes}>Email*</p>
                 <input
                   type="email"
                   id="email"
@@ -208,7 +236,7 @@ function EditarPerfilFuncionario() {
                 />
               </div>
               <div className={styles.inputContainer1}>
-                <p className={styles.Nomes}>Nome de Usuário</p>
+                <p className={styles.Nomes}>Nome de Usuário*</p>
                 <input
                   type="text"
                   id="username"
@@ -221,32 +249,38 @@ function EditarPerfilFuncionario() {
                 />
               </div>
             </div>
-            <div className={styles.divisao}>
-              <div className={styles.inputContainer}>
-                <p className={styles.Nomes}>Senha</p>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  tabIndex={0}
-                  placeholder="Digite sua senha"
-                  onChange={handleChangeInput}
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.inputContainer}>
-                <p className={styles.Nomes}>Confirmar Senha</p>
-                <input
-                  type="password"
-                  id="passwordConfirmation"
-                  name="passwordConfirmation"
-                  tabIndex={0}
-                  placeholder="Confirme sua senha"
-                  onChange={handleChangeInput}
-                  className={styles.input}
-                />
-              </div>
+            <div>
+              <input name={'updatePassword'} checked={changePassword} type={'checkbox'} onChange={handleShowPasswordArea}></input>
+              <label htmlFor='updatePassword' className={styles.Nomes}> Alterar Senha</label>
             </div>
+            { changePassword && (
+              <div className={styles.divisao}>
+                <div className={styles.inputContainer}>
+                  <p className={styles.Nomes}>Nova Senha*</p>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    tabIndex={0}
+                    placeholder="Digite sua nova senha"
+                    onChange={handleChangeInput}
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.inputContainer}>
+                  <p className={styles.Nomes}>Confirmar Senha*</p>
+                  <input
+                    type="password"
+                    id="passwordConfirmation"
+                    name="passwordConfirmation"
+                    tabIndex={0}
+                    placeholder="Confirme sua nova senha"
+                    onChange={handleChangeInput}
+                    className={styles.input}
+                  />
+                </div>
+              </div>
+            )}
             { !passwordEquals && (
                 <div>
                   <p className={styles.sinalizadorDadosInvalidos}>As senhas não correspondem!</p>

@@ -10,9 +10,9 @@ class UpdateUserController {
             let usernameParam = req.params.username;
             const {username, password, name, email, isAdmin } = req.body;
             let _isAdmin = isAdmin == undefined ? false : isAdmin;
-
-            if (!(username && password && name && email)) {
-                return res.status(400).json({message: "Nome de usuário, senha, nome e email são campos obrigatórios!"});
+          
+            if (!(username && name && email)) {
+                return res.status(400).json({message: "Nome de usuário, nome e email são campos obrigatórios!"});
             }
 
             // Garantindo que usuário comum só atualiza os próprios dados e que se um parâmetro não for passado então edita os dados do usuário logado
@@ -77,15 +77,18 @@ class UpdateUserController {
             }
 
             // Criptografando a senha (hashed password)
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
+            var hashedPassword: string = '';
+            if (password != undefined) {
+                const salt = await bcrypt.genSalt(10);
+                hashedPassword = await bcrypt.hash(password, salt);
+            }
 
             // Dados do funcionário
             const updatedUser = await database.user.update({
                 where: { id: user.id },
                 data: {
                     username,
-                    password: hashedPassword,
+                    password: password != undefined ? hashedPassword : user.password,
                     isAdmin: _isAdmin
                 }
             });
