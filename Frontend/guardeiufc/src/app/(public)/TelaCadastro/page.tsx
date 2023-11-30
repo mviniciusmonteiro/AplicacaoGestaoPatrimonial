@@ -16,9 +16,10 @@ interface FormData {
   senhaConfirmacao: string;
 }
 
-interface FormPassword {
-  equals: boolean;
+interface ErrorInfo {
+  message: string;
 }
+
 
 function TelaCadastro() {
   const [formData, setFormData] = useState<FormData>({
@@ -94,9 +95,10 @@ function TelaCadastro() {
       let mensagem = JSON.stringify(error.response?.data);
       let mensagemList = mensagem.split('"');
       if (error.response?.status == 400) {
+        const error_info  = error.response?.data as ErrorInfo;
         Swal.fire({
           icon: 'error',
-          text: `${mensagemList[3]+"!"}`
+          text: `${error_info.message}`
         });
       } else {
         Swal.fire({
