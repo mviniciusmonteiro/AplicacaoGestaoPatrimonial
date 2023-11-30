@@ -10,10 +10,10 @@ const blockSizeItemDic : {[key: number]: number}  = {
 	4: 50
 }
 
-export function createTable(title: String, path: String, data: String[][]) {
+export async function createTable(title: String, path: String, data: String[][]) {
 	const margin = 20;
 	const pdfDoc = new PDFDocument({size: 'A4', printing: 'highResolution', copying: true, margin: margin });
-	pdfDoc.pipe(fs.createWriteStream(path));
+	await pdfDoc.pipe(fs.createWriteStream(path));
 
     let startY = pdfDoc.y,
     startX = pdfDoc.x,
