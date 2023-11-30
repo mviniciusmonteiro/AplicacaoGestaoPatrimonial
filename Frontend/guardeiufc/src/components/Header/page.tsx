@@ -5,6 +5,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
+import { getStoredItem } from "@/config/localStorage";
 
 export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -15,7 +16,14 @@ export default function Header() {
   const router = useRouter();
 
   const handleBackToHome = () => {
-    router.push("/Administrador/TelaAdministrador");
+    const userRole = getStoredItem('userRole');
+    if (userRole == null) {
+      router.push("/TelaLogin");
+    } else if (userRole == 'admin') {
+      router.push("/Administrador/TelaAdministrador");
+    } else {
+      router.push("/Usuario/TelaFuncionario");
+    }
   };
 
   return (
