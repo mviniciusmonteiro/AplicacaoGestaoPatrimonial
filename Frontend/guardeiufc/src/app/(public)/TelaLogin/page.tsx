@@ -8,6 +8,7 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import { axios } from '@/config/axios';
 import { AxiosResponse, AxiosError } from 'axios';
+import { setStoredItem } from "@/config/localStorage";
 
 interface FormData {
   nome: string;
@@ -49,6 +50,8 @@ function TelaLogin() {
     axios.post('/login', { username: formData.nome, password: formData.senha })
     .then((response: AxiosResponse) => {
       if (response.status == 200) {
+        // Salva userRole no localStorage
+        setStoredItem('userRole', response.data.isAdmin ? 'admin' : 'common');
         if (response.data.isAdmin) {
           router.push('/Administrador/TelaAdministrador');
         } else {

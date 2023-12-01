@@ -28,14 +28,14 @@ class DownloadPDFReportController {
                 itemStrDataList.push(item.numberOfPatrimony.toString());
                 itemStrDataList.push(item.description);
                 itemStrDataList.push(item.locationId.toString());
-                itemStrDataList.push(item.responsibleRegistration ? item.responsibleRegistration.toString() : '');
-                itemStrDataList.push(item.projectId ? item.projectId.toString() : '');
+                itemStrDataList.push(item.responsibleRegistration ? item.responsibleRegistration.toString() : '-');
+                itemStrDataList.push(item.projectId ? item.projectId.toString() : '-');
                 formatedStrDataList.push(itemStrDataList);
             });
             // Cria o arquivo PDF com tabela
             const filename = 'report ' + moment().format("DD-MM-YYYY HH-mm-ss");
             const path = process.env.UPLOADS_PATH + '/pdf/' + filename + '.pdf';            
-            createTable('GuardeiUFC - Relatório de Itens', path, formatedStrDataList);
+            await createTable('GuardeiUFC - Relatório de Itens', path, formatedStrDataList);
             const file = fs.createReadStream(path);
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', 'attachment: filename="' + filename + '.pdf"');

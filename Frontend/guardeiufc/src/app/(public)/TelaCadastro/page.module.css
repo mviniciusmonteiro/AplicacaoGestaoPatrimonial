@@ -43,9 +43,8 @@
   flex-direction: column;
 }
 
-.sinalizadorSenhasDiferentes {
+.sinalizadorDadosInvalidos {
   color: white;
-  display: none;
 }
 
 .inputContainer1 {
