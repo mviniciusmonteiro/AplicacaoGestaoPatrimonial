@@ -5,23 +5,47 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Loader from "@/components/Loader/page";
 import { FaFilePdf } from "react-icons/fa6";
+import { PiMagnifyingGlassDuotone } from "react-icons/pi";
+import Swal from "sweetalert2";
+import { AxiosError } from "axios";
+import { axios } from '@/config/axios';
+import { useRouter } from "next/navigation";
 
-interface Item {
-  matSolicitante: string;
-  matRespondente: string;
-  descricao: string;
-  motivo: string;
-  data: string;
+interface ReportRequest {
+  requestedBy: string;
+  answeredBy: string;
+  description: string;
+  motiveOfRequest: string;
+  solicitedAt: string;
+  answeredAt: string;
   status: string;
-  motivoIndeferimento: string;
+  motiveOfIndefer: string;
+  filePath: string;
+}
+
+interface Response {
+  filteredReportReq: ReportRequest[];
 }
 
 export default function AcompanharRelatorios() {
+  const router = useRouter();
   const [selectedOption, setSelectedOption] = useState("");
   const [visualizar, setVisualizar] = useState(false);
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [loader, setLoader] = useState(true);
   const [selectedRequestStatus, setSelectedRequestStatus] = useState('');
+  const [newStatus, setNewStatus] = useState('Deferida');
+  const [data, setData] = useState<ReportRequest[]>([{
+    requestedBy: '',
+    answeredBy: '',
+    description: '',
+    motiveOfRequest: '',
+    solicitedAt: '',
+    answeredAt: '',
+    status: '',
+    motiveOfIndefer: '',
+    filePath: ''    
+  }]);
   const handleOptionChange = (value: string) => {
     setSelectedOption(value);
   };
@@ -29,81 +53,14 @@ export default function AcompanharRelatorios() {
   const [formState, setFormState] = useState({
     matricula: "",
     matriculaRespondente: "",
-    nome: "",
     motivoS: "",
     descricaoR: "",
     dataResposta: "",
     motivoI: "",
     status: "",
+    nomeArquivo: ""
   });
 
-  const handleVisualizar = (row: Item) => {
-    // Define o estado do formulário com os dados da linha clicada
-    setFormState({
-      matricula: row.matSolicitante,
-      matriculaRespondente: row.matRespondente,
-      nome: "",
-      motivoS: row.motivo,
-      descricaoR: row.descricao,
-      dataResposta: row.data,
-      motivoI: row.motivoIndeferimento,
-      status: row.status,
-    });
-    setSelectedRequestStatus(row.status);
-    setVisualizar(true);
-  };
-
-  const handleAction = (row: Item) => {
-    //teste para o envio
-    console.log(`Ação realizada para o solicitante ${row.matSolicitante}`);
-    // Abre os contêineres do formulário
-    handleVisualizar(row);
-  };
-
-  //Exemplo de dados para receber
-  const [dados, setDados] = useState<Item[]>([
-    {
-      matSolicitante: "001",
-      matRespondente: "002",
-      descricao: "Relatório 1",
-      motivo: "Motivo 1",
-      data: "01/01/2023",
-      status: "Pendente",
-      motivoIndeferimento: "",
-    },
-    {
-      matSolicitante: "002",
-      matRespondente: "001",
-      descricao: "Relatório 2",
-      motivo: "Motivo 2",
-      data: "02/01/2023",
-      status: "Deferida",
-      motivoIndeferimento: "",
-    },
-    {
-      matSolicitante: "003",
-      matRespondente: "001",
-      descricao: "Relatório 3",
-      motivo: "Motivo 3",
-      data: "03/01/2023",
-      status: "Indeferida",
-      motivoIndeferimento: "Motivo indeferimento 3",
-    },
-  ]);
-
-  const dadosFiltrados =
-    selectedOption === "todas"
-      ? dados
-      : dados.filter((item) => {
-          if (selectedOption === "pendentes") {
-            return item.status.toLowerCase() === "pendente";
-          } else if (selectedOption === "deferidas") {
-            return item.status.toLowerCase() === "deferida";
-          } else if (selectedOption === "indeferidas") {
-            return item.status.toLowerCase() === "indeferida";
-          }
-          return false;
-        });
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -135,8 +92,59 @@ export default function AcompanharRelatorios() {
     setVisualizar(false);
   };
 
+  const formatDate = (date: string) => {
+    var date_ = new Date(date);
+    return ((date_.getDate() )) + "/" + ((date_.getMonth() + 1)) + "/" + date_.getFullYear();
+  }  
+
+  const handleVisualizar = (row: ReportRequest) => {
+    // Define o estado do formulário com os dados da linha clicada
+    setFormState({
+      matricula: row.requestedBy,
+      matriculaRespondente: row.answeredBy,
+      motivoS: row.motiveOfRequest,
+      descricaoR: row.description,
+      dataResposta: formatDate(row.answeredAt),
+      motivoI: row.motiveOfIndefer,
+      status: row.status,
+      nomeArquivo: row.filePath
+    });
+    setSelectedRequestStatus(row.status);
+    setSelectedRequestStatus(row.status);
+    setVisualizar(true);
+  }
+
+  const handleGetReportByStatus = (status: string) => {
+    setSelectedOption(status);
+    setVisualizar(false);
+
+    axios.get<Response>(`/report-request/${status}`)
+    .then(response => {
+      if (response.status == 200) {
+        setData(response.data.filteredReportReq);
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para visualizar as solicitações de relatórios!'
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {      
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar buscar as solicitações. Por favor, tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    });
+  }
+
   useEffect(() => {
-    alert('Enviar requisição GET para obter TODAS as solicitações de relatório');
+    handleGetReportByStatus('Todas');
     setLoader(false);
   }, []);
 
@@ -159,36 +167,36 @@ export default function AcompanharRelatorios() {
               <label>
                 <input
                   type="radio"
-                  value="pendentes"
-                  checked={selectedOption === "pendentes"}
-                  onChange={() => handleOptionChange("pendentes")}
+                  value="Pendente"
+                  checked={selectedOption == 'Pendente'}
+                  onChange={() => handleGetReportByStatus('Pendente')}
                 />
                 Pendentes
               </label>
               <label>
                 <input
                   type="radio"
-                  value="deferidas"
-                  checked={selectedOption === "deferidas"}
-                  onChange={() => handleOptionChange("deferidas")}
+                  value="Deferida"
+                  checked={selectedOption == 'Deferida'}
+                  onChange={() => handleGetReportByStatus('Deferida')}
                 />
                 Deferidas
               </label>
               <label>
                 <input
                   type="radio"
-                  value="indeferidas"
-                  checked={selectedOption === "indeferidas"}
-                  onChange={() => handleOptionChange("indeferidas")}
+                  value="Indeferida"
+                  checked={selectedOption == "Indeferida"}
+                  onChange={() => handleGetReportByStatus('Indeferida')}
                 />
                 Indeferidas
               </label>
               <label>
                 <input
                   type="radio"
-                  value="todas"
-                  checked={selectedOption === "todas"}
-                  onChange={() => handleOptionChange("todas")}
+                  value="Todas"
+                  checked={selectedOption == 'Todas'}
+                  onChange={() => handleGetReportByStatus('Todas')}
                 />
                 Todas
               </label>
@@ -203,23 +211,23 @@ export default function AcompanharRelatorios() {
                       <th>Motivo da Solicitação</th>
                       <th>Data Solicitação</th>
                       <th>Status</th>
-                      <th>Motivo indeferimento</th>
+                      <th>Motivo Indeferimento</th>
                       <th>Acão</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {dadosFiltrados.map((row, index) => (
+                    {data.map((row, index) => (
                       <tr key={index}>
-                        <td>{row.matSolicitante}</td>
-                        <td>{row.descricao}</td>
-                        <td>{row.motivo}</td>
-                        <td>{row.data}</td>
+                        <td>{row.requestedBy}</td>
+                        <td>{row.description}</td>
+                        <td>{row.motiveOfRequest}</td>
+                        <td>{formatDate(row.solicitedAt)}</td>
                         <td>{row.status}</td>
-                        <td>{row.motivoIndeferimento}</td>
+                        <td>{row.motiveOfIndefer}</td>
                         <td>
-                          <button onClick={() => handleAction(row)}>
-                            Visualizar
-                          </button>
+                        <div className={styles.areaVisualizar}>
+                          <PiMagnifyingGlassDuotone className={styles.lupa} onClick={() => handleVisualizar(row)}/>
+                        </div>
                         </td>
                       </tr>
                     ))}
@@ -313,32 +321,28 @@ export default function AcompanharRelatorios() {
               </div>
             )} {/*FECHAMENTO DO CONTAINER DE VISUALIZAÇÃO /*}
             {/* ÁREA DE RESPOSTA: Mostra os campos de resposta à solicitação pendente */}
-            { selectedRequestStatus == 'Pendente' && (
+            { visualizar && selectedRequestStatus == 'Pendente' && (
               <>
                 <div className={styles.containerSecundario}>
                   <div className={styles.divisao}>
                     <div>
                       <p className={styles.Nomes}>Status</p>
                       <div className={styles.radioGroup}>
-                        <label>
+                        <label className={styles.Nomes}>
                           <input
                             type="radio"
-                            value="solicitacaodeferida"
-                            checked={selectedOption === "solicitacaodeferida"}
-                            onChange={() =>
-                              handleOptionChange("solicitacaodeferida")
-                            }
+                            value="solicitacaoDeferida"
+                            checked={newStatus === "Deferida"}
+                            onChange={() => setNewStatus('Deferida')}
                           />
                           Deferida
                         </label>
-                        <label>
+                        <label className={styles.Nomes}>
                           <input
                             type="radio"
-                            value="solicitacaoindeferida"
-                            checked={selectedOption === "solicitacaoindeferida"}
-                            onChange={() =>
-                              handleOptionChange("solicitacaoindeferida")
-                            }
+                            value="solicitacaoIndeferida"
+                            checked={newStatus === "Indeferida"}
+                            onChange={() => setNewStatus('Indeferida')}
                           />
                           Indeferida
                         </label>
@@ -346,20 +350,21 @@ export default function AcompanharRelatorios() {
                     </div>
                     <div>
                       {/* Condicionalmente renderizar o input de arquivo */}
-                      {selectedOption === "solicitacaodeferida" && (
+                      {newStatus === "Deferida" && (
                         <>
                           <p className={styles.Nomes}>Anexar relatório</p>
                           <input type="file" onChange={handleFileChange}></input>
                         </>
                       )}
-                      {selectedOption === "solicitacaoindeferida" && (
+                      {newStatus === "Indeferida" && (
                         <>
-                          <p className={styles.Nomes}>Motivo do indeferimento</p>
+                          <p className={styles.Nomes}>Motivo do Indeferimento</p>
                           <textarea
                             id="indeferimento"
                             name="motivoI"
-                            className={styles.textareaEstilizado}
+                            className={styles.textarea}
                             value={formState.motivoI}
+                            placeholder="Informe o motivo da solicitação estar sendo indeferida"
                             onChange={handleTextareaChange}
                             ></textarea>
                         </>
