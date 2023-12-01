@@ -1,26 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Select from "react-select";
+import Swal from "sweetalert2";
+import { axios } from "@/config/axios";
+import { AxiosResponse, AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+
+interface FormData {
+  bloco: string;
+  sala: string;
+}
+interface Local {
+  id: number;
+  departmentBuilding: string;
+  room: string;
+}
 
 function EditarLocal() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
-  const [departamento, setDepartamento] = useState("");
-  const [sala, setSala] = useState("");
-  const [selectedLocal, setSelectedLocal] = useState<{
-    label: string;
-    value: number;
-    bloco: string;
-    sala: string;
-  } | null>(null);
+  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    bloco: "",
+    sala: "",
+  });
+  const router = useRouter();
 
-  const [searchValue, setSearchValue] = useState("");
-  const [isSearchable, setIsSearchable] = useState(false);
-
-  const [localizacoes, setLocalizacoes] = useState([
-    { id: 1, bloco: "Bloco 1", sala: "Sala 1" },
-    { id: 2, bloco: "Bloco 2", sala: "Sala 2" },
+  const [localizacoes, setLocalizacoes] = useState<Local[]>([
+    { id: 1, departmentBuilding: "", room: "" },
   ]);
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
@@ -30,12 +38,214 @@ function EditarLocal() {
     }
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Lógica para lidar com a mudança nos campos de entrada
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const validateData = (bloco: String, sala: String) => {
+    if (bloco == "" || sala == "") {
+      return false;
+    }
+    return true;
+  };
+
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
   const telaEdicaoClicada = () => {
     if (!showCreate) {
       setShowEditDelete(!showEditDelete);
     }
   };
+
+  const limparCampos = () => {
+    setFormData({
+      bloco: "",
+      sala: "",
+    });
+    setSelectedLocal(null);
+  };
+
+  const cadastrarLocal = () => {
+    const dataIsValid = validateData(formData.bloco, formData.sala);
+    if (!dataIsValid) {
+      Swal.fire({
+        icon: "warning",
+        text: "Informe o bloco e a sala para cadastrar um local!",
+      });
+      return;
+    }
+
+    axios
+      .post("/local", {
+        departmentBuilding: formData.bloco,
+        room: formData.sala,
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 201) {
+          Swal.fire({
+            icon: "info",
+            text: "Local cadastrado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        let mensagem = JSON.stringify(error.response?.data);
+        let mensagemList = mensagem.split('"');
+        if (error.response?.status == 400) {
+          Swal.fire({
+            icon: "error",
+            text: `${mensagemList[3] + "!"}`,
+          });
+        }
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar local!",
+          }).then(() => {
+            limparCampos();
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar cadastrar local.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  //Edicao do Local
+  const editarLocal = () => {
+    if (!selectedLocal){
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um local para editar!",
+      });
+      return;
+    }
+  const localId = selectedLocal?.id;
+    axios
+      .put(`/local/${localId}`, {
+        departmentBuilding: selectedLocal?.departmentBuilding,
+        room: selectedLocal?.room,
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Local atualizado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        let mensagem = JSON.stringify(error.response?.data);
+        let mensagemList = mensagem.split('"');
+        if (error.response?.status == 400) {
+          Swal.fire({
+            icon: "error",
+            text: `${mensagemList[3] + "!"}`,
+          });
+        }
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar local!",
+          }).then(() => {
+            limparCampos();
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar editar local.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  const excluirLocal = () =>{
+    if (!selectedLocal){
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um local para excluir!",
+      });
+      return;
+    }
+  const localId = selectedLocal?.id;
+  axios
+      .delete(`/local/${localId}`)
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Local excluído com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar local!",
+          }).then(() => {
+            limparCampos();
+            router.push("/TelaLogin");
+          });
+        }
+        let mensagem = JSON.stringify(error.response?.data);
+        let mensagemList = mensagem.split('"');
+        if (error.response?.status == 404) {
+          Swal.fire({
+            icon: "error",
+            text: `${mensagemList[3] + "!"}`,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar editar local.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    // Obtendo todos os locais
+    axios
+      .get("/local")
+      .then((response) => {
+        if (response.status == 200) {
+          setLocalizacoes(response.data.locations);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar localizações!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  }, [showCreate, showEditDelete, selectedLocal]);
 
   return (
     <div>
@@ -68,10 +278,12 @@ function EditarLocal() {
                 <p className={styles.Nomes}>Bloco</p>
                 <input
                   type="text"
-                  id="departamento"
-                  name="departamento"
+                  id="bloco"
+                  name="bloco"
+                  value={formData.bloco}
                   placeholder="Digite o bloco do local (Ex: Bloco - 910)"
                   className={styles.input}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className={styles.divisao}>
@@ -81,14 +293,16 @@ function EditarLocal() {
                     type="text"
                     id="sala"
                     name="sala"
+                    value={formData.sala}
                     placeholder="Digite a sala do local"
                     className={styles.input}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
             </div>
-            <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Salvar Alterações</p>
+            <div className={styles.botoesInferiores} onClick={cadastrarLocal}>
+              <p className={styles.estiloBotao}>Criar Local</p>
             </div>
           </div>
         )}
@@ -100,22 +314,16 @@ function EditarLocal() {
                   <p className={styles.Nomes}>Selecione um local</p>
                   <Select
                     value={selectedLocal}
-                    onChange={(selectedOption) => {
-                      setSelectedLocal(selectedOption);
-                      setDepartamento(selectedOption?.bloco || "");
-                      setSala(selectedOption?.sala || "");
-                    }}
-                    options={
-                      searchValue.length > 0
-                        ? localizacoes.map((localizacao) => ({
-                            label: `${localizacao.bloco} - ${localizacao.sala}`,
-                            value: localizacao.id,
-                            bloco: localizacao.bloco,
-                            sala: localizacao.sala,
-                          }))
-                        : []
+                    onChange={(selectedOption) =>
+                      setSelectedLocal(selectedOption as Local)
                     }
-                    onInputChange={(newValue) => setSearchValue(newValue)}
+                    options={localizacoes.map((localizacao) => ({
+                      label: `${localizacao.departmentBuilding} - ${localizacao.room}`,
+                      value: localizacao.id,
+                      departmentBuilding: localizacao.departmentBuilding,
+                      room: localizacao.room,
+                      id: localizacao.id,
+                    }))}
                     isSearchable
                     placeholder="Digite ou selecione um local"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
@@ -125,14 +333,21 @@ function EditarLocal() {
             </div>
             <div className={styles.containerPrincipal}>
               <div className={styles.inputContainer}>
-                <p className={styles.Nomes}>Departamento</p>
+                <p className={styles.Nomes}>Bloco</p>
                 <input
                   type="text"
                   id="departamentoEdicao"
                   name="departamentoEdicao"
                   placeholder="Departamento"
-                  value={departamento}
-                  onChange={(e) => setDepartamento(e.target.value)}
+                  value={selectedLocal?.departmentBuilding || ""}
+                  onChange={(e) =>
+                    setSelectedLocal((prev) => ({
+                      ...prev,
+                      departmentBuilding: e.target.value,
+                      id: prev?.id || 0,
+                      room: prev?.room || '',
+                    }))
+                  }
                   className={styles.input}
                 />
               </div>
@@ -144,16 +359,23 @@ function EditarLocal() {
                     id="salaEdicao"
                     name="salaEdicao"
                     placeholder="Sala"
-                    value={sala}
-                    onChange={(e) => setSala(e.target.value)}
+                    value={selectedLocal?.room || ""}
+                    onChange={(e) =>
+                      setSelectedLocal((prev) => ({
+                        ...prev,
+                        departmentBuilding: prev?.departmentBuilding || '',
+                        id: prev?.id || 0,
+                        room: e.target.value,
+                      }))
+                    }
                     className={styles.input}
                   />
                 </div>
               </div>
             </div>
             <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Salvar Alterações</p>
-              <p className={styles.estiloBotaoExcluir}>Excluir Local</p>
+              <p className={styles.estiloBotao} onClick={editarLocal}>Salvar Alterações</p>
+              <p className={styles.estiloBotaoExcluir} onClick = {excluirLocal}>Excluir Local</p>
             </div>
           </div>
         )}

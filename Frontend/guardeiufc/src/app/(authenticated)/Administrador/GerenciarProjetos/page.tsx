@@ -2,6 +2,10 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Select from "react-select";
+import { axios } from "@/config/axios";
+import { AxiosResponse, AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 interface ProjetoSelecionado {
   nomeProjeto: string;
@@ -9,37 +13,35 @@ interface ProjetoSelecionado {
   idResponsavel: number;
 }
 interface Responsavel {
-  matricula: number;
-  nome: string;
+  registration: number;
+  name: string;
+  email: string;
 }
 
 interface Projeto {
-  id: number;
-  nome: string;
-  idResponsavel: number;
+  name: string;
+  coordinatorRegistration: number;
 }
 
 function EditarProjetos() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
-  const [responsavel, setResponsavel] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isSearchable, setIsSearchable] = useState(false);
+  const [oldProjectName, setOldProjectName] = useState<string>("");
+  const router = useRouter();
+  const [formData, setFormData] = useState<Projeto>({
+    name: "",
+    coordinatorRegistration: 0,
+  });
 
-  const [selectedResponsavel, setSelectedResponsavel] = useState<{
-    label: string;
-    value: number;
-    matresponsavel: number;
-    nomeResponsavel: string;
-  } | null>(null);
+  const [selectedResponsavel, setSelectedResponsavel] =
+    useState<Responsavel | null>(null);
 
-  const [selectedProjeto, setSelectedProjeto] = useState<{
-    label: string;
-    value: number;
-    nomeProjeto: string;
-    idProjeto: number;
-    idResponsavel: number;
-  } | null>(null);
+  const [selectedProjeto, setSelectedProjeto] = useState<Projeto>({
+    name: "",
+    coordinatorRegistration: 0,
+  });
 
   const [projetoSelecionado, setProjetoSelecionado] =
     useState<ProjetoSelecionado>({
@@ -48,31 +50,33 @@ function EditarProjetos() {
       idResponsavel: 0,
     });
 
-  const [responsaveis, setResponsaveis] = useState([
-    { matricula: 123, nome: "João da Silva" },
-    { matricula: 456, nome: "Maria Oliveira" },
+  const [responsaveis, setResponsaveis] = useState<Responsavel[]>([
+    {
+      registration: 1,
+      name: "",
+      email: "",
+    },
   ]);
-  // Atualiza o estado inicial de selectedResponsavel ao carregar
-  useEffect(() => {
-    if (projetoSelecionado && projetoSelecionado.idResponsavel) {
-      const responsavelSelecionado = responsaveis.find(
-        (r) => r.matricula === projetoSelecionado.idResponsavel
-      );
-      if (responsavelSelecionado) {
-        setSelectedResponsavel({
-          label: `${responsavelSelecionado.matricula} - ${responsavelSelecionado.nome}`,
-          value: responsavelSelecionado.matricula,
-          nomeResponsavel: responsavelSelecionado.nome,
-          matresponsavel: responsavelSelecionado.matricula,
-        });
-      }
-    }
-  }, [projetoSelecionado]);
+  const [projetos, setProjetos] = useState<Projeto[]>([
+    { name: "", coordinatorRegistration: 1 },
+  ]);
 
-  const [projetos, setProjetos] = useState([
-    { id: 1, nome: "Projeto A", idResponsavel: 123 },
-    { id: 2, nome: "Projeto B", idResponsavel: 456 },
-  ]);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Lógica para lidar com a mudança nos campos de entrada
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const limparCampos = () => {
+    setFormData({
+      name: "",
+      coordinatorRegistration: 0,
+    });
+    setSelectedResponsavel(null);
+  };
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
   const telaCriacaoClicada = () => {
@@ -87,6 +91,188 @@ function EditarProjetos() {
       setShowEditDelete(!showEditDelete);
     }
   };
+
+  const validateData = (name: String, cooordinationRegistration: number) => {
+    if (name == "" || cooordinationRegistration == 0) {
+      return false;
+    }
+    return true;
+  };
+
+  const cadastrarProjeto = () => {
+    const dataIsValid = validateData(
+      formData.name,
+      selectedResponsavel ? selectedResponsavel.registration : 0
+    );
+    if (!dataIsValid) {
+      Swal.fire({
+        icon: "warning",
+        text: "Informe o nome e o responsavel para cadastrar um projeto!",
+      });
+      return;
+    }
+    const idResponsavel = selectedResponsavel?.registration;
+    axios
+      .post("/project", {
+        name: formData.name,
+        coordinatorRegistration: idResponsavel,
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 201) {
+          Swal.fire({
+            icon: "info",
+            text: "Projeto cadastrado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 400) {
+          Swal.fire({
+            icon: "error",
+            text: "Já existe projeto com mesmo nome",
+          });
+        }
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar projeto!",
+          }).then(() => {
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar cadastrar projeto.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  //Editar Projeto
+  const editarProjeto = () => {
+    if (!selectedProjeto) {
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um projeto para editar!",
+      });
+      return;
+    }
+    console.log(oldProjectName);
+    axios
+      .put(`/project/${oldProjectName}`, {
+        name: selectedProjeto?.name,
+        coordinatorRegistration: selectedProjeto?.coordinatorRegistration,
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 201) {
+          Swal.fire({
+            icon: "info",
+            text: "Projeto editado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 400) {
+          Swal.fire({
+            icon: "error",
+            text: "Já existe projeto com mesmo nome",
+          });
+        }
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para editar projeto!",
+          }).then(() => {
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar editar projeto.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    // Obtendo todos os locais
+    axios
+      .get("/employee")
+      .then((response) => {
+        if (response.status == 200) {
+          setResponsaveis(response.data.employees);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar a tela!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+    axios
+      .get("/project")
+      .then((response) => {
+        if (response.status == 200) {
+          setProjetos(response.data.projects);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para gerar relatório de itens!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  }, [showCreate, selectedResponsavel]);
+
+  useEffect(() => {
+    if (selectedProjeto && selectedProjeto.coordinatorRegistration) {
+      const responsavelSelecionado = responsaveis.find(
+        (r) => r.registration === selectedProjeto.coordinatorRegistration
+      );
+      if (responsavelSelecionado) {
+        const responsavelData = {
+          label: `${responsavelSelecionado.registration} - ${responsavelSelecionado.name}`,
+          value: responsavelSelecionado.registration,
+          name: responsavelSelecionado.name,
+          registration: responsavelSelecionado.registration,
+          email: responsavelSelecionado.email,
+        };
+        setSelectedResponsavel(responsavelData);
+      }
+    }
+    if (selectedProjeto) {
+      // Armazene o nome do projeto atualmente selecionado como antigo
+      setOldProjectName(selectedProjeto.name || "");
+    }
+  }, [selectedProjeto]);
 
   return (
     <div>
@@ -120,9 +306,11 @@ function EditarProjetos() {
                 <input
                   type="text"
                   id="projeto"
-                  name="projeto"
+                  name="name"
+                  value={formData.name}
                   placeholder="Digite o nome do projeto"
                   className={styles.input}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className={styles.divisao}>
@@ -130,21 +318,20 @@ function EditarProjetos() {
                   <p className={styles.Nomes}>Responsável</p>
                   <Select
                     value={selectedResponsavel}
-                    onChange={(selectedOption) => {
-                      setSelectedResponsavel(selectedOption);
-                      setResponsavel(String(selectedOption?.value || ""));
-                    }}
+                    onChange={(selectedOption) =>
+                      setSelectedResponsavel(selectedOption as Responsavel)
+                    }
                     options={
-                      searchValue.length > 0
+                      responsaveis
                         ? responsaveis.map((responsavel) => ({
-                            label: `${responsavel.matricula} - ${responsavel.nome}`,
-                            value: responsavel.matricula,
-                            nomeResponsavel: responsavel.nome,
-                            matresponsavel: responsavel.matricula,
+                            label: `${responsavel.registration} - ${responsavel.name}`,
+                            value: responsavel.registration,
+                            name: responsavel.name,
+                            registration: responsavel.registration,
+                            email: responsavel.email,
                           }))
                         : []
                     }
-                    onInputChange={(newValue) => setSearchValue(newValue)}
                     isSearchable
                     placeholder="Selecione um responsável"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
@@ -153,10 +340,13 @@ function EditarProjetos() {
               </div>
             </div>
             <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Criar Projeto</p>
+              <p className={styles.estiloBotao} onClick={cadastrarProjeto}>
+                Criar Projeto
+              </p>
             </div>
           </div>
         )}
+
         {showEditDelete && (
           <div className={styles.conteudo}>
             <div className={styles.containerBuscar}>
@@ -166,19 +356,13 @@ function EditarProjetos() {
                   <Select
                     value={selectedProjeto}
                     onChange={(selectedOption) => {
-                      setSelectedProjeto(selectedOption);
-                      setProjetoSelecionado({
-                        nomeProjeto: selectedOption?.nomeProjeto || "",
-                        idProjeto: selectedOption?.idProjeto || 0,
-                        idResponsavel: selectedOption?.idResponsavel || 0,
-                      });
+                      setSelectedProjeto(selectedOption as Projeto);
                     }}
                     options={projetos.map((projeto) => ({
-                      label: `${projeto.nome} - ID: ${projeto.id}`,
-                      value: projeto.id,
-                      nomeProjeto: projeto.nome,
-                      idProjeto: projeto.id,
-                      idResponsavel: projeto.idResponsavel,
+                      label: `${projeto.name}`,
+                      value: projeto,
+                      name: projeto.name,
+                      coordinatorRegistration: projeto.coordinatorRegistration,
                     }))}
                     placeholder="Selecione um projeto"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
@@ -194,11 +378,13 @@ function EditarProjetos() {
                   id="nomeProjeto"
                   name="nomeProjeto"
                   placeholder="Nome do projeto"
-                  value={projetoSelecionado?.nomeProjeto || ""}
+                  value={selectedProjeto.name || ""}
                   onChange={(e) =>
-                    setProjetoSelecionado((prev) => ({
+                    setSelectedProjeto((prev) => ({
                       ...prev,
-                      nomeProjeto: e.target.value,
+                      name: e.target.value,
+                      coordinatorRegistration:
+                        prev?.coordinatorRegistration || 0,
                     }))
                   }
                   className={styles.input}
@@ -209,19 +395,17 @@ function EditarProjetos() {
                   <p className={styles.Nomes}>Selecione um responsável</p>
                   <Select
                     value={selectedResponsavel}
-                    onChange={(selectedOption) => {
-                      setSelectedResponsavel(selectedOption);
-                      setProjetoSelecionado((prev) => ({
-                        ...prev,
-                        idResponsavel: selectedOption?.value || 0,
-                      }));
-                    }}
+                    onChange={(selectedOption) =>
+                      setSelectedResponsavel(selectedOption as Responsavel)
+                    }
                     options={responsaveis.map((responsavel) => ({
-                      label: `${responsavel.matricula} - ${responsavel.nome}`,
-                      value: responsavel.matricula,
-                      nomeResponsavel: responsavel.nome,
-                      matresponsavel: responsavel.matricula,
+                      label: `${responsavel.registration} - ${responsavel.name}`,
+                      value: responsavel.registration,
+                      name: responsavel.name,
+                      registration: responsavel.registration,
+                      email: responsavel.email,
                     }))}
+                    isSearchable
                     placeholder="Selecione um responsável"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
                   />
@@ -229,7 +413,9 @@ function EditarProjetos() {
               </div>
             </div>
             <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Salvar Alterações</p>
+              <p className={styles.estiloBotao} onClick={editarProjeto}>
+                Salvar Alterações
+              </p>
               <p className={styles.estiloBotaoExcluir}>Excluir Projeto</p>
             </div>
           </div>
