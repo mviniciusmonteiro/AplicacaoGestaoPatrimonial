@@ -245,7 +245,7 @@ export default function AcompanharRelatorios() {
             router.push('/TelaLogin');
           }
         });
-      } else {      
+      } else {
         Swal.fire({
           icon: 'error',
           text: `Ocorreu um erro ao tentar buscar as solicitações. Por favor, tente novamente!\nCódigo do erro: ${error.response?.status}`

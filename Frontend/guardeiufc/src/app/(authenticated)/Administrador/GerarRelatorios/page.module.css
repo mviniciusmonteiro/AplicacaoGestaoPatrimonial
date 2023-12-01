@@ -186,6 +186,14 @@
   height: 100%;
 }
 
+.sinalizadorCampoNumInvalido {
+  color: white;
+}
+
+.notFound {
+  color: red;
+}
+
 @media (max-width: 780px) {
   .divisao {
     flex-direction: column;

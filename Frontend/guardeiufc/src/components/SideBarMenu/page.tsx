@@ -82,9 +82,9 @@ const SidebarMenu = () => {
               do patrimônio
             </li>
             <li
-              onClick={() => router.push("/Administrador/GerenciarRelatorios")}
+              onClick={() => router.push("/Administrador/GerarRelatorios")}
             >
-              <TbReportSearch className={styles.iconsMenu} /> Gerenciar
+              <TbReportSearch className={styles.iconsMenu} /> Gerar
               relatórios de itens
             </li>
             <li
