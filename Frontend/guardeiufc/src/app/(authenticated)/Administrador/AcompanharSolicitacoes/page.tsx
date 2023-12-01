@@ -7,9 +7,10 @@ import Loader from "@/components/Loader/page";
 import { FaFilePdf } from "react-icons/fa6";
 import { PiMagnifyingGlassDuotone } from "react-icons/pi";
 import Swal from "sweetalert2";
-import { AxiosError } from "axios";
 import { axios } from '@/config/axios';
+import { AxiosResponse, AxiosError} from 'axios';
 import { useRouter } from "next/navigation";
+import fileDownload from 'js-file-download'
 
 interface ReportRequest {
   requestedBy: string;
@@ -91,6 +92,35 @@ export default function AcompanharRelatorios() {
     // Limpar o formulário
     setVisualizar(false);
   };
+
+  const handleDownloadPDFReport = () => {
+    const fileNameDownload = formState.nomeArquivo;
+
+    axios.get(`/download-anexed-pdf/${fileNameDownload}`, { responseType: 'blob'})
+    .then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        fileDownload(response.data, fileNameDownload);
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para baixar um relatório anexado a uma solicitação!'
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar baixar o relatório anexado. Por favor, tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);        
+    })    
+
+  }
 
   const formatDate = (date: string) => {
     var date_ = new Date(date);
@@ -314,8 +344,8 @@ export default function AcompanharRelatorios() {
                 {/* ÁREA DE DEFERIMENTO: Mostra botão para baixar relatório anexado à solicitação */}
                 { selectedRequestStatus == 'Deferida' && (
                     <div className={styles.areaDeferimento}>
-                      <FaFilePdf className={styles.downloadIcon} onClick={() => alert('handleDownloadPDFReport')}/>
-                      <p onClick={() => alert('handleDownloadPDFReport')}> Baixar relatório</p>
+                      <FaFilePdf className={styles.downloadIcon} onClick={handleDownloadPDFReport}/>
+                      <p onClick={handleDownloadPDFReport}> Baixar relatório</p>
                     </div>
                 )}
               </div>
