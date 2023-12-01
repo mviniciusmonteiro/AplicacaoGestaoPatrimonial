@@ -28,28 +28,18 @@ function EditarProjetos() {
   const [showEditDelete, setShowEditDelete] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isSearchable, setIsSearchable] = useState(false);
-  const [oldProjectName, setOldProjectName] = useState<string>("");
+  const [editedProjectName, setEditedProjectName] = useState<string>("");
   const router = useRouter();
   const [formData, setFormData] = useState<Projeto>({
     name: "",
     coordinatorRegistration: 0,
   });
-
   const [selectedResponsavel, setSelectedResponsavel] =
     useState<Responsavel | null>(null);
-
   const [selectedProjeto, setSelectedProjeto] = useState<Projeto>({
     name: "",
     coordinatorRegistration: 0,
   });
-
-  const [projetoSelecionado, setProjetoSelecionado] =
-    useState<ProjetoSelecionado>({
-      nomeProjeto: "",
-      idProjeto: 0,
-      idResponsavel: 0,
-    });
-
   const [responsaveis, setResponsaveis] = useState<Responsavel[]>([
     {
       registration: 1,
@@ -69,29 +59,29 @@ function EditarProjetos() {
       [name]: value,
     }));
   };
-
   const limparCampos = () => {
     setFormData({
       name: "",
       coordinatorRegistration: 0,
     });
     setSelectedResponsavel(null);
+    setSelectedProjeto({
+      name: "",
+      coordinatorRegistration: 0,
+    });
   };
-
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
   const telaCriacaoClicada = () => {
     if (!showEditDelete) {
       setShowCreate(!showCreate);
     }
   };
-
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
   const telaEdicaoClicada = () => {
     if (!showCreate) {
       setShowEditDelete(!showEditDelete);
     }
   };
-
   const validateData = (name: String, cooordinationRegistration: number) => {
     if (name == "" || cooordinationRegistration == 0) {
       return false;
@@ -133,7 +123,7 @@ function EditarProjetos() {
             text: "Já existe projeto com mesmo nome",
           });
         }
-        if (error.response?.status == 403) {
+        else if (error.response?.status == 403) {
           Swal.fire({
             icon: "error",
             text: "Faça login para cadastrar projeto!",
@@ -152,18 +142,18 @@ function EditarProjetos() {
 
   //Editar Projeto
   const editarProjeto = () => {
-    if (!selectedProjeto) {
+    if (!selectedProjeto || !selectedResponsavel || !editedProjectName.trim()) {
       Swal.fire({
         icon: "warning",
-        text: "Selecione um projeto para editar!",
+        text: "Forneça as informações necessárias!",
       });
       return;
     }
-    console.log(oldProjectName);
+    const nomeProj = selectedProjeto?.name;
     axios
-      .put(`/project/${oldProjectName}`, {
-        name: selectedProjeto?.name,
-        coordinatorRegistration: selectedProjeto?.coordinatorRegistration,
+      .put(`/project/${nomeProj}`, {
+        name: editedProjectName,
+        coordinatorRegistration: selectedResponsavel?.registration,
       })
       .then((response: AxiosResponse) => {
         if (response.status == 201) {
@@ -178,7 +168,7 @@ function EditarProjetos() {
         if (error.response?.status == 400) {
           Swal.fire({
             icon: "error",
-            text: "Já existe projeto com mesmo nome",
+            text: "Já existe projeto com mesmo nome!",
           });
         }
         if (error.response?.status == 403) {
@@ -198,8 +188,52 @@ function EditarProjetos() {
       });
   };
 
+  const excluirProjeto = () => {
+    if (!selectedProjeto || !selectedResponsavel || !editedProjectName.trim()) {
+      Swal.fire({
+        icon: "warning",
+        text: "Forneça as informações necessárias!",
+      });
+      return;
+    }
+    const nomeProj = selectedProjeto?.name;
+    axios
+      .delete(`/project/${nomeProj}`, {
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Projeto excluido com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 404) {
+          Swal.fire({
+            icon: "error",
+            text: "O nome do projeto é obrigatório!",
+          });
+        }
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para editar projeto!",
+          }).then(() => {
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar excluir projeto.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
-    // Obtendo todos os locais
     axios
       .get("/employee")
       .then((response) => {
@@ -269,8 +303,7 @@ function EditarProjetos() {
       }
     }
     if (selectedProjeto) {
-      // Armazene o nome do projeto atualmente selecionado como antigo
-      setOldProjectName(selectedProjeto.name || "");
+      setEditedProjectName(selectedProjeto.name || "");
     }
   }, [selectedProjeto]);
 
@@ -360,10 +393,11 @@ function EditarProjetos() {
                     }}
                     options={projetos.map((projeto) => ({
                       label: `${projeto.name}`,
-                      value: projeto,
+                      value: projeto.name,
                       name: projeto.name,
                       coordinatorRegistration: projeto.coordinatorRegistration,
                     }))}
+                    isSearchable
                     placeholder="Selecione um projeto"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
                   />
@@ -378,15 +412,8 @@ function EditarProjetos() {
                   id="nomeProjeto"
                   name="nomeProjeto"
                   placeholder="Nome do projeto"
-                  value={selectedProjeto.name || ""}
-                  onChange={(e) =>
-                    setSelectedProjeto((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                      coordinatorRegistration:
-                        prev?.coordinatorRegistration || 0,
-                    }))
-                  }
+                  value={editedProjectName}
+                  onChange={(e) => setEditedProjectName(e.target.value)}
                   className={styles.input}
                 />
               </div>
@@ -395,6 +422,7 @@ function EditarProjetos() {
                   <p className={styles.Nomes}>Selecione um responsável</p>
                   <Select
                     value={selectedResponsavel}
+                    
                     onChange={(selectedOption) =>
                       setSelectedResponsavel(selectedOption as Responsavel)
                     }
@@ -416,7 +444,7 @@ function EditarProjetos() {
               <p className={styles.estiloBotao} onClick={editarProjeto}>
                 Salvar Alterações
               </p>
-              <p className={styles.estiloBotaoExcluir}>Excluir Projeto</p>
+              <p className={styles.estiloBotaoExcluir} onClick = {excluirProjeto}>Excluir Projeto</p>
             </div>
           </div>
         )}
