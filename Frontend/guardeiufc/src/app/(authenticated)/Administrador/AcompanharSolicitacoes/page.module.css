@@ -73,7 +73,7 @@
 }
 
 .inputContainer1 {
-  margin-right: 5%;
+  margin-right: 50%;
   flex: 1;
   flex-direction: column;
 }
@@ -81,6 +81,17 @@
 .Nomes {
   margin-bottom: 5px;
   color: white;
+}
+
+.verticalContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.horizontalContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 5%;
 }
 
 /* Estilo para inputs padrão */
@@ -108,11 +119,30 @@
   border-color: #555;
 }
 
+.areaDeferimento {
+  cursor: pointer;
+}
+
+.areaDeferimento > p {
+  display: inline;
+  color: white;
+  cursor: pointer;
+}
+
 .botoesInferiores {
   justify-content: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.lupa {
+  cursor: pointer;
+}
+
+.downloadIcon {
+  color: white;
+  cursor: pointer;
 }
 
 .estiloBotao {
