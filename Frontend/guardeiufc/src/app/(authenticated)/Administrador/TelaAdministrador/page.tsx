@@ -20,8 +20,8 @@ function TelaAdministrador() {
             </div>
             <div className={styles.containerVazio}>
               <p className={styles.textoContainer}>
-                Explore o GuardeiUFC, para acessar todas as funcionalidades do
-                nosso sistema de controle patrimonial.
+                Explore o GuardeiUFC para acessar todas as funcionalidades do
+                sistema de controle patrimonial.
               </p>
             </div>
           </div>
