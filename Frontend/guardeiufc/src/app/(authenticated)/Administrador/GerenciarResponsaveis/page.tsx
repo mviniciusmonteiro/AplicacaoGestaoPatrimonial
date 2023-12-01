@@ -1,50 +1,47 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Select from "react-select";
+import { axios } from "@/config/axios";
+import { AxiosResponse, AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
-function EditarLocal() {
+interface Responsavel {
+  registration: number;
+  name: string;
+  email: string;
+}
+
+interface FormData{
+  registration: number;
+  name: string;
+  email: string;
+}
+interface ErrorInfo {
+  message: string;
+}
+
+function EditarResponsavel() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [responsavelSelecionado, setResponsavelSelecionado] =
-    useState<boolean>(false);
-  const [selectedFuncionario, setSelectedFuncionario] = useState<{
-    label: string;
-    value: number;
-    nome: string;
-    id: number;
-    email: string;
-  } | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    registration: 0,
+    email:''
+  });
+  const router = useRouter();
 
   const [searchValue, setSearchValue] = useState("");
 
-  const resetSeletores = () => {
-    console.log("Antes do reset:", {
-      selectedFuncionario,
-      nome,
-      email,
-    });
-
-    setSelectedFuncionario(null);
-    setNome("");
-    setEmail("");
-
-    console.log("Depois do reset:", {
-      selectedFuncionario,
-      nome,
-      email,
-    });
-  };
-
-  const salvarAlteracoesClicado = () => {
-    resetSeletores();
-  };
-
-  const [responsaveis, setResponsaveis] = useState([
-    { id: 123, nome: "João da Silva", email: "wdnoewfn" },
-    { id: 456, nome: "Maria Oliveira", email: "ejwfnqefjiqe" },
+  const [selectedResponsavel, setSelectedResponsavel] =
+    useState<Responsavel | null>(null);
+  const [responsaveis, setResponsaveis] = useState<Responsavel[]>([
+    {
+      registration: 1,
+      name: "",
+      email: "",
+    },
   ]);
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
@@ -58,11 +55,210 @@ function EditarLocal() {
   const telaEdicaoClicada = () => {
     if (!showCreate) {
       setShowEditDelete(!showEditDelete);
-      if (selectedFuncionario) {
-        setResponsavelSelecionado((prev) => !prev);
-      }
     }
   };
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Lógica para lidar com a mudança nos campos de entrada
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const limparCampos = () => {
+    setFormData({
+      name: "",
+      registration: 0,
+      email: "",
+    });
+    setSelectedResponsavel(null);
+  };
+
+  const validateData = (name: String, registration: number, email: string) => {
+    if (name == "" || registration == 0 || email == ""){
+      return false;
+    }
+    return true;
+  };
+
+  const cadastrarFuncionario = () => {
+    const dataIsValid = validateData(
+      formData.name,
+      formData.registration,
+      formData.email
+    );
+    
+    if (!dataIsValid) {
+      Swal.fire({
+        icon: "warning",
+        text: "Informe todos os campos para cadastrar um funcionário!",
+      });
+      return;
+    }
+    axios
+      .post("/employee", {
+        name: formData.name,
+        registration:Number(formData.registration),
+        email:formData.email
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 201) {
+          Swal.fire({
+            icon: "info",
+            text: "Funcionário cadastrado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 400) {
+          const error_info  = error.response?.data as ErrorInfo;
+          Swal.fire({
+            icon: 'error',
+            text: `${error_info.message}`
+          });
+        }
+        else if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar funcionário!",
+          }).then(() => {
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar cadastrar funcionário.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+  const excluirResponsavel = () =>{
+    if (!selectedResponsavel){
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um funcionário para excluir!",
+      });
+      return;
+    }
+  const funcId = selectedResponsavel?.registration;
+  axios
+      .delete(`/employee/${funcId}`)
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Funcionário excluído com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar local!",
+          }).then(() => {
+            limparCampos();
+            router.push("/TelaLogin");
+          });
+        }
+        let mensagem = JSON.stringify(error.response?.data);
+        let mensagemList = mensagem.split('"');
+        if (error.response?.status == 404) {
+          Swal.fire({
+            icon: "error",
+            text: `${mensagemList[3] + "!"}`,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar editar local.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  const editarFuncionario = () => {
+    if (!selectedResponsavel || selectedResponsavel?.name == '' || selectedResponsavel?.email == ''){
+      Swal.fire({
+        icon: "warning",
+        text: "Informe dados válidos para edição!",
+      });
+      return;
+    }
+  const funcId = selectedResponsavel?.registration;
+  console.log(selectedResponsavel);
+  console.log(funcId);
+    axios
+      .put(`/employee/${funcId}`, {
+        name: selectedResponsavel?.name,
+        email:selectedResponsavel?.email
+      })
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Funcionário editado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status == 400) {
+          const error_info  = error.response?.data as ErrorInfo;
+          Swal.fire({
+            icon: 'error',
+            text: `${error_info.message}`
+          });
+        }
+        else if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para editar funcionário!",
+          }).then(() => {
+            router.push("/TelaLogin");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar editar funcionário.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    axios
+      .get("/employee")
+      .then((response) => {
+        if (response.status == 200) {
+          setResponsaveis(response.data.employees);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar a tela!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+}, [showCreate, showEditDelete, selectedResponsavel]);
 
   return (
     <div>
@@ -91,15 +287,28 @@ function EditarLocal() {
         {showCreate && (
           <div>
             <div className={styles.containerPrincipal}>
+            <div className={styles.inputContainer2}>
+                <p className={styles.Nomes}>Matrícula</p>
+                <input
+                  type="text"
+                  id="matricula"
+                  name="registration"
+                  value = {formData.registration}
+                  placeholder="Digite o matricula do funcionário"
+                  className={styles.input}
+                  onChange={handleInputChange}
+                />
+              </div>
               <div className={styles.inputContainer2}>
                 <p className={styles.Nomes}>Nome do Responsável</p>
                 <input
                   type="text"
                   id="nome"
-                  name="nome"
+                  name="name"
                   placeholder="Digite o nome do funcionário"
                   className={styles.input}
-                  onChange={(e) => setNome(e.target.value)}
+                  onChange={handleInputChange}
+                  value = {formData.name}
                 />
               </div>
               <div className={styles.divisao}>
@@ -111,13 +320,14 @@ function EditarLocal() {
                     name="email"
                     placeholder="Digite o email do funcionário"
                     className={styles.input}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleInputChange}
+                    value = {formData.email}
                   />
                 </div>
               </div>
             </div>
             <div className={styles.botoesInferiores}>
-              <p className={styles.estiloBotao}>Salvar Alterações</p>
+              <p className={styles.estiloBotao} onClick = {cadastrarFuncionario}>Salvar Alterações</p>
             </div>
           </div>
         )}
@@ -128,25 +338,21 @@ function EditarLocal() {
                 <div className={styles.inputContainer}>
                   <p className={styles.Nomes}>Selecione um Responsável</p>
                   <Select
-                    value={selectedFuncionario}
-                    onChange={(selectedOption) => {
-                      setSelectedFuncionario(selectedOption);
-                      setNome(selectedOption?.nome || "");
-                      setEmail(selectedOption?.email || "");
-                      setResponsavelSelecionado(true);
-                    }}
+                    value={selectedResponsavel}
+                    onChange={(selectedOption) =>
+                      setSelectedResponsavel(selectedOption as Responsavel)
+                    }
                     options={
-                      searchValue.length > 0
+                      responsaveis
                         ? responsaveis.map((responsavel) => ({
-                            label: `${responsavel.id} - ${responsavel.nome}`,
-                            value: responsavel.id,
-                            id: responsavel.id,
-                            nome: responsavel.nome,
+                            label: `${responsavel.registration} - ${responsavel.name}`,
+                            value: responsavel.registration,
+                            name: responsavel.name,
+                            registration: responsavel.registration,
                             email: responsavel.email,
                           }))
                         : []
                     }
-                    onInputChange={(newValue) => setSearchValue(newValue)}
                     isSearchable
                     placeholder="Digite ou selecione um responsável"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
@@ -162,10 +368,17 @@ function EditarLocal() {
                   id="nomeEdicao"
                   name="nomeEdicao"
                   placeholder="Nome"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
+                  value={selectedResponsavel?.name || ""}
+                  onChange={(e) =>
+                    setSelectedResponsavel((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                      registration: prev?.registration || 0,
+                      email: prev?.email || '',
+                    }))
+                  }
                   className={styles.input}
-                  disabled={!responsavelSelecionado}
+                  disabled={!selectedResponsavel}
                 />
               </div>
               <div className={styles.divisao}>
@@ -176,10 +389,17 @@ function EditarLocal() {
                     id="emailEdicao"
                     name="emailEdicao"
                     placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={selectedResponsavel?.email || ""}
                     className={styles.input}
-                    disabled={!responsavelSelecionado}
+                    disabled={!selectedResponsavel}
+                    onChange={(e) =>
+                      setSelectedResponsavel((prev) => ({
+                        ...prev,
+                        name: prev?.name || '',
+                        registration: prev?.registration || 0,
+                        email: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -187,11 +407,11 @@ function EditarLocal() {
             <div className={styles.botoesInferiores}>
               <p
                 className={styles.estiloBotao}
-                onClick={salvarAlteracoesClicado}
+                onClick={editarFuncionario}
               >
                 Salvar Alterações
               </p>
-              <p className={styles.estiloBotaoExcluir}>Excluir Local</p>
+              <p className={styles.estiloBotaoExcluir} onClick = {excluirResponsavel}>Excluir Funcionário</p>
             </div>
           </div>
         )}
@@ -200,4 +420,4 @@ function EditarLocal() {
   );
 }
 
-export default EditarLocal;
+export default EditarResponsavel;
