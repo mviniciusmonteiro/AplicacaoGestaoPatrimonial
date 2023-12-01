@@ -17,7 +17,17 @@ class GetUserByUsernameController {
             if (!user) {
                 return res.status(200).json({mensagem: "Usuário não encontrado"});
             }
-            return res.status(200).json({user});
+
+            const employee = await database.employee.findFirst({
+                where: { registration: user.employeeRegistration }
+            });
+
+            if (!employee) {
+                // Erro: usuário encontrado, mas seus dados de funcionário não
+                return res.status(400).json({mensagem: "Funcionário não encontrado"});
+            }
+
+            return res.status(200).json({user: {user, employee}});
         } catch (error) {
             console.error(error);
             throw(error);
