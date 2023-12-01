@@ -11,8 +11,10 @@ import { axios } from '@/config/axios';
 import { AxiosResponse, AxiosError} from 'axios';
 import { useRouter } from "next/navigation";
 import fileDownload from 'js-file-download'
+import FormData from "form-data";
 
 interface ReportRequest {
+  id: string;
   requestedBy: string;
   answeredBy: string;
   description: string;
@@ -37,6 +39,7 @@ export default function AcompanharRelatorios() {
   const [selectedRequestStatus, setSelectedRequestStatus] = useState('');
   const [newStatus, setNewStatus] = useState('Deferida');
   const [data, setData] = useState<ReportRequest[]>([{
+    id: '',
     requestedBy: '',
     answeredBy: '',
     description: '',
@@ -47,11 +50,8 @@ export default function AcompanharRelatorios() {
     motiveOfIndefer: '',
     filePath: ''    
   }]);
-  const handleOptionChange = (value: string) => {
-    setSelectedOption(value);
-  };
-
   const [formState, setFormState] = useState({
+    id: "",
     matricula: "",
     matriculaRespondente: "",
     motivoS: "",
@@ -62,9 +62,29 @@ export default function AcompanharRelatorios() {
     nomeArquivo: ""
   });
 
-  const handleTextareaChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleChangeNewStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = event.target;
+    setNewStatus(value);
+
+    // Limpa caixa de indeferimento ou arquivo ao mudar o novo status
+    if (id == 'Deferida') {
+      // Limpa o arquivo
+      setArquivo(null);
+    } else {
+      // Limpa caixa do indeferimento
+      const motiveOfIndeferComp = document.getElementById(id) as HTMLInputElement;
+      if (motiveOfIndeferComp) {
+        motiveOfIndeferComp.value = '';
+        // Atualiza o formulário
+        setFormState({
+          ...formState,
+          ...{motivoI: ''}
+        });
+      }
+    }
+  }
+
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     // Lógica para lidar com a mudança no campo de textarea
     const { name, value } = event.target;
     setFormState((prevState) => ({
@@ -79,19 +99,80 @@ export default function AcompanharRelatorios() {
     setArquivo(file || null);
   };
 
-  const enviarRelatorio = () => {
-    // Preparar os dados para envio
-    const dadosParaEnvio = {
-      ...formState,
-      status: selectedOption, // Usar o status do radio button
-      arquivo: arquivo, // Adicionar o arquivo
-      motivoI: formState.motivoI
-    };
-    console.log("Dados para envio:", dadosParaEnvio);
+  const validateResponseData = () => {
+    if (newStatus == 'Deferida') {
+      // Se solicitação for deferida, anexar relatório pdf é obrigatório
+      if (arquivo == null) {
+        return false;
+      }
+    } else {
+      // Se solicitação for indeferida, informar motivo é obrigatório
+      if (formState.motivoI == '') {
+        return false;
+      }
+    }
+    return true;
+  }
 
-    // Limpar o formulário
-    setVisualizar(false);
-  };
+  const handleRespondToRequest = () => {
+    const responseDataIsValid = validateResponseData();
+
+    if (!responseDataIsValid) {
+      if (newStatus == 'Deferida') {
+        Swal.fire({
+          icon: 'warning',
+          text: 'Anexe um relatório em formato pdf para responder à solicitação!'
+        });        
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          text: 'Informe o motivo do indeferimento para responder à solicitação!'
+        });
+      }
+      return;
+    }
+    // Seta os dados do body da requisição PUT (deve ser enviado num form-data)
+    const data: FormData = new FormData();
+    if (newStatus == 'Deferida') {
+      data.append('report', arquivo, arquivo?.name);
+    } else {
+      data.append('motiveOfIndefer', formState.motivoI);
+    }
+
+    axios.put(`/respond-report-request/${formState.id}`, data, {
+      headers: { "Accept": '*/*', "Content-Type": `multipart/form-data` }
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        Swal.fire({
+          icon: 'info',
+          text: 'Solicitação de relatório respondida com sucesso!'
+        }).then(value => {
+          if (value) {
+            // Atualiza a visualização das solicitações
+            handleGetReportByStatus(selectedRequestStatus);            
+          }
+        });
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para responder uma solicitação de relatório!'
+        }).then(({value}) => {
+          if (value === true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar responder a solicitação. Por favor, tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    })
+  }
 
   const handleDownloadPDFReport = () => {
     const fileNameDownload = formState.nomeArquivo;
@@ -130,6 +211,7 @@ export default function AcompanharRelatorios() {
   const handleVisualizar = (row: ReportRequest) => {
     // Define o estado do formulário com os dados da linha clicada
     setFormState({
+      id: row.id,
       matricula: row.requestedBy,
       matriculaRespondente: row.answeredBy,
       motivoS: row.motiveOfRequest,
@@ -140,7 +222,7 @@ export default function AcompanharRelatorios() {
       nomeArquivo: row.filePath
     });
     setSelectedRequestStatus(row.status);
-    setSelectedRequestStatus(row.status);
+    setNewStatus('Deferida'); // Restaura o novo status para o padrão
     setVisualizar(true);
   }
 
@@ -242,7 +324,7 @@ export default function AcompanharRelatorios() {
                       <th>Data Solicitação</th>
                       <th>Status</th>
                       <th>Motivo Indeferimento</th>
-                      <th>Acão</th>
+                      <th>Ação</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -361,18 +443,24 @@ export default function AcompanharRelatorios() {
                         <label className={styles.Nomes}>
                           <input
                             type="radio"
-                            value="solicitacaoDeferida"
+                            id="Deferida"
+                            name="Deferida"
+                            value="Deferida"
+                            tabIndex={0}
                             checked={newStatus === "Deferida"}
-                            onChange={() => setNewStatus('Deferida')}
+                            onChange={handleChangeNewStatus}
                           />
                           Deferida
                         </label>
                         <label className={styles.Nomes}>
                           <input
                             type="radio"
-                            value="solicitacaoIndeferida"
+                            id="Indeferida"
+                            name="Indeferida"
+                            value="Indeferida"
+                            tabIndex={0}
                             checked={newStatus === "Indeferida"}
-                            onChange={() => setNewStatus('Indeferida')}
+                            onChange={handleChangeNewStatus}
                           />
                           Indeferida
                         </label>
@@ -382,28 +470,29 @@ export default function AcompanharRelatorios() {
                       {/* Condicionalmente renderizar o input de arquivo */}
                       {newStatus === "Deferida" && (
                         <>
-                          <p className={styles.Nomes}>Anexar relatório</p>
-                          <input type="file" onChange={handleFileChange}></input>
+                          <p className={styles.Nomes}>Anexar relatório*</p>
+                          <input id="chooseFile" type="file" onChange={handleFileChange} tabIndex={0}></input>
                         </>
                       )}
                       {newStatus === "Indeferida" && (
                         <>
-                          <p className={styles.Nomes}>Motivo do Indeferimento</p>
+                          <p className={styles.Nomes}>Motivo do Indeferimento*</p>
                           <textarea
                             id="indeferimento"
                             name="motivoI"
                             className={styles.textarea}
                             value={formState.motivoI}
+                            tabIndex={0}
                             placeholder="Informe o motivo da solicitação estar sendo indeferida"
                             onChange={handleTextareaChange}
                             ></textarea>
                         </>
                       )}
                     </div>
-                  </div>                
+                  </div>
                 </div>
                 <div className={styles.botoesInferiores}>
-                  <p className={styles.estiloBotao} onClick={enviarRelatorio}>
+                  <p className={styles.estiloBotao} onClick={handleRespondToRequest} tabIndex={0}>
                     Responder Solicitação
                   </p>
                 </div>

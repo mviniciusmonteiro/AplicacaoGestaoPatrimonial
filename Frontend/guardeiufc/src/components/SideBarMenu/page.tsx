@@ -46,7 +46,7 @@ const SidebarMenu = () => {
             </li>
             <li
               onClick={() => {
-                router.push("/Administrador/AcompanhaRelatorios");
+                router.push("/Administrador/AcompanharSolicitacoes");
                 setVerSolicitacoesAtivo(true);
               }}
               className={verSolicitacoesAtivo ? styles.menuAtivo : ""}
