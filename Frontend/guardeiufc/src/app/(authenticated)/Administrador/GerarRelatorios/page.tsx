@@ -24,6 +24,16 @@ interface Employee {
   name: string;
 }
 
+interface FormData {
+  numberOfPatrimony: number | null;
+  name: string | null;
+  description: string | null;
+  statusId: number | null;
+  locationId: number | null;
+  projectId: number | null;
+  responsibleRegistration: number | null;
+}
+
 interface ResponseLocalReq {
   locations: Local[];
 }
@@ -34,6 +44,10 @@ interface ResponseProjectReq {
 
 interface ResponseEmployeeReq {
   employees: Employee[];
+}
+
+interface ResponseItemReq {
+  items: Item[];
 }
 
 export default function GerarRelatorios() {
@@ -51,15 +65,16 @@ export default function GerarRelatorios() {
     registration: 0,
     name: ''
   }]);
-  const [formData, setFormData] = useState<Item>({
+  const [formData, setFormData] = useState<FormData>({
     numberOfPatrimony: null,
     name: null,
     description: null,
+    statusId: null,
     locationId: null,
     projectId: null,
     responsibleRegistration: null
   });
-  const [filteredItems, settFilteredItems] = useState<Item[]>([{
+  const [filteredItems, setFilteredItems] = useState<Item[]>([{
     numberOfPatrimony: null,
     name: null,
     description: null,
@@ -77,7 +92,45 @@ export default function GerarRelatorios() {
   }
 
   const handleFilterItems = () => {
-    alert(`Filtrar itens com parâmetros:\nnúmero patrimonio: ${formData.numberOfPatrimony}\nnome: ${formData.name}\ndescrição: ${formData.description}\nlocalização: ${formData.locationId}\nprojeto: ${formData.projectId}\nresponsável: ${formData.responsibleRegistration}`);
+    const parameters = {
+      ...(formData.numberOfPatrimony && { numberOfPatrimony: formData.numberOfPatrimony }),
+      ...(formData.name && { name: formData.name }),
+      ...(formData.description && { description: formData.description }),
+      ...(formData.statusId && { status: formData.statusId }),
+      ...(formData.locationId && { locationId: formData.locationId }),
+      ...(formData.projectId && { projectId: formData.projectId }),
+      ...(formData.responsibleRegistration && { responsibleRegistration: formData.responsibleRegistration })
+    }
+    axios.get<ResponseItemReq>('/report/items/', { params: parameters }
+    ).then(response => {
+      if (response.status == 200) {
+        if (response.data.items.length > 0) {
+          setFilteredItems(response.data.items);
+          setTabelaVisivel(true);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+          setTabelaVisivel(false);
+        }
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para gerar relatório de itens!'
+        }).then(({value}) => {
+          if (value == true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar gerar o relatório. Tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    });
   }
 
   useEffect(() => {
@@ -242,6 +295,29 @@ export default function GerarRelatorios() {
                     </select>
                   </div>
                   <div className={styles.inputContainer1}>
+                    <p className={styles.Nomes}>Status</p>
+                    <select
+                      id="statusId"
+                      name="status"
+                      tabIndex={0}
+                      className={styles.input}
+                      onChange={(e) => {
+                        setNotFound(false);
+                        setTabelaVisivel(false);
+                        const { id, value } = e.target;
+                        setFormData((prevFormData) => ({
+                          ...prevFormData,
+                          [id]: value
+                        }))}
+                      }
+                    >
+                      <option value={''}>Selecione o status</option>
+                      <option key={1} value={1}>Alocado</option>
+                      <option key={2} value={2}>Disponível</option>
+                      <option key={3} value={3}>Todos</option>
+                    </select>
+                  </div>
+                  <div className={styles.inputContainer1}>
                     <p className={styles.Nomes}>Projeto Vinculado</p>
                     <select
                       id="projectId"
@@ -335,6 +411,11 @@ export default function GerarRelatorios() {
                   <p className={styles.estiloBotaoGerar}>Exportar Relatório</p>
                 </div>
               )}
+              {notFound && (
+                <div>
+                  <p className={styles.notFound}><b>Nenhum item encontrado para os filtros aplicados!</b></p>
+                </div>
+              )}              
             </div>
           </div>
         </div>
