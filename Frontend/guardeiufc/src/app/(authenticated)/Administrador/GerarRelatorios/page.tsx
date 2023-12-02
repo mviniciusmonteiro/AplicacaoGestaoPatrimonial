@@ -257,12 +257,12 @@ export default function GerarRelatorios() {
               <div className={styles.containerEdicao}>
                 <div className={styles.divisao}>
                   <div className={styles.inputContainer1}>
-                    <p className={styles.Nomes}>Número do patrimônio</p>
+                    <p className={styles.Nomes}>Número de Patrimônio</p>
                     <input
                       type="text"
                       id="numberOfPatrimony"
                       name="id"
-                      placeholder="Filtrar número do patrimônio"
+                      placeholder="Filtrar número de patrimônio"
                       className={styles.input}
                       onChange={(e) => {
                           setNotFound(false);
