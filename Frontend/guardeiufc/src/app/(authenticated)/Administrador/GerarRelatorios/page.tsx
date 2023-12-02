@@ -5,8 +5,9 @@ import Tabela, { Item } from "@/components/Table/page";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader/page";
 import { axios } from '@/config/axios';
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import Swal from "sweetalert2";
+import fileDownload from "js-file-download";
 
 interface Local {
   id: number;
@@ -90,6 +91,35 @@ export default function GerarRelatorios() {
   const handleValidateNumericField = (number: string) => {
     setNumFieldIsValid(/^[0-9]*$/.test(number));
   }
+
+  const handleDownloadPdfReport = async () => {
+    axios.get('/pdf-report', 
+    { params: {data: filteredItems}, responseType: 'blob'})
+    .then((response: AxiosResponse) => {
+      if (response.status == 200) {
+        const now = new Date();
+        const fileName = `Relatório de Itens - ${((now.getDate() ))}/${((now.getMonth() + 1))}/${now.getFullYear()}.pdf`
+        fileDownload(response.data, fileName);
+      }
+    }).catch((error: AxiosError) => {
+      if (error.response?.status == 403) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Faça login para baixar relatório de itens!'
+        }).then(({value}) => {
+          if (value == true) {
+            router.push('/TelaLogin');
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: `Ocorreu um erro ao tentar baixar o relatório. Tente novamente!\nCódigo do erro: ${error.response?.status}`
+        });
+      }
+      console.error(error);
+    });
+  }  
 
   const handleFilterItems = () => {
     const parameters = {
@@ -408,7 +438,7 @@ export default function GerarRelatorios() {
               {tabelaVisivel && (
                 <div className={styles.tabela}>
                   <Tabela data={filteredItems}></Tabela>
-                  <p className={styles.estiloBotaoGerar}>Exportar Relatório</p>
+                  <p className={styles.estiloBotaoGerar} onClick={handleDownloadPdfReport}>Exportar Relatório</p>
                 </div>
               )}
               {notFound && (
