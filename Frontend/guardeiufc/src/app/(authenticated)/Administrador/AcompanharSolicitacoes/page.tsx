@@ -158,7 +158,7 @@ export default function AcompanharRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para responder uma solicitação de relatório!'
+          text: 'Faça login como administrador para responder uma solicitação de relatório!'
         }).then(({value}) => {
           if (value === true) {
             router.push('/TelaLogin');
@@ -186,7 +186,7 @@ export default function AcompanharRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para baixar um relatório anexado a uma solicitação!'
+          text: 'Faça login como administrador para baixar um relatório anexado a uma solicitação!'
         }).then(({value}) => {
           if (value === true) {
             router.push('/TelaLogin');
@@ -239,7 +239,7 @@ export default function AcompanharRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para visualizar as solicitações de relatórios!'
+          text: 'Faça login como administrador para visualizar as solicitações de relatórios!'
         }).then(({value}) => {
           if (value === true) {
             router.push('/TelaLogin');

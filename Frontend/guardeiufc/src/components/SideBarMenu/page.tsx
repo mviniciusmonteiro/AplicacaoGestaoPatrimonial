@@ -46,7 +46,7 @@ const SidebarMenu = () => {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para visualizar a tela inicial!'
+          text: 'Faça login como administrador para visualizar a tela inicial!'
         }).then(value => {
           if (value) {
             router.push('/TelaLogin');

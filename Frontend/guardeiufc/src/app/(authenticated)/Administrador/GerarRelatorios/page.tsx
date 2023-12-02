@@ -105,7 +105,7 @@ export default function GerarRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para baixar relatório de itens!'
+          text: 'Faça login como administrador para baixar relatório de itens!'
         }).then(({value}) => {
           if (value == true) {
             router.push('/TelaLogin');
@@ -147,7 +147,7 @@ export default function GerarRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para gerar relatório de itens!'
+          text: 'Faça login como administrador para gerar relatório de itens!'
         }).then(({value}) => {
           if (value == true) {
             router.push('/TelaLogin');
@@ -174,7 +174,7 @@ export default function GerarRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para gerar relatório de itens!'
+          text: 'Faça login como administrador para gerar relatório de itens!'
         }).then(({value}) => {
           if (value == true) {
             router.push('/TelaLogin');
@@ -198,7 +198,7 @@ export default function GerarRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para gerar relatório de itens!'
+          text: 'Faça login como administrador para gerar relatório de itens!'
         }).then(({value}) => {
           if (value == true) {
             router.push('/TelaLogin');
@@ -222,7 +222,7 @@ export default function GerarRelatorios() {
       if (error.response?.status == 403) {
         Swal.fire({
           icon: 'error',
-          text: 'Faça login para gerar relatório de itens!'
+          text: 'Faça login como administrador para gerar relatório de itens!'
         }).then(({value}) => {
           if (value == true) {
             router.push('/TelaLogin');
