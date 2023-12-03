@@ -188,11 +188,13 @@ export default function Home() {
       newFormData.append("projectId", selectedProjeto?.id.toString());
     }
     if (selectedImage) {
-      newFormData.append("imageName", selectedImage);
+      newFormData.append("image", selectedImage);
     }
 
     axios
-      .post("/item", newFormData)
+      .post("/item", newFormData, {
+        headers: { "Accept": '*/*', "Content-Type": `multipart/form-data` }
+      })
       .then((response: AxiosResponse) => {
         if (response.status == 201) {
           Swal.fire({
@@ -274,7 +276,9 @@ export default function Home() {
     }
     
     axios
-      .put(`/item/${itemData.numberOfPatrimony}`, newFormData)
+      .put(`/item/${itemData.numberOfPatrimony}`, newFormData, {
+        headers: { "Accept": '*/*', "Content-Type": `multipart/form-data` }
+      })
       .then((response: AxiosResponse) => {
         if (response.status == 200) {
           Swal.fire({
@@ -487,7 +491,7 @@ export default function Home() {
     <div>
       <div className={styles.main}>
         <div className={styles.Principal}>
-          <p className={styles.estilotitulo}>Gerenciar Patrimônios</p>
+          <p className={styles.estilotitulo}>Gerenciar Itens do Patrimônio</p>
           <div className={styles.EspacoBotoes}>
             <div className={styles.botoes}>
               <button
@@ -515,12 +519,12 @@ export default function Home() {
                   <div className={styles.containerCriacao}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer1}>
-                        <p className={styles.Nomes}>Número do patrimônio*</p>
+                        <p className={styles.Nomes}>Número de patrimônio*</p>
                         <input
                           type="number"
                           id="id"
                           name="matricula"
-                          placeholder="Digite o número do patrimônio"
+                          placeholder="Digite o número de patrimônio"
                           className={styles.input}
                           tabIndex={0}
                           value={formData.matricula}
@@ -533,7 +537,7 @@ export default function Home() {
                           type="text"
                           id="nome"
                           name="nome"
-                          placeholder="Digite o nome do patrimônio"
+                          placeholder="Digite o nome do item"
                           className={styles.input}
                           value={formData.nome}
                           onChange={handleInputChange}
@@ -588,7 +592,7 @@ export default function Home() {
                           type="text"
                           id="descricao"
                           name="descricao"
-                          placeholder="Informe uma descrição para o patrimônio"
+                          placeholder="Informe uma descrição para o item"
                           className={styles.input}
                           value={formData.descricao}
                           onChange={handleInputChange}
@@ -621,7 +625,7 @@ export default function Home() {
                         />
                       </div>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Imagem do Patrimônio</p>
+                        <p className={styles.Nomes}>Imagem do Item</p>
                         <input
                           type="file"
                           name="imagem"
@@ -651,7 +655,7 @@ export default function Home() {
                           type="number"
                           id="numero"
                           name="numero"
-                          placeholder="Digite o número do patrimônio"
+                          placeholder="Digite o número de patrimônio"
                           className={styles.input}
                           value={formData.numero}
                           onChange={handleInputChange}
@@ -676,7 +680,7 @@ export default function Home() {
                           type="text"
                           id="id"
                           name="id"
-                          placeholder="Digite o número do patrimônio"
+                          placeholder="Digite o número de patrimônio"
                           className={styles.input}
                           value={selectedItemData?.numberOfPatrimony || ""}
                           readOnly
@@ -688,7 +692,7 @@ export default function Home() {
                           type="text"
                           id="nome"
                           name="name"
-                          placeholder="Digite o nome do patrimônio"
+                          placeholder="Digite o nome do item"
                           className={styles.input}
                           disabled={!selectedItem}
                           value={selectedItemData?.name || ""}
@@ -765,7 +769,7 @@ export default function Home() {
                           type="text"
                           id="descricao"
                           name="descricao"
-                          placeholder="Informe uma descrição para o patrimônio"
+                          placeholder="Informe uma descrição para o item"
                           className={styles.input}
                           disabled={!selectedItem}
                           value={selectedItemData?.description || ""}
@@ -817,7 +821,7 @@ export default function Home() {
                         </select>
                       </div>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Imagem do Patrimônio</p>
+                        <p className={styles.Nomes}>Imagem do Item</p>
                         <input
                           type="file"
                           name="imagem"
@@ -836,7 +840,7 @@ export default function Home() {
                       Salvar Alterações
                     </p>
                     <p className={styles.estiloBotaoExcluir} onClick = {handleExcluirItem}>
-                      Excluir patrimônio
+                      Excluir item
                     </p>
                   </div>
                 </div>

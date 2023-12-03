@@ -41,6 +41,7 @@ import { DownloadPDFReportController } from "../controllers/report/DownloadPDFRe
 import { DownloadAnexedPDFController } from "../controllers/report/DownloadAnexedPDFController";
 import { GetOurNumbersController } from "../controllers/report/user/GetOurNumbersController";
 import { GetLoggedUserDataController } from "../controllers/user/GetLoggedUserDataController";
+import { GetAllItemsController } from "../controllers/item/GetAllItemsController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -73,6 +74,7 @@ router.get('/user/:username', new AuthorizationJWTAdmin().handle, new GetUserByU
 router.get('/user', new AuthorizationJWTAdmin().handle, new GetAllUsersController().handle);
 router.delete('/user/:username', new AuthorizationJWTAdmin().handle, new DeleteUserController().handle);
 router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new CreateItemController().handle);
+router.get('/item', new AuthorizationJWTAdmin().handle, new GetAllItemsController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new UpdateItemController().handle);
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);
