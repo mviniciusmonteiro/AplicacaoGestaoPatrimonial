@@ -86,7 +86,9 @@
   background-color: #3f5259;
   color: white;
 }
-
+.sinalizadorDadosInvalidos {
+  color: white;
+}  
 .buttonUnselected {
   background-color: #379080;
   color: white;
@@ -227,7 +229,6 @@
 }
 
 .estiloBotaoExcluir {
-  margin-top: 2%;
   background-color: #cf1717;
   margin-bottom: 5%;
   color: #fff;

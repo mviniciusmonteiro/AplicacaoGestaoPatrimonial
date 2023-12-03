@@ -17,6 +17,11 @@ interface Local {
   room: string;
 }
 
+interface ErrorResponse {
+  message?: string;
+  mensagem?: string;
+}
+
 function EditarLocal() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
@@ -180,6 +185,7 @@ function EditarLocal() {
       return;
     }
   const localId = selectedLocal?.id;
+  console.log(localId)
   axios
       .delete(`/local/${localId}`)
       .then((response: AxiosResponse) => {
@@ -191,27 +197,33 @@ function EditarLocal() {
           limparCampos();
         }
       })
-      .catch((error) => {
-        if (error.response?.status == 403) {
+      .catch((error: AxiosError<ErrorResponse>) => {
+        if (error.response?.status === 400) {
+          const errorMessage = error.response?.data?.mensagem;
+          if (errorMessage) {
+            Swal.fire({
+              icon: "error",
+              text: errorMessage,
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              text: "Ocorreu um erro ao tentar excluir local.",
+            });
+          }
+        } else if (error.response?.status == 403) {
           Swal.fire({
             icon: "error",
-            text: "Faça login para cadastrar local!",
-          }).then(() => {
-            limparCampos();
-            router.push("/TelaLogin");
-          });
-        }
-        let mensagem = JSON.stringify(error.response?.data);
-        let mensagemList = mensagem.split('"');
-        if (error.response?.status == 404) {
-          Swal.fire({
-            icon: "error",
-            text: `${mensagemList[3] + "!"}`,
+            text: "Faça login para cadastrar um novo item!",
+          }).then(({ value }) => {
+            if (value === true) {
+              router.push("/TelaLogin");
+            }
           });
         } else {
           Swal.fire({
             icon: "error",
-            text: `Ocorreu um erro ao tentar editar local.\nCódigo do erro: ${error.response?.status}`,
+            text: `Ocorreu um erro ao tentar fazer exclusão.\nCódigo do erro: ${error.response?.status}`,
           });
         }
         console.error(error);

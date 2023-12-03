@@ -163,7 +163,6 @@
 }
 
 .inputContainer {
-  margin-right: 5%;
   flex-grow: 1;
   flex-direction: column;
 }
@@ -196,7 +195,7 @@
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ccc;
+  background-color: #fff;
   margin-bottom: 12px;
 }
 
@@ -260,11 +259,22 @@
   background-color: #17a4cf;
   color: #fff;
   padding: 15px;
-  width: 100%;
-  margin-top: 21%;
+  width: 90%;
   text-align: center;
   cursor: pointer;
   border-radius: 10px;
+  font-weight: 500;
+}
+.estiloBotaoBuscar:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.botaoBuscar{
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .estilotitulo{

@@ -1,94 +1,111 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Select from "react-select";
+import { axios } from "@/config/axios";
+import { AxiosResponse, AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 interface PatrimonioItem {
-  id: number;
+  numberOfPatrimony: number;
+  name: string;
+  locationId: number;
+  projectId: number;
+  description: string;
+  responsibleRegistration: number;
+  imageName: string;
+}
+
+interface FormData {
+  matricula: string;
   nome: string;
-  local: number;
-  projeto: number;
   descricao: string;
-  responsavel: number;
-  imagem: string;
+  numero: string;
 }
 
 interface ItemOpcao {
   value: number;
   label: number;
 }
+interface Responsavel {
+  registration: number;
+  name: string;
+}
+interface Projeto {
+  name: string;
+  coordinatorRegistration: number;
+  id: number;
+}
+interface ErrorResponse {
+  message?: string;
+  mensagem?: string;
+}
+
+interface Local {
+  id: number;
+  departmentBuilding: string;
+  room: string;
+  value: number;
+}
 
 export default function Home() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const router = useRouter();
 
-  const [localizacoes, setLocalizacoes] = useState([
-    { id: 1, nome: "Localização 1", bloco: "Bloco 1", sala: "Sala 1" },
-    { id: 2, nome: "Localização 2", bloco: "Bloco 2", sala: "Sala 2" },
+  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const [localizacoes, setLocalizacoes] = useState<Local[]>([
+    { id: 1, departmentBuilding: "", room: "", value: 0 },
   ]);
+  const [formData, setFormData] = useState<FormData>({
+    matricula: "",
+    nome: "",
+    descricao: "",
+    numero: "",
+  });
 
   const [selectedItem, setSelectedItem] = useState<ItemOpcao | null>(null);
+  const [selectedResponsavel, setSelectedResponsavel] =
+    useState<Responsavel | null>(null);
+  const [selectedProjeto, setSelectedProjeto] = useState<Projeto>({
+    name: "",
+    coordinatorRegistration: 0,
+    id: 0,
+  });
+
   const [selectedItemData, setSelectedItemData] =
     useState<PatrimonioItem | null>({
-      id: 0,
-      nome: "",
-      local: 0,
-      projeto: 0,
-      descricao: "",
-      responsavel: 0,
-      imagem: "",
+      numberOfPatrimony: 0,
+      name: "",
+      locationId: 0,
+      projectId: 0,
+      description: "",
+      responsibleRegistration: 0,
+      imageName: "",
     });
 
-  // Função para lidar com a mudança de seleção do item
-  const handleItemChange = (selectedOption: ItemOpcao | null) => {
-    setSelectedItem(selectedOption);
-
-    const selectedItemData = itens.find(
-      (item) => item.id === (selectedOption?.value || 0)
-    );
-    setSelectedItemData(
-      selectedItemData || {
-        id: 0,
-        nome: "",
-        local: 0,
-        projeto: 0,
-        descricao: "",
-        responsavel: 0,
-        imagem: "",
-      }
-    );
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Lógica para lidar com a mudança nos campos de entrada
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const [itens, setItens] = useState<PatrimonioItem[]>([
-    {
-      id: 1,
-      nome: "Item 1",
-      local: 1,
-      projeto: 1,
-      descricao: "Descrição do Item 1",
-      responsavel: 1,
-      imagem: "imagem1.jpg",
-    },
-    {
-      id: 2,
-      nome: "Item 2",
-      local: 2,
-      projeto: 2,
-      descricao: "Descrição do Item 2",
-      responsavel: 2,
-      imagem: "imagem2.jpg",
-    },
+  const [projetos, setProjetos] = useState<Projeto[]>([
+    { id: 0, name: "", coordinatorRegistration: 1 },
   ]);
 
-  const [projetos, setProjetos] = useState([
-    { id: 1, nome: "Projeto 1" },
-    { id: 2, nome: "Projeto 2" },
-  ]);
-
-  const [responsavel, SetResponsavel] = useState([
-    { id: 1, nome: "Rossana" },
-    { id: 2, nome: "Trinta" },
+  const [responsaveis, setResponsaveis] = useState<Responsavel[]>([
+    {
+      registration: 1,
+      name: "",
+    },
   ]);
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
@@ -96,20 +113,381 @@ export default function Home() {
     if (!showEditDelete) {
       setShowCreate(!showCreate);
     }
+    limparCampos();
   };
 
   // Verifica se a outra tela não está aberta antes de abrir a tela desejada
   const telaEdicaoClicada = () => {
     if (!showCreate) {
-      setShowEditDelete(!showEditDelete);    
+      setShowEditDelete(!showEditDelete);
     }
+    limparCampos();
   };
+
+  const validateData = (nome: string, descricao: string, matricula: string) => {
+    if (nome == "" || descricao == "" || matricula == "") {
+      return false;
+    }
+    return true;
+  };
+
+  const limparCampos = () => {
+    setFormData({
+      matricula: "",
+      nome: "",
+      descricao: "",
+      numero: "",
+    });
+    setSelectedResponsavel(null);
+    setSelectedLocal(null);
+    setSelectedItem(null);
+    setSelectedItemData(null);
+    setSelectedProjeto({
+      name: "",
+      coordinatorRegistration: 0,
+      id: 0,
+    });
+  };
+
+  const camposPreenchidos = () => {
+    return (
+      selectedItemData?.name.trim() !== "" &&
+      selectedItemData?.description.trim() !== "" &&
+      selectedItemData?.locationId !== undefined
+    );
+  };
+
+  // Cadastro de item
+  const handleCadastrar = function (): void {
+    const dataIsValid = validateData(
+      formData.nome,
+      formData.descricao,
+      formData.matricula
+    );
+    if (!dataIsValid || !selectedLocal) {
+      Swal.fire({
+        icon: "warning",
+        text: "Os campos marcados com * são de preenchimento obrigatório!",
+      });
+      return;
+    }
+    const newFormData = new FormData();
+    // Adicionar os dados do formulário ao objeto FormData
+    newFormData.append("numberOfPatrimony", formData.matricula.toString());
+    newFormData.append("name", formData.nome);
+    newFormData.append("description", formData.descricao);
+    newFormData.append("locationId", selectedLocal?.id.toString());
+
+    if (selectedResponsavel && selectedResponsavel.registration) {
+      newFormData.append(
+        "responsibleRegistration",
+        selectedResponsavel.registration.toString()
+      );
+    }
+    if (selectedProjeto && selectedProjeto.id) {
+      newFormData.append("projectId", selectedProjeto?.id.toString());
+    }
+    if (selectedImage) {
+      newFormData.append("imageName", selectedImage);
+    }
+
+    axios
+      .post("/item", newFormData)
+      .then((response: AxiosResponse) => {
+        if (response.status == 201) {
+          Swal.fire({
+            icon: "info",
+            text: "Cadastro realizado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        if (error.response?.status === 400) {
+          const errorMessage = error.response?.data?.mensagem;
+          if (errorMessage) {
+            Swal.fire({
+              icon: "error",
+              text: errorMessage,
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              text: "Ocorreu um erro ao tentar fazer cadastro.",
+            });
+          }
+        } else if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar um novo item!",
+          }).then(({ value }) => {
+            if (value === true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar fazer cadastro.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  const handleSalvarAlteracoes = function (): void {
+    if (!selectedItemData) {
+      Swal.fire({
+        icon: "warning",
+        text: "Selecione um item para editar!",
+      });
+      return;
+    }
+    if (!camposPreenchidos()) {
+      Swal.fire({
+        icon: "warning",
+        text: "Por favor, preencha todos os campos obrigatórios!",
+      });
+      return;
+    }
+    const itemData = selectedItemData ?? {
+      numberOfPatrimony: 0,
+      name: "",
+      locationId: 0,
+      projectId: 0,
+      description: "",
+      responsibleRegistration: 0,
+    };
+    const newFormData = new FormData();
+    // Adicionar os dados do formulário ao objeto FormData
+    newFormData.append("name", itemData.name);
+    newFormData.append("description", itemData.description);
+    newFormData.append("locationId", itemData.locationId.toString());
+    if (itemData.responsibleRegistration) {
+      newFormData.append(
+        "responsibleRegistration",
+        itemData.responsibleRegistration.toString()
+      );
+    }
+    if (itemData.projectId) {
+      newFormData.append("projectId", itemData.projectId.toString());
+    }
+    
+    axios
+      .put(`/item/${itemData.numberOfPatrimony}`, newFormData)
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Item alterado com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        if (error.response?.status === 400) {
+          const errorMessage = error.response?.data?.mensagem;
+          if (errorMessage) {
+            Swal.fire({
+              icon: "error",
+              text: errorMessage,
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              text: "Ocorreu um erro ao tentar fazer cadastro.",
+            });
+          }
+        } else if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar um novo item!",
+          }).then(({ value }) => {
+            if (value === true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar fazer cadastro.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  const handleBuscarItem = () => {
+    // Verifica se o número do item foi fornecido no campo de entrada
+    const numeroDoItem = Number(formData.numero);
+    if (!numeroDoItem) {
+      Swal.fire({
+        icon: "warning",
+        text: "Digite um número válido para buscar o item.",
+      });
+      return;
+    }
+    axios
+      .get(`/item/${numeroDoItem}`)
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          const itemEncontrado = response.data.item;
+          if (itemEncontrado) {
+            setSelectedItem({
+              value: itemEncontrado.id,
+              label: itemEncontrado.nome,
+            });
+            setSelectedItemData(itemEncontrado);
+          }
+          else {
+            Swal.fire({
+              icon: "info",
+              text: "Item não encontrado com o número fornecido.",
+            });
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar o item:", error);
+        Swal.fire({
+          icon: "error",
+          text: "Ocorreu um erro ao buscar o item. Tente novamente.",
+        });
+      });
+  };
+
+  const handleExcluirItem = () => {
+    // Verifica se o número do item foi fornecido no campo de entrada
+    const numeroDoItem = Number(formData.numero);
+    if (!numeroDoItem) {
+      Swal.fire({
+        icon: "warning",
+        text: "Digite um número válido para excluir o item.",
+      });
+      return;
+    }
+    axios
+      .delete(`/item/${numeroDoItem}`)
+      .then((response: AxiosResponse) => {
+        if (response.status == 200) {
+          Swal.fire({
+            icon: "info",
+            text: "Item excluído com sucesso!",
+          });
+          limparCampos();
+        }
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        if (error.response?.status === 400) {
+          const errorMessage = error.response?.data?.mensagem;
+          if (errorMessage) {
+            Swal.fire({
+              icon: "error",
+              text: errorMessage,
+            });
+          }
+        } else if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para cadastrar excluir um item!",
+          }).then(({ value }) => {
+            if (value === true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar fazer exclusão.\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    axios
+      .get("/employee")
+      .then((response) => {
+        if (response.status == 200) {
+          setResponsaveis(response.data.employees);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar a tela!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+    axios
+      .get("/project")
+      .then((response) => {
+        if (response.status == 200) {
+          setProjetos(response.data.projects);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para gerar relatório de itens!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+    axios
+      .get("/local")
+      .then((response) => {
+        if (response.status == 200) {
+          setLocalizacoes(response.data.locations);
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar localizações!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
+      });
+  }, [showCreate, selectedResponsavel, selectedLocal, selectedProjeto]);
 
   return (
     <div>
       <div className={styles.main}>
         <div className={styles.Principal}>
-          <p className={styles.estilotitulo}>Gerenciar Itens do patrimônio</p>
+          <p className={styles.estilotitulo}>Gerenciar Patrimônios</p>
           <div className={styles.EspacoBotoes}>
             <div className={styles.botoes}>
               <button
@@ -137,89 +515,110 @@ export default function Home() {
                   <div className={styles.containerCriacao}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer1}>
-                        <p className={styles.Nomes}>Número do patrimônio</p>
+                        <p className={styles.Nomes}>Número do patrimônio*</p>
                         <input
-                          type="text"
+                          type="number"
                           id="id"
-                          name="id"
+                          name="matricula"
                           placeholder="Digite o número do patrimônio"
                           className={styles.input}
+                          tabIndex={0}
+                          value={formData.matricula}
+                          onChange={handleInputChange}
                         />
                       </div>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Nome</p>
+                        <p className={styles.Nomes}>Nome*</p>
                         <input
                           type="text"
                           id="nome"
                           name="nome"
                           placeholder="Digite o nome do patrimônio"
                           className={styles.input}
+                          value={formData.nome}
+                          onChange={handleInputChange}
                         />
                       </div>
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Localização</p>
-                        <select
-                          id="localizacao"
-                          name="localizacao"
-                          className={styles.input}
-                        >
-                          <option value="">Selecione a localização</option>
-                          {localizacoes.map((localizacao) => (
-                            <option key={localizacao.id} value={localizacao.id}>
-                              {localizacao.nome}
-                            </option>
-                          ))}
-                        </select>
+                        <p className={styles.Nomes}>Localização*</p>
+                        <Select
+                          value={selectedLocal}
+                          onChange={(selectedOption) =>
+                            setSelectedLocal(selectedOption as Local)
+                          }
+                          options={localizacoes.map((localizacao) => ({
+                            label: `${localizacao.departmentBuilding} - ${localizacao.room}`,
+                            value: localizacao.id,
+                            departmentBuilding: localizacao.departmentBuilding,
+                            room: localizacao.room,
+                            id: localizacao.id,
+                          }))}
+                          isSearchable
+                          placeholder="Digite ou selecione um local"
+                          noOptionsMessage={() => "Nenhuma opção disponível"}
+                        />
                       </div>
-                      <div className={styles.inputContainer1}>
+                      <div className={styles.inputContainer2}>
                         <p className={styles.Nomes}>Projeto Vinculado</p>
-                        <select
-                          id="projeto"
-                          name="projeto"
-                          className={styles.input}
-                        >
-                          <option value="">
-                            Selecione o projeto vinculado
-                          </option>
-                          {projetos.map((projeto) => (
-                            <option key={projeto.id} value={projeto.id}>
-                              {projeto.nome}
-                            </option>
-                          ))}
-                        </select>
+                        <Select
+                          value={selectedProjeto}
+                          onChange={(selectedOption) => {
+                            setSelectedProjeto(selectedOption as Projeto);
+                          }}
+                          options={projetos.map((projeto) => ({
+                            label: `${projeto.name}`,
+                            value: projeto.id,
+                            id: projeto.id,
+                            name: projeto.name,
+                            coordinatorRegistration:
+                              projeto.coordinatorRegistration,
+                          }))}
+                          isSearchable
+                          placeholder="Selecione um projeto"
+                          noOptionsMessage={() => "Nenhuma opção disponível"}
+                        />
                       </div>
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer}>
-                        <p className={styles.Nomes}>Descrição</p>
+                        <p className={styles.Nomes}>Descrição*</p>
                         <input
                           type="text"
                           id="descricao"
                           name="descricao"
                           placeholder="Informe uma descrição para o patrimônio"
                           className={styles.input}
+                          value={formData.descricao}
+                          onChange={handleInputChange}
                         />
                       </div>
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer2}>
                         <p className={styles.Nomes}>Responsável</p>
-                        <select
-                          id="responsavel"
-                          name="repsonsavel"
-                          className={styles.input}
-                        >
-                          <option value="">
-                            Selecione o responsável pelo projeto
-                          </option>
-                          {responsavel.map((responsavel) => (
-                            <option key={responsavel.id} value={responsavel.id}>
-                              {responsavel.nome}
-                            </option>
-                          ))}
-                        </select>
+                        <Select
+                          value={selectedResponsavel}
+                          onChange={(selectedOption) =>
+                            setSelectedResponsavel(
+                              selectedOption as Responsavel
+                            )
+                          }
+                          options={
+                            responsaveis
+                              ? responsaveis.map((responsavel) => ({
+                                  label: `${responsavel.registration} - ${responsavel.name}`,
+                                  value: responsavel.registration,
+                                  name: responsavel.name,
+                                  registration: responsavel.registration,
+                                }))
+                              : []
+                          }
+                          isSearchable
+                          placeholder="Selecione um responsável"
+                          noOptionsMessage={() => "Nenhuma opção disponível"}
+                        />
                       </div>
                       <div className={styles.inputContainer2}>
                         <p className={styles.Nomes}>Imagem do Patrimônio</p>
@@ -228,36 +627,45 @@ export default function Home() {
                           name="imagem"
                           accept="image/*"
                           className={styles.input}
+                          onChange={(e) =>
+                            setSelectedImage(e.target.files?.[0] || null)
+                          }
                         />
                       </div>
                     </div>
                   </div>
                   <div className={styles.botoesInferiores}>
-                    <p className={styles.estiloBotao}>Salvar Alterações</p>
+                    <p className={styles.estiloBotao} onClick={handleCadastrar}>
+                      Salvar Alterações
+                    </p>
                   </div>
                 </div>
               )}
               {showEditDelete && (
                 <div className={styles.ContainerPrincipalEdicao}>
                   <div className={styles.containerBuscar}>
-                    <div>
-                      <p className={styles.Nomes}>Número do patrimônio</p>
-                      <Select
-                        value={selectedItem}
-                        onChange={handleItemChange}
-                        options={
-                          searchValue.length > 0? itens.map(
-                          (item) => ({
-                            value: item.id,
-                            label: item.id,
-                          }))
-                          : []
-                        }
-                        placeholder="Digite ou selecione um número de patrimônio"
-                        onInputChange={(newValue) => setSearchValue(newValue)}
-                        isSearchable
-                        noOptionsMessage={() => "Nenhuma opção disponível"}
-                      />
+                    <div className={styles.divisao}>
+                      <div className={styles.inputContainer}>
+                        <p className={styles.Nomes}>Número do patrimônio</p>
+                        <input
+                          type="number"
+                          id="numero"
+                          name="numero"
+                          placeholder="Digite o número do patrimônio"
+                          className={styles.input}
+                          value={formData.numero}
+                          onChange={handleInputChange}
+                          tabIndex={0}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.botaoBuscar}>
+                      <p
+                        className={styles.estiloBotaoBuscar}
+                        onClick={handleBuscarItem}
+                      >
+                        Buscar item
+                      </p>
                     </div>
                   </div>
                   <div className={styles.containerEdicao}>
@@ -270,7 +678,7 @@ export default function Home() {
                           name="id"
                           placeholder="Digite o número do patrimônio"
                           className={styles.input}
-                          value={selectedItemData?.id || ""}
+                          value={selectedItemData?.numberOfPatrimony || ""}
                           readOnly
                         />
                       </div>
@@ -279,16 +687,16 @@ export default function Home() {
                         <input
                           type="text"
                           id="nome"
-                          name="nome"
+                          name="name"
                           placeholder="Digite o nome do patrimônio"
                           className={styles.input}
                           disabled={!selectedItem}
-                          value={selectedItemData?.nome || ""}
+                          value={selectedItemData?.name || ""}
                           onChange={(e) => {
                             setSelectedItemData(
                               (prevSelectedItemData): PatrimonioItem => ({
                                 ...prevSelectedItemData!,
-                                nome: e.target.value,
+                                name: e.target.value,
                               })
                             );
                           }}
@@ -303,12 +711,12 @@ export default function Home() {
                           name="localizacao"
                           className={styles.input}
                           disabled={!selectedItem}
-                          value={selectedItemData?.local || ""}
+                          value={selectedItemData?.locationId || ""}
                           onChange={(e) => {
                             setSelectedItemData(
                               (prevSelectedItemData): PatrimonioItem => ({
                                 ...prevSelectedItemData!,
-                                local: parseInt(e.target.value, 10),
+                                locationId: parseInt(e.target.value, 10),
                               })
                             );
                           }}
@@ -316,7 +724,8 @@ export default function Home() {
                           <option value="">Selecione a localização</option>
                           {localizacoes.map((localizacao) => (
                             <option key={localizacao.id} value={localizacao.id}>
-                              {localizacao.nome}
+                              {localizacao.departmentBuilding} -{" "}
+                              {localizacao.room}
                             </option>
                           ))}
                         </select>
@@ -328,12 +737,12 @@ export default function Home() {
                           name="projeto"
                           className={styles.input}
                           disabled={!selectedItem}
-                          value={selectedItemData?.projeto || ""}
+                          value={selectedItemData?.projectId || ""}
                           onChange={(e) => {
                             setSelectedItemData(
                               (prevSelectedItemData): PatrimonioItem => ({
                                 ...prevSelectedItemData!,
-                                projeto: parseInt(e.target.value, 10),
+                                projectId: parseInt(e.target.value, 10),
                               })
                             );
                           }}
@@ -343,7 +752,7 @@ export default function Home() {
                           </option>
                           {projetos.map((projeto) => (
                             <option key={projeto.id} value={projeto.id}>
-                              {projeto.nome}
+                              {projeto.name}
                             </option>
                           ))}
                         </select>
@@ -359,12 +768,12 @@ export default function Home() {
                           placeholder="Informe uma descrição para o patrimônio"
                           className={styles.input}
                           disabled={!selectedItem}
-                          value={selectedItemData?.descricao || ""}
+                          value={selectedItemData?.description || ""}
                           onChange={(e) => {
                             setSelectedItemData(
                               (prevSelectedItemData): PatrimonioItem => ({
                                 ...prevSelectedItemData!,
-                                descricao: e.target.value,
+                                description: e.target.value,
                               })
                             );
                           }}
@@ -379,12 +788,17 @@ export default function Home() {
                           name="responsavel"
                           className={styles.input}
                           disabled={!selectedItem}
-                          value={selectedItemData?.responsavel || ""}
+                          value={
+                            selectedItemData?.responsibleRegistration || ""
+                          }
                           onChange={(e) => {
                             setSelectedItemData(
                               (prevSelectedItemData): PatrimonioItem => ({
                                 ...prevSelectedItemData!,
-                                responsavel: parseInt(e.target.value, 10),
+                                responsibleRegistration: parseInt(
+                                  e.target.value,
+                                  10
+                                ),
                               })
                             );
                           }}
@@ -392,9 +806,12 @@ export default function Home() {
                           <option value="">
                             Selecione o responsável pelo projeto
                           </option>
-                          {responsavel.map((responsavel) => (
-                            <option key={responsavel.id} value={responsavel.id}>
-                              {responsavel.nome}
+                          {responsaveis.map((responsavel) => (
+                            <option
+                              key={responsavel.registration}
+                              value={responsavel.registration}
+                            >
+                              {responsavel.name}
                             </option>
                           ))}
                         </select>
@@ -412,8 +829,13 @@ export default function Home() {
                     </div>
                   </div>
                   <div className={styles.botoesInferiores}>
-                    <p className={styles.estiloBotao}>Salvar Alterações</p>
-                    <p className={styles.estiloBotaoExcluir}>
+                    <p
+                      className={styles.estiloBotao}
+                      onClick={handleSalvarAlteracoes}
+                    >
+                      Salvar Alterações
+                    </p>
+                    <p className={styles.estiloBotaoExcluir} onClick = {handleExcluirItem}>
                       Excluir patrimônio
                     </p>
                   </div>

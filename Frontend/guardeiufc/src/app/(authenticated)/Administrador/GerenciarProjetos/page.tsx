@@ -7,11 +7,6 @@ import { AxiosResponse, AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-interface ProjetoSelecionado {
-  nomeProjeto: string;
-  idProjeto: number;
-  idResponsavel: number;
-}
 interface Responsavel {
   registration: number;
   name: string;
@@ -189,7 +184,7 @@ function EditarProjetos() {
   };
 
   const excluirProjeto = () => {
-    if (!selectedProjeto || !selectedResponsavel || !editedProjectName.trim()) {
+    if (!selectedProjeto || !selectedResponsavel) {
       Swal.fire({
         icon: "warning",
         text: "Forneça as informações necessárias!",
