@@ -382,7 +382,6 @@ export default function AcompanharRelatorios() {
                   readOnly
                 />
                 { selectedRequestStatus != 'Pendente' && (
-                  <div className={styles.inputContainer1}>
                     <div className={styles.verticalContainer}>
                       <div className={styles.horizontalContainer}>
                         <p className={styles.Nomes}>Matrícula Respondente</p>
@@ -395,7 +394,7 @@ export default function AcompanharRelatorios() {
                           value={formState.matriculaRespondente}
                         />
                       </div>
-                      <div className={styles.horizontalContainer}>
+                      <div className={styles.horizontalContainer2}>
                         <p className={styles.Nomes}>Data Resposta</p>
                         <input
                           type="text"
@@ -406,8 +405,7 @@ export default function AcompanharRelatorios() {
                           value={formState.dataResposta}
                         />
                       </div>
-                    </div>
-                  </div>                  
+                    </div>                 
                 )}                
                 {/* ÁREA DE INDEFERIMENTO: Mostra os detalhes do indeferimento da solicitação */}
                 { selectedRequestStatus == 'Indeferida' && (
@@ -436,7 +434,6 @@ export default function AcompanharRelatorios() {
             { visualizar && selectedRequestStatus == 'Pendente' && (
               <>
                 <div className={styles.containerSecundario}>
-                  <div className={styles.divisao}>
                     <div>
                       <p className={styles.Nomes}>Status</p>
                       <div className={styles.radioGroup}>
@@ -490,7 +487,6 @@ export default function AcompanharRelatorios() {
                       )}
                     </div>
                   </div>
-                </div>
                 <div className={styles.botoesInferiores}>
                   <p className={styles.estiloBotao} onClick={handleRespondToRequest} tabIndex={0}>
                     Responder Solicitação
