@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./page.module.css";
 import Select from "react-select";
 import { axios } from "@/config/axios";
@@ -52,9 +52,8 @@ interface Local {
 export default function Home() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEditDelete, setShowEditDelete] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
   const router = useRouter();
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [patrimonios, setPatrimonios] = useState<PatrimonioItem[]>([]);
@@ -149,6 +148,9 @@ export default function Home() {
       coordinatorRegistration: 0,
       id: 0,
     });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const camposPreenchidos = () => {
@@ -648,6 +650,7 @@ export default function Home() {
                           name="imagem"
                           accept="image/*"
                           className={styles.input}
+                          ref={fileInputRef}
                           onChange={(e) =>
                             setSelectedImage(e.target.files?.[0] || null)
                           }
@@ -702,7 +705,7 @@ export default function Home() {
                           type="text"
                           id="id"
                           name="id"
-                          placeholder="Digite o número de patrimônio"
+                          placeholder="Número do patrimônio"
                           className={styles.input}
                           value={selectedItemData?.numberOfPatrimony || ""}
                           readOnly
