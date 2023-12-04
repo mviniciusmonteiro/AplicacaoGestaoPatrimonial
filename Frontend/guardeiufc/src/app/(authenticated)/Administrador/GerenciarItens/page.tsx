@@ -280,6 +280,10 @@ export default function Home() {
       newFormData.append("projectId", itemData.projectId.toString());
     }
 
+    if (selectedImage) {
+      newFormData.append("image", selectedImage);
+    }
+
     axios
       .put(`/item/${itemData.numberOfPatrimony}`, newFormData, {
         headers: { Accept: "*/*", "Content-Type": `multipart/form-data` },
@@ -868,6 +872,10 @@ export default function Home() {
                           disabled={!selectedItem}
                           accept="image/*"
                           className={styles.input}
+                          ref={fileInputRef}
+                          onChange={(e) =>
+                            setSelectedImage(e.target.files?.[0] || null)
+                          }
                         />
                       </div>
                     </div>
