@@ -164,18 +164,19 @@
 
 .inputContainer {
   flex-grow: 1;
+  margin-right: 4%;
   flex-direction: column;
 }
 
 .inputContainer1 {
-  margin-right: 5%;
+  margin-right: 4%;
   flex: 1;
   flex-direction: column;
 }
 
 .inputContainer2 {
   flex: 2;
-  margin-right: 5%;
+  margin-right: 4%;
   flex-direction: column;
 }
 

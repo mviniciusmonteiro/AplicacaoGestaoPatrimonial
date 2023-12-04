@@ -26,7 +26,7 @@ interface FormData {
 
 interface ItemOpcao {
   value: number;
-  label: number;
+  label: string;
 }
 interface Responsavel {
   registration: number;
@@ -57,6 +57,7 @@ export default function Home() {
 
   const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [patrimonios, setPatrimonios] = useState<PatrimonioItem[]>([]);
 
   const [localizacoes, setLocalizacoes] = useState<Local[]>([
     { id: 1, departmentBuilding: "", room: "", value: 0 },
@@ -142,6 +143,7 @@ export default function Home() {
     setSelectedLocal(null);
     setSelectedItem(null);
     setSelectedItemData(null);
+    setSelectedImage(null);
     setSelectedProjeto({
       name: "",
       coordinatorRegistration: 0,
@@ -153,7 +155,7 @@ export default function Home() {
     return (
       selectedItemData?.name.trim() !== "" &&
       selectedItemData?.description.trim() !== "" &&
-      selectedItemData?.locationId !== undefined
+      !isNaN(selectedItemData?.locationId || NaN)
     );
   };
 
@@ -193,7 +195,7 @@ export default function Home() {
 
     axios
       .post("/item", newFormData, {
-        headers: { "Accept": '*/*', "Content-Type": `multipart/form-data` }
+        headers: { Accept: "*/*", "Content-Type": `multipart/form-data` },
       })
       .then((response: AxiosResponse) => {
         if (response.status == 201) {
@@ -252,6 +254,7 @@ export default function Home() {
       });
       return;
     }
+    console.log(selectedItemData.locationId)
     const itemData = selectedItemData ?? {
       numberOfPatrimony: 0,
       name: "",
@@ -274,10 +277,10 @@ export default function Home() {
     if (itemData.projectId) {
       newFormData.append("projectId", itemData.projectId.toString());
     }
-    
+
     axios
       .put(`/item/${itemData.numberOfPatrimony}`, newFormData, {
-        headers: { "Accept": '*/*', "Content-Type": `multipart/form-data` }
+        headers: { Accept: "*/*", "Content-Type": `multipart/form-data` },
       })
       .then((response: AxiosResponse) => {
         if (response.status == 200) {
@@ -342,8 +345,7 @@ export default function Home() {
               label: itemEncontrado.nome,
             });
             setSelectedItemData(itemEncontrado);
-          }
-          else {
+          } else {
             Swal.fire({
               icon: "info",
               text: "Item não encontrado com o número fornecido.",
@@ -362,11 +364,11 @@ export default function Home() {
 
   const handleExcluirItem = () => {
     // Verifica se o número do item foi fornecido no campo de entrada
-    const numeroDoItem = Number(formData.numero);
+    const numeroDoItem = Number(selectedItemData?.numberOfPatrimony);
     if (!numeroDoItem) {
       Swal.fire({
         icon: "warning",
-        text: "Digite um número válido para excluir o item.",
+        text: "Selecione um item para excluir!",
       });
       return;
     }
@@ -393,7 +395,7 @@ export default function Home() {
         } else if (error.response?.status == 403) {
           Swal.fire({
             icon: "error",
-            text: "Faça login para cadastrar excluir um item!",
+            text: "Faça login para excluir um item!",
           }).then(({ value }) => {
             if (value === true) {
               router.push("/TelaLogin");
@@ -484,6 +486,21 @@ export default function Home() {
           });
         }
         console.error(error);
+      });
+
+    axios
+      .get("/item")
+      .then((response) => {
+        if (response.status === 200) {
+          setPatrimonios(response.data.items);
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar os itens:", error);
+        Swal.fire({
+          icon: "error",
+          text: "Ocorreu um erro ao buscar os itens. Tente novamente.",
+        });
       });
   }, [showCreate, selectedResponsavel, selectedLocal, selectedProjeto]);
 
@@ -577,7 +594,7 @@ export default function Home() {
                             id: projeto.id,
                             name: projeto.name,
                             coordinatorRegistration:
-                              projeto.coordinatorRegistration,
+                            projeto.coordinatorRegistration,
                           }))}
                           isSearchable
                           placeholder="Selecione um projeto"
@@ -587,7 +604,7 @@ export default function Home() {
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer}>
-                        <p className={styles.Nomes}>Descrição*</p>
+                        <p className={styles.Nomes}>Descrição</p>
                         <input
                           type="text"
                           id="descricao"
@@ -650,26 +667,31 @@ export default function Home() {
                   <div className={styles.containerBuscar}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer}>
-                        <p className={styles.Nomes}>Número do patrimônio</p>
-                        <input
-                          type="number"
-                          id="numero"
-                          name="numero"
-                          placeholder="Digite o número de patrimônio"
-                          className={styles.input}
-                          value={formData.numero}
-                          onChange={handleInputChange}
-                          tabIndex={0}
+                        <p className={styles.Nomes}>Selecione um item</p>
+                        <Select
+                          value={selectedItem}
+                          onChange={(selectedOption) => {
+                            const selectedItemValue =
+                              selectedOption as ItemOpcao;
+                            setSelectedItem(selectedItemValue);
+                            // Encontrar os dados do item selecionado na lista completa
+                            const selectedPatrimonio = patrimonios.find(
+                              (item) =>
+                                item.numberOfPatrimony ===
+                                selectedItemValue.value
+                            );
+                            // Definir os dados do item selecionado
+                            setSelectedItemData(selectedPatrimonio || null);
+                          }}
+                          options={patrimonios.map((patrimonio) => ({
+                            label:`${patrimonio.numberOfPatrimony} - ${patrimonio.name}`,
+                            value: patrimonio.numberOfPatrimony,
+                          }))}
+                          isSearchable
+                          placeholder="Digite e selecione um item"
+                          noOptionsMessage={() => "Nenhum item disponível"}
                         />
                       </div>
-                    </div>
-                    <div className={styles.botaoBuscar}>
-                      <p
-                        className={styles.estiloBotaoBuscar}
-                        onClick={handleBuscarItem}
-                      >
-                        Buscar item
-                      </p>
                     </div>
                   </div>
                   <div className={styles.containerEdicao}>
@@ -687,7 +709,7 @@ export default function Home() {
                         />
                       </div>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Nome</p>
+                        <p className={styles.Nomes}>Nome*</p>
                         <input
                           type="text"
                           id="nome"
@@ -709,7 +731,7 @@ export default function Home() {
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer2}>
-                        <p className={styles.Nomes}>Localização</p>
+                        <p className={styles.Nomes}>Localização*</p>
                         <select
                           id="localizacao"
                           name="localizacao"
@@ -764,7 +786,7 @@ export default function Home() {
                     </div>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer}>
-                        <p className={styles.Nomes}>Descrição</p>
+                        <p className={styles.Nomes}>Descrição*</p>
                         <input
                           type="text"
                           id="descricao"
@@ -839,7 +861,10 @@ export default function Home() {
                     >
                       Salvar Alterações
                     </p>
-                    <p className={styles.estiloBotaoExcluir} onClick = {handleExcluirItem}>
+                    <p
+                      className={styles.estiloBotaoExcluir}
+                      onClick={handleExcluirItem}
+                    >
                       Excluir item
                     </p>
                   </div>
