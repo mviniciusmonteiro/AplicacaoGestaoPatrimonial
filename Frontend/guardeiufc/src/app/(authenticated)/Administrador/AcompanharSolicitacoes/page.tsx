@@ -468,7 +468,7 @@ export default function AcompanharRelatorios() {
                       {newStatus === "Deferida" && (
                         <>
                           <p className={styles.Nomes}>Anexar relatório*</p>
-                          <input id="chooseFile" type="file" onChange={handleFileChange} tabIndex={0}></input>
+                          <input id="chooseFile" type="file" accept="application/pdf" onChange={handleFileChange} tabIndex={0}></input>
                         </>
                       )}
                       {newStatus === "Indeferida" && (

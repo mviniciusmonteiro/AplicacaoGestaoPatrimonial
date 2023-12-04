@@ -519,7 +519,7 @@ export default function Home() {
                   <div className={styles.containerCriacao}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer1}>
-                        <p className={styles.Nomes}>Número de patrimônio*</p>
+                        <p className={styles.Nomes}>Número de Patrimônio*</p>
                         <input
                           type="number"
                           id="id"
@@ -650,7 +650,7 @@ export default function Home() {
                   <div className={styles.containerBuscar}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer}>
-                        <p className={styles.Nomes}>Número do patrimônio</p>
+                        <p className={styles.Nomes}>Número de Patrimônio</p>
                         <input
                           type="number"
                           id="numero"
@@ -675,7 +675,7 @@ export default function Home() {
                   <div className={styles.containerEdicao}>
                     <div className={styles.divisao}>
                       <div className={styles.inputContainer1}>
-                        <p className={styles.Nomes}>Número do patrimônio</p>
+                        <p className={styles.Nomes}>Número de Patrimônio</p>
                         <input
                           type="text"
                           id="id"
@@ -822,6 +822,10 @@ export default function Home() {
                       </div>
                       <div className={styles.inputContainer2}>
                         <p className={styles.Nomes}>Imagem do Item</p>
+                          <img src={window.location.origin + `/items-images/${selectedItemData?.imageName}`} alt='Imagem atualmente definida para o item' width={'60vh'} height={'60vh'}></img>
+                      </div>
+                      <div className={styles.inputContainer2}>
+                        <p className={styles.Nomes}>Nova Imagem do Item</p>
                         <input
                           type="file"
                           name="imagem"

@@ -38,3 +38,6 @@ next-env.d.ts
 
 # environment
 .env
+
+# items images
+public/items-images/*

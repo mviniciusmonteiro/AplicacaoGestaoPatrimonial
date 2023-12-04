@@ -120,8 +120,7 @@ const SidebarMenu = () => {
             <li
               onClick={() => router.push("/Administrador/GerenciarResponsaveis")}
             >
-              <RiUserSettingsLine className={styles.iconsMenu} /> Gerenciar
-              responsáveis
+              <RiUserSettingsLine className={styles.iconsMenu} /> Gerenciar funcionários
             </li>
           </ul>
         </nav>

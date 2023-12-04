@@ -35,7 +35,7 @@ export default function Header() {
     if (userRole == null) {
       router.push("/TelaLogin");
     } else if (userRole == 'admin') {
-      router.push("/Administrador/EditarPerfilAdmin");
+      router.push("/Administrador/EditarPerfilAdm");
     } else {
       router.push("/Usuario/EditarPerfilFuncionario");
     }

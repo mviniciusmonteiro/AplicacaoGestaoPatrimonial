@@ -264,7 +264,7 @@ function EditarResponsavel() {
     <div>
       <div className={styles.main}>
         <div className={styles.estiloCadastro}>
-          <p>Gerenciar Responsáveis</p>
+          <p>Gerenciar Funcionários</p>
         </div>
         <div className={styles.botoes}>
           <button
@@ -273,7 +273,7 @@ function EditarResponsavel() {
             }`}
             onClick={telaCriacaoClicada}
           >
-            Cadastrar Responsável
+            Cadastrar Funcionário
           </button>
           <button
             className={`${styles.EstilobotaoMenu} ${
@@ -281,7 +281,7 @@ function EditarResponsavel() {
             }`}
             onClick={telaEdicaoClicada}
           >
-            Editar/Excluir Responsável
+            Editar/Excluir Funcionário
           </button>
         </div>
         {showCreate && (
@@ -300,7 +300,7 @@ function EditarResponsavel() {
                 />
               </div>
               <div className={styles.inputContainer2}>
-                <p className={styles.Nomes}>Nome do Responsável</p>
+                <p className={styles.Nomes}>Nome do Funcionário</p>
                 <input
                   type="text"
                   id="nome"
@@ -336,7 +336,7 @@ function EditarResponsavel() {
             <div className={styles.containerBuscar}>
               <div className={styles.divisao}>
                 <div className={styles.inputContainer}>
-                  <p className={styles.Nomes}>Selecione um Responsável</p>
+                  <p className={styles.Nomes}>Selecione um Funcionário</p>
                   <Select
                     value={selectedResponsavel}
                     onChange={(selectedOption) =>
@@ -354,7 +354,7 @@ function EditarResponsavel() {
                         : []
                     }
                     isSearchable
-                    placeholder="Digite ou selecione um responsável"
+                    placeholder="Digite ou selecione um funcionário"
                     noOptionsMessage={() => "Nenhuma opção disponível"}
                   />
                 </div>
