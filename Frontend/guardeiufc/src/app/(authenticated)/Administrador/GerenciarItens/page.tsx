@@ -497,12 +497,23 @@ export default function Home() {
           setPatrimonios(response.data.items);
         }
       })
-      .catch((error) => {
-        console.error("Erro ao buscar os itens:", error);
-        Swal.fire({
-          icon: "error",
-          text: "Ocorreu um erro ao buscar os itens. Tente novamente.",
-        });
+      .catch((error: AxiosError) => {
+        if (error.response?.status == 403) {
+          Swal.fire({
+            icon: "error",
+            text: "Faça login para acessar items!",
+          }).then(({ value }) => {
+            if (value == true) {
+              router.push("/TelaLogin");
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: `Ocorreu um erro ao tentar inicializar a tela. Tente novamente!\nCódigo do erro: ${error.response?.status}`,
+          });
+        }
+        console.error(error);
       });
   }, [showCreate, selectedResponsavel, selectedLocal, selectedProjeto]);
 
