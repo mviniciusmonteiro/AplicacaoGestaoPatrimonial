@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { FaCircleUser } from "react-icons/fa6";
-import { FaUserEdit } from "react-icons/fa";
-import { CiLogout } from "react-icons/ci";
+import { FaUserEdit, FaSignOutAlt } from "react-icons/fa";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { getStoredItem, removeStoredItem } from "@/config/localStorage";
@@ -34,10 +33,8 @@ export default function Header() {
     const userRole = getStoredItem('userRole');
     if (userRole == null) {
       router.push("/TelaLogin");
-    } else if (userRole == 'admin') {
-      router.push("/Administrador/EditarPerfilAdm");
     } else {
-      router.push("/Usuario/EditarPerfilFuncionario");
+      router.push("/Comuns/EditarPerfilFuncionario");
     }
   }
 
@@ -81,7 +78,7 @@ export default function Header() {
                   Editar Perfil
                 </div>
                 <div onClick={() => { handleLogoff() }}>
-                  <CiLogout className={styles.iconMenu}/>
+                  <FaSignOutAlt className={styles.iconMenu}/>
                   Sair
                 </div>
               </div>
