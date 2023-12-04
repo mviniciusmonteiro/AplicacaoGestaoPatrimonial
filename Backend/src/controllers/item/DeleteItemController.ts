@@ -22,7 +22,7 @@ class DeleteItemController {
 
             // Deletando imagem
             if (item.imageName) {
-                fs.unlinkSync(process.env.UPLOADS_PATH + '/images/' + item.imageName);
+                fs.unlinkSync(process.env.UPLOADS_IMG_PATH + '/' + item.imageName);
             }
             // Deletando item
             await database.item.delete({
