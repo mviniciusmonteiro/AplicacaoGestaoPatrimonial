@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { database } from "../../database";
+import { Prisma } from "@prisma/client";
 
 class DeleteLocalController {
     async handle(req: Request, res: Response) {
@@ -24,6 +25,11 @@ class DeleteLocalController {
 
             return res.status(200).json({deletedLocal});
         } catch (error) {
+            // Tratando erro de restrição de chave
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == 'P2003') {
+                // Um erro de restrição de chave ocorreu, informa o fato
+                return res.status(400).json({mensagem: "Local não pode ser excluído pois há pelo menos um item vinculado a ele!"});
+            }
             console.error(error);
             throw(error);
         }
