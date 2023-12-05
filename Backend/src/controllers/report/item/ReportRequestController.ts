@@ -15,7 +15,7 @@ class ReportRequestController {
             const requestedBy = loggedUser?.employeeRegistration;
             const newReportRequest = await database.reportRequest.create({
                 data: {
-                    requestedBy,
+                    requestedBy: requestedBy ? requestedBy : 0,
                     description,
                     motiveOfRequest,
                     status: 'Pendente'
