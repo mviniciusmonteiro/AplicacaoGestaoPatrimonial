@@ -8,18 +8,19 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
 interface Responsavel {
-  registration: number;
+  registration: string;
   name: string;
   email: string;
 }
 
 interface FormData{
-  registration: number;
+  registration: string;
   name: string;
   email: string;
 }
 interface ErrorInfo {
   message: string;
+  mensagem: string;
 }
 
 function EditarResponsavel() {
@@ -27,18 +28,16 @@ function EditarResponsavel() {
   const [showEditDelete, setShowEditDelete] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
-    registration: 0,
+    registration: '',
     email:''
   });
   const router = useRouter();
-
-  const [searchValue, setSearchValue] = useState("");
 
   const [selectedResponsavel, setSelectedResponsavel] =
     useState<Responsavel | null>(null);
   const [responsaveis, setResponsaveis] = useState<Responsavel[]>([
     {
-      registration: 1,
+      registration: "",
       name: "",
       email: "",
     },
@@ -69,14 +68,14 @@ function EditarResponsavel() {
   const limparCampos = () => {
     setFormData({
       name: "",
-      registration: 0,
+      registration: '',
       email: "",
     });
     setSelectedResponsavel(null);
   };
 
-  const validateData = (name: String, registration: number, email: string) => {
-    if (name == "" || registration == 0 || email == ""){
+  const validateData = (name: String, registration: string, email: string) => {
+    if (name == "" || registration == "" || email == ""){
       return false;
     }
     return true;
@@ -88,11 +87,10 @@ function EditarResponsavel() {
       formData.registration,
       formData.email
     );
-    
-    if (!dataIsValid) {
+    if (!dataIsValid || isNaN(Number(formData.registration))) {
       Swal.fire({
         icon: "warning",
-        text: "Informe todos os campos para cadastrar um funcionário!",
+        text: "Informe todos os campos corretamente para cadastrar um funcionário!",
       });
       return;
     }
@@ -116,7 +114,7 @@ function EditarResponsavel() {
           const error_info  = error.response?.data as ErrorInfo;
           Swal.fire({
             icon: 'error',
-            text: `${error_info.message}`
+            text: `${error_info.mensagem}`
           });
         }
         else if (error.response?.status == 403) {
@@ -135,6 +133,7 @@ function EditarResponsavel() {
         console.error(error);
       });
   };
+
   const excluirResponsavel = () =>{
     if (!selectedResponsavel){
       Swal.fire({
@@ -143,7 +142,7 @@ function EditarResponsavel() {
       });
       return;
     }
-  const funcId = selectedResponsavel?.registration;
+  const funcId = Number(selectedResponsavel?.registration);
   axios
       .delete(`/employee/${funcId}`)
       .then((response: AxiosResponse) => {
@@ -165,14 +164,14 @@ function EditarResponsavel() {
             router.push("/TelaLogin");
           });
         }
-        let mensagem = JSON.stringify(error.response?.data);
-        let mensagemList = mensagem.split('"');
-        if (error.response?.status == 404) {
+        else if (error.response?.status == 400) {
+          const error_info  = error.response?.data as ErrorInfo;
           Swal.fire({
-            icon: "error",
-            text: `${mensagemList[3] + "!"}`,
+            icon: 'error',
+            text: `${error_info.mensagem}`
           });
-        } else {
+        }
+         else {
           Swal.fire({
             icon: "error",
             text: `Ocorreu um erro ao tentar editar local.\nCódigo do erro: ${error.response?.status}`,
@@ -190,9 +189,7 @@ function EditarResponsavel() {
       });
       return;
     }
-  const funcId = selectedResponsavel?.registration;
-  console.log(selectedResponsavel);
-  console.log(funcId);
+  const funcId = Number(selectedResponsavel?.registration);
     axios
       .put(`/employee/${funcId}`, {
         name: selectedResponsavel?.name,
@@ -212,7 +209,7 @@ function EditarResponsavel() {
           const error_info  = error.response?.data as ErrorInfo;
           Swal.fire({
             icon: 'error',
-            text: `${error_info.message}`
+            text: `${error_info.mensagem}`
           });
         }
         else if (error.response?.status == 403) {
@@ -373,7 +370,7 @@ function EditarResponsavel() {
                     setSelectedResponsavel((prev) => ({
                       ...prev,
                       name: e.target.value,
-                      registration: prev?.registration || 0,
+                      registration: prev?.registration || "",
                       email: prev?.email || '',
                     }))
                   }
@@ -396,7 +393,7 @@ function EditarResponsavel() {
                       setSelectedResponsavel((prev) => ({
                         ...prev,
                         name: prev?.name || '',
-                        registration: prev?.registration || 0,
+                        registration: prev?.registration || "",
                         email: e.target.value,
                       }))
                     }
