@@ -131,6 +131,13 @@ function EditarLocal() {
 
   //Edicao do Local
   const editarLocal = () => {
+    if (!selectedLocal?.departmentBuilding.trim() || !selectedLocal?.room.trim()) {
+      Swal.fire({
+        icon: "warning",
+        text: "Informe o bloco e a sala para editar um local!",
+      });
+      return;
+    }
     if (!selectedLocal) {
       Swal.fire({
         icon: "warning",

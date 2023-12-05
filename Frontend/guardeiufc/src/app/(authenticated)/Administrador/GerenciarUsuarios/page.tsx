@@ -131,12 +131,34 @@ export default function GerenciarUsuarios() {
     return true;
   };
 
+  const validateDataEdicao = (
+    nome: string,
+    email: string,
+    nomeUsuario: string,
+    senha: string,
+    senhaConfirmacao: string
+  ) => {
+    if (
+      nome == "" ||
+      email == "" ||
+      nomeUsuario == ""
+    ){
+      return false
+    }
+    if (changePassword){
+      if (senha == "" || senhaConfirmacao == ""){
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleShowPasswordArea = () => {
     const passwordComponent = document.getElementById(
-      "password"
+      "senha"
     ) as HTMLInputElement;
     const passwordConfirmComponent = document.getElementById(
-      "passwordConfirmation"
+      "senhaConfirmacao"
     ) as HTMLInputElement;
     // Limpa caixas de senha e confirmação de senha
     if (passwordComponent) {
@@ -148,7 +170,7 @@ export default function GerenciarUsuarios() {
     // Atualiza formData
     setFormData({
       ...formData,
-      ...{ password: "", passwordConfirmation: "" },
+      ...{ senha: "", senhaConfirmacao: "" },
     });
     setPasswordEquals(true);
     setChangePassword(!changePassword);
@@ -240,6 +262,22 @@ export default function GerenciarUsuarios() {
       });
       return;
     }
+
+    const dataIsValid = validateDataEdicao(
+      editedUsuarioUser,
+      selectedItemData?.name ? selectedItemData?.name : "",
+      selectedItemData?.email ? selectedItemData?.email: "",
+      formData.senha,
+      formData.senhaConfirmacao
+    );
+    if (!dataIsValid){
+      Swal.fire({
+        icon: "warning",
+        text: "Preencha as informações corretas para edição!",
+      });
+      return;
+    }
+
     const data = {
       username: editedUsuarioUser,
       ...(changePassword && { password: formData.senha }),
@@ -248,7 +286,6 @@ export default function GerenciarUsuarios() {
       isAdmin: editedAdmin === "sim",
     };
     const nomeUser = selectedUsuario?.username;
-    console.log(editedUsuarioUser);
     axios
       .put(`/user/${nomeUser}`, data)
       .then((response: AxiosResponse) => {
@@ -309,7 +346,7 @@ export default function GerenciarUsuarios() {
       })
       .catch((error: AxiosError<ErrorResponse>) => {
         if (error.response?.status === 400) {
-          const errorMessage = error.response?.data?.message;
+          const errorMessage = error.response?.data?.mensagem;
           if (errorMessage) {
             Swal.fire({
               icon: "error",
@@ -688,6 +725,7 @@ export default function GerenciarUsuarios() {
                             placeholder="Digite sua nova senha"
                             onChange={handleInputChange}
                             className={styles.input}
+                            value = {formData.senha}
                           />
                         </div>
                         <div className={styles.inputContainer}>
@@ -700,6 +738,7 @@ export default function GerenciarUsuarios() {
                             placeholder="Confirme sua nova senha"
                             onChange={handleInputChange}
                             className={styles.input}
+                            value = {formData.senhaConfirmacao}
                           />
                         </div>
                       </div>
