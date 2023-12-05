@@ -31,7 +31,7 @@ class LoginController {
                 return res.cookie('access_token', token, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production"
-                }).status(200).json({mensagem: "Login realizado com sucesso"});
+                }).status(200).json({isAdmin: user.isAdmin});
             }
             return res.status(400).json({mensagem: "Usuário e/ou senha inválidos"});
         } catch (error) {

@@ -24,15 +24,16 @@ class RespondToReportRequest {
             const loggedUser = await database.user.findFirst({
                 where: { id: req.userId }
             });
+
             // Salvando resposta da solicitação de relatório
             const answeredRequest = await database.reportRequest.update({
                 where: { id: Number(id) },
                 data: {
-                    status: motiveOfIndefer ? "Indeferida" : "Deferida",
+                    status: req.file === undefined ? "Indeferida" : "Deferida",
                     answeredBy: loggedUser?.employeeRegistration,
                     answeredAt: moment(),
                     motiveOfIndefer,
-                    filePath: motiveOfIndefer ? null : req.file.filename
+                    filePath: req.file === undefined ? null : req.file.filename
                 }
             });
             return res.status(200).json({answeredRequest});

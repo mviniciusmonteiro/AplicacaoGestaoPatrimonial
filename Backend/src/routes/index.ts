@@ -32,8 +32,6 @@ import { DeleteEmployeeController } from "../controllers/employee/DeleteEmployee
 import { ReportRequestController } from "../controllers/report/item/ReportRequestController";
 import { GetReportRequestByStatusController } from "../controllers/report/item/GetReportRequestByStatusController";
 import { GetCountPendentReportReqController } from "../controllers/report/item/GetCountPendentReportReqController";
-import { GetCountOfUsersController } from "../controllers/report/user/GetCountOfUsersController";
-import { GetCountOfItemsController } from "../controllers/report/user/GetCountOfItemsController";
 import { RespondToReportRequest } from "../controllers/report/item/RespondToReportRequest";
 import { ValidateRecoveryCodeController } from "../controllers/password-recovery/ValidateRecoveryCodeController";
 import { RequestRecoveryCodeController } from "../controllers/password-recovery/RequestRecoveryCodeController";
@@ -41,6 +39,9 @@ import { VerifyRecoveryCode } from "../middleware/VerifyRecoveryCode";
 import { RedefinePasswordController } from "../controllers/password-recovery/RedefinePasswordController";
 import { DownloadPDFReportController } from "../controllers/report/DownloadPDFReportController";
 import { DownloadAnexedPDFController } from "../controllers/report/DownloadAnexedPDFController";
+import { GetOurNumbersController } from "../controllers/report/user/GetOurNumbersController";
+import { GetLoggedUserDataController } from "../controllers/user/GetLoggedUserDataController";
+import { GetAllItemsController } from "../controllers/item/GetAllItemsController";
 
 const router = Router();
 const multer = require('../config/multer');
@@ -50,22 +51,22 @@ router.post('/login', new LoginController().handle);
 router.post('/sign-up', new CreateUserControllerCommom().handle);
 router.post('/request-recovery-code', new RequestRecoveryCodeController().handle);
 router.post('/validate-recovery-code', new ValidateRecoveryCodeController().handle);
-router.get('/users-count', new GetCountOfUsersController().handle);
-router.get('/items-count', new GetCountOfItemsController().handle);
+router.get('/our-numbers', new GetOurNumbersController().handle);
 
 // Rota de recuperação de senha (requer verificação do código de recuperação)
 router.post('/redefine-password', new VerifyRecoveryCode().handle, new RedefinePasswordController().handle);
 
 // Rotas que requerem autorização comum (apenas autenticado)
-router.get('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
+router.post('/logout', new AuthorizationJWTCommom().handle, new LogoffController().handle);
 router.get('/report/items', new AuthorizationJWTCommom().handle, new GetItemsReportController().handle);
+router.get('/logged-user', new AuthorizationJWTCommom().handle, new GetLoggedUserDataController().handle);
 router.put('/user/:username?', new AuthorizationJWTCommom().handle, new UpdateUserController().handle);
 router.get('/local', new AuthorizationJWTCommom().handle, new GetAllLocationsController().handle);
 router.get('/project', new AuthorizationJWTCommom().handle, new GetAllProjectsController().handle);
 router.post('/report-request', new AuthorizationJWTCommom().handle, new ReportRequestController().handle);
 router.get('/report-request/:status?', new AuthorizationJWTCommom().handle, new GetReportRequestByStatusController().handle);
 router.get('/pdf-report', new AuthorizationJWTCommom().handle, new DownloadPDFReportController().handle);
-router.get('/download-anexed-pdf/:requestId', new AuthorizationJWTCommom().handle, new DownloadAnexedPDFController().handle);
+router.get('/download-anexed-pdf/:filename', new AuthorizationJWTCommom().handle, new DownloadAnexedPDFController().handle);
 
 // Rotas que requerem autorização de administrador (autenticado e administrador)
 router.post('/user', new AuthorizationJWTAdmin().handle, new CreateUserControllerAdmin().handle);
@@ -73,6 +74,7 @@ router.get('/user/:username', new AuthorizationJWTAdmin().handle, new GetUserByU
 router.get('/user', new AuthorizationJWTAdmin().handle, new GetAllUsersController().handle);
 router.delete('/user/:username', new AuthorizationJWTAdmin().handle, new DeleteUserController().handle);
 router.post('/item', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new CreateItemController().handle);
+router.get('/item', new AuthorizationJWTAdmin().handle, new GetAllItemsController().handle);
 router.get('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new GetItemByNumberOfPatrimony().handle);
 router.put('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, multer.uploadImage.single('image'), new UpdateItemController().handle);
 router.delete('/item/:numberOfPatrimony', new AuthorizationJWTAdmin().handle, new DeleteItemController().handle);

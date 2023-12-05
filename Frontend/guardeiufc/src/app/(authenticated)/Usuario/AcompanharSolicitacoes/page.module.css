@@ -1,0 +1,238 @@
+.main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+.Principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.EstilobotaoMenu {
+  background-color: #128c7e;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-right: 3%;
+  cursor: pointer;
+  border-radius: 15px;
+}
+.EstilobotaoMenu:hover {
+  background-color: #45a049;
+}
+
+.ContainerPrincipalDescricao{
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 3%;
+}
+
+.containerDescricao{
+  width: 70%;
+  height: 90%;
+  background-color: #379080;
+  padding: 2%;
+  border-radius: 10px;
+}
+
+.containerSecundario{
+  margin-top: 2%;
+  width: 70%;
+  height: 90%;
+  background-color: #7a8381;
+  padding: 2%;
+  border-radius: 10px;
+}
+.containerBuscar {
+  width: 70%;
+  height: 90%;
+  background-color: #379080;
+  padding: 2%;
+  border-radius: 10px;
+  margin-bottom: 1.5%;
+}
+
+.divisao {
+  display: flex;
+  width: 100%;
+}
+
+.inputContainer {
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+.inputContainer1 {
+  margin-right: 50%;
+  flex: 1;
+  flex-direction: column;
+}
+
+.verticalContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.horizontalContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 5%;
+}
+
+.textarea {
+  height: 70px;
+  max-height: 100px;
+  resize: none; 
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ccc;
+  margin-bottom: 12px;
+}
+
+.Nomes {
+  margin-bottom: 5px;
+  color: white;
+}
+
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ccc;
+  margin-bottom: 12px;
+}
+
+.areaDeferimento {
+  cursor: pointer;
+}
+
+.areaDeferimento > p {
+  display: inline;
+  color: white;
+  cursor: pointer;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4caf50; 
+}
+
+
+.input::placeholder {
+  color: #000000;
+}
+
+.input:hover {
+  border-color: #555;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.textarea::placeholder {
+  color: #000000;
+}
+
+.textarea:hover {
+  border-color: #555;
+}
+
+.botoesInferiores {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.estiloBotao {
+  margin-top: 2%;
+  background-color: #17a4cf;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  width: 50vw;
+  border-radius: 15px;
+}
+
+.estiloBotao:active {
+  background-color: #128c7e;
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.estilotitulo {
+  margin-top: 2%;
+  margin-bottom: 1.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #379080;
+}
+
+.radioGroup {
+  display: flex;
+  margin-bottom: 2%;
+}
+
+.radioGroup label {
+  margin-right: 20px;
+}
+
+.radioGroup input {
+  margin-right: 5px;
+}
+
+.tabela{
+  width: 90%;
+  height: 100%;
+}
+
+.areaVisualizar {
+  text-align: center;
+}
+
+.lupa {
+  cursor: pointer;
+}
+
+.downloadIcon {
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 780px) {
+  .divisao {
+    flex-direction: column;
+  }
+
+  .inputContainer,
+  .inputContainer1,
+  .inputContainer2,
+  .inputContainerPatrimonio {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+.textareaEstilizado {
+  width: 100%;
+}

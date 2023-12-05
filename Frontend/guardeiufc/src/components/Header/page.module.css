@@ -1,0 +1,71 @@
+.main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+.fixedheader {
+  background-color: #379080;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.profileMenu {
+  display: flex;
+  align-items: center;
+}
+
+.profileIcon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 8%;
+  right: 0;
+  margin-right: 1%;
+  padding: 0.8%;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.menu div {
+  color: #379080;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+  cursor: pointer;
+}
+
+.iconMenu {
+  margin-right: 6px;
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.menuaberto {
+  display: flex;
+  flex-direction: column;
+}
+.menuItem {
+  transition: background-color 0.3s ease;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.menuItem:hover {
+  background-color: #d16666;
+}
+.titulo{
+  cursor:pointer
+}

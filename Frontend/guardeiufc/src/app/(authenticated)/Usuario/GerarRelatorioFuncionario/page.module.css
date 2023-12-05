@@ -1,0 +1,241 @@
+.main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.Principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.EstilobotaoMenu {
+  background-color: #128c7e;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-right: 3%;
+  cursor: pointer;
+  border-radius: 15px;
+}
+.EstilobotaoMenu:hover {
+  background-color: #45a049;
+}
+
+.ContainerPrincipalEdicao {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.containerEdicao {
+  width: 70%;
+  height: 90%;
+  background-color: #379080;
+  padding: 2%;
+  border-radius: 10px;
+}
+.containerBuscar {
+  width: 70%;
+  height: 90%;
+  background-color: #379080;
+  padding: 2%;
+  border-radius: 10px;
+  margin-bottom: 1.5%;
+}
+
+.conteudo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divisao {
+  display: flex;
+  width: 100%;
+}
+
+.inputContainer {
+  margin-right: 5%;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+.inputContainer1 {
+  margin-right: 5%;
+  flex: 1;
+  flex-direction: column;
+}
+
+.inputContainer2 {
+  flex: 2;
+  margin-right: 5%;
+  flex-direction: column;
+}
+
+.inputContainerPatrimonio {
+  width: 40%;
+  margin-right: 4%;
+  flex-direction: column;
+}
+
+.Nomes {
+  margin-bottom: 5px;
+  color: white;
+}
+
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ccc;
+  margin-bottom: 12px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4caf50; 
+}
+
+.input::placeholder {
+  color: #000000;
+}
+
+
+.input:hover {
+  border-color: #555;
+}
+
+.textarea {
+  height: 70px;
+  max-height: 100px;
+  resize: none; 
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ccc;
+  margin-bottom: 12px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.textarea::placeholder {
+  color: #000000;
+}
+
+.textarea:hover {
+  border-color: #555;
+}
+
+.botoesInferiores {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.estiloBotao {
+  margin-top: 2%;
+  background-color: #17a4cf;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  width: 50vw;
+  border-radius: 15px;
+}
+
+.estiloBotaoGerar {
+  margin-top: 2%;
+  background-color: gray;
+  margin-bottom: 5%;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 15px;
+  font-size: 100%;
+}
+
+.estiloBotao:active {
+  background-color: #128c7e;
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.estiloBotaoGerar:active {
+  background-color: #b47f6a;
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.estilotitulo {
+  margin-top: 2%;
+  margin-bottom: 1%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #379080;
+}
+
+.estilosubtitulo{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #0d0e0d;
+}
+
+.tabela{
+  width: 90%;
+  height: 100%;
+}
+
+.sinalizadorCampoNumInvalido {
+  color: white;
+}
+
+.notFound {
+  color: red;
+}
+
+@media (max-width: 780px) {
+  .divisao {
+    flex-direction: column;
+  }
+
+  .inputContainer,
+  .inputContainer1,
+  .inputContainer2,
+  .inputContainerPatrimonio {
+    width: 100%;
+    margin-right: 0;
+  }
+  .estilotitulo{
+    font-size: 1.8em;
+  }
+  .estilosubtitulo{
+    font-size: 1em;
+  }
+}

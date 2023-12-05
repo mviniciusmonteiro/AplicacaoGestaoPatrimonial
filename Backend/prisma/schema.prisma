@@ -53,10 +53,10 @@ model Local {
 model Project {
   id Int @id @default(autoincrement())
   name String @unique
-  coordinatorRegistration Int? // Chave estrangeira
+  coordinatorRegistration Int // Chave estrangeira
 
   // Campos de relacionamento: apenas definem relacionamento, não existem no banco
-  coordinatedBy Employee? @relation(fields: [coordinatorRegistration], references: [registration])
+  coordinatedBy Employee @relation(fields: [coordinatorRegistration], references: [registration])
   linkedItems Item[]
 
   @@map("projects")
@@ -82,7 +82,7 @@ model Item {
 
 model ReportRequest {
   id Int @id @default(autoincrement())
-  requestedBy Int?
+  requestedBy Int
   answeredBy Int?
   description String
   motiveOfRequest String?
@@ -93,7 +93,7 @@ model ReportRequest {
   filePath String?
 
   // Campos de relacionamento
-  isRequested Employee? @relation(fields: [requestedBy], references: [registration], name: "isRequested")
+  isRequested Employee @relation(fields: [requestedBy], references: [registration], name: "isRequested")
   isAnswered Employee? @relation(fields: [answeredBy], references: [registration], name: "isAnswered")
 
   @@map("report_requests")

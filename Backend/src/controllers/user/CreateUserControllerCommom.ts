@@ -11,7 +11,7 @@ class CreateUserControllerCommom {
             let _isAdmin = isAdmin == undefined ? false : isAdmin;
 
             if (!(username && password && registration && name && email)) {
-                return res.status(400).json({mensagem: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios"});
+                return res.status(400).json({message: "Nome de usuário, senha, matrícula, nome e email são campos obrigatórios!"});
             }
 
             // Verificando se já existe usuário com mesmo username ou se matrícula do funcionário já está vinculada a um usuário
@@ -25,7 +25,7 @@ class CreateUserControllerCommom {
             });
 
             if (userAlreadyExistOrEmpAlreadyLinked) {
-                return res.status(400).json({mensagem: "Há um usuário cadastrado com mesmo nome de usuário ou matrícula informada já está vinculada a um usuário"});
+                return res.status(400).json({message: "Há um usuário cadastrado com mesmo nome de usuário ou matrícula informada já está vinculada a um usuário!"});
             }
 
             // Verificando se já existe um funcionário com mesma matrícula
@@ -38,7 +38,7 @@ class CreateUserControllerCommom {
             if (employee) {
                 // Há funcionário cadastrado com mesma matrícula. Verifica se os dados inseridos são diferentes dos dados do funcionário cadastrado. Se sim, informa erro
                 if (employee.name.toLowerCase() != name.toLowerCase() || employee.email.toLowerCase() != email.toLowerCase()) {
-                    return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesma matrícula, mas com nome e email diferentes dos que foram informados pelo usuário. Contacte o administrador"});
+                    return res.status(400).json({message: "Há um funcionário cadastrado com mesma matrícula, mas com nome e/ou email diferentes dos que foram informados. Contacte o administrador!"});
                 }
             } else {
                 // Matrícula é única: verifica se email está vinculado a outro funcionário
@@ -46,7 +46,7 @@ class CreateUserControllerCommom {
                     where: { email: { equals: email, mode: 'insensitive' } }
                 });
                 if (emailAlreadyExist) {
-                    return res.status(400).json({mensagem: "Há um funcionário cadastrado com mesmo email"});
+                    return res.status(400).json({message: "Há um funcionário cadastrado com mesmo email!"});
                 }
             }
 

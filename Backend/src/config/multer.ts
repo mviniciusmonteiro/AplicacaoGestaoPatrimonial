@@ -8,7 +8,7 @@ type FileNameCallback = (error: Error | null, filename: String) => void;
 
 export const imageStorage = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: DestinationCallback) => {
-        cb(null, process.env.UPLOADS_PATH +  '/images');
+        cb(null, process.env.UPLOADS_IMG_PATH + '');
     },
     filename: (req: Request, file: Express.Multer.File, cb: FileNameCallback) => {
         const ext = file.mimetype.split("/")[1];

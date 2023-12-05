@@ -1,0 +1,81 @@
+.main {
+  background-color: #fff;
+  width: 100vw;
+  min-height: 100vh; 
+}
+.containerMenu{
+  width: 10%;
+}
+.telaPrincipal {
+  display: flex;
+  flex-direction: row;
+}
+.container{
+  display: flex;
+  flex-direction: row;
+}
+.textoPrincipal {
+  font-size: 270%;
+  width: 40vw;
+  font-weight: bold;
+  color: #379080;
+  margin-top: 5%;
+}
+
+.textoContainer { 
+  text-align: center; 
+  font-weight: bold;
+  font-size: 100%;
+}
+
+.containerVazio {
+  width: 64%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25%;
+  margin-top: 25%;
+  padding: 10px;
+  font-size: 1.1em;
+  color: #379080;
+  border-radius: 10px;
+  background-color: #f6f6f6;
+  line-height: 1.5;
+}
+
+.telaSecundaria {
+  flex-direction: column;
+}
+
+.imagemContainer {
+  margin-top: 9%;
+  margin-right: 3%;
+  width: 42%;
+}
+
+.imagemContainer .div {
+  position: unset !important;
+}
+
+.imagemContainer .image {
+  object-fit: contain;
+  width: 100% !important;
+  position: relative !important;
+  height: unset !important;
+}
+@media only screen and (max-width: 600px) {
+  .textoPrincipal {
+    font-size: 170%;
+    width: 80vw;
+  }
+  .containerVazio{
+    width: 100%;
+  }
+  .textoContainer{
+    font-size: 80%;
+  }
+
+  .imagemContainer {
+    display:none;
+  }
+}

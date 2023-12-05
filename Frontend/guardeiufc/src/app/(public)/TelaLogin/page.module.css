@@ -1,0 +1,108 @@
+.imagemContainer {
+
+    width: 50%;
+  
+    .div {
+      position: unset !important;
+    }
+  
+    .image {
+      object-fit: contain;
+      width: 100% !important;
+      position: relative !important;
+      height: unset !important;
+    }
+}
+
+.main{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* styles.module.css */
+
+.containerEntrada {
+    width: 45%;
+    margin:  auto;
+    padding: 2%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-right: 5%;
+  }
+  
+.titulo {
+    text-align: center;
+    color:#379080; 
+    margin-bottom: 7%;
+}
+  
+.dadosEntrada {
+    margin-top: 20px;
+}
+  
+.Nomes {
+    margin-bottom: 8px;
+    color: #000000;
+}
+  
+.input {
+    width: 100%;
+    background-color: #ccc;
+    padding: 3.5%;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+  
+.botaoLogin {
+    background-color: #379080;
+    color: #fff;
+    padding: 3.6%;
+    text-align: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.botaoLogin:active{
+  transform: translateY(2px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.textoBotao{
+    font-size: 1.2em;
+    font-weight: bold;;
+}
+  
+.textosSaida {
+    margin-top: 20px;
+    color: #666;
+}
+  
+.textosSaida a {
+    color: #379080;
+    text-decoration: none;
+}
+  
+.textosSaida a:hover {
+    text-decoration: underline;
+}
+  
+@media (max-width: 768px) {
+    .main {
+      flex-direction: column; /* Altera para layout de coluna em telas menores */
+      align-items: center; 
+    }
+  
+    .imagemContainer {
+      margin-bottom: 15px; /* Adiciona margem para separar os elementos */
+    }
+  
+    .containerEntrada {
+      width: 90%; /* Ajusta a largura do formulário */
+      height: auto;
+      margin-bottom: 2%; /* Ajusta a altura automaticamente com base no conteúdo */
+    }
+  }

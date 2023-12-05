@@ -76,7 +76,7 @@ class UpdateItemController {
                 // Usuário enviou uma imagem
                 // Apaga imagem antiga e multer irá inserir a nova
                 if (oldItem.imageName)
-                    fs.unlinkSync(process.env.UPLOADS_PATH + '/images/' + oldItem.imageName);
+                    fs.unlinkSync(process.env.UPLOADS_IMG_PATH + '/' + oldItem.imageName);
             }
 
             // Atualizando dados do item
