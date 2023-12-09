@@ -18,20 +18,34 @@ class DeleteUserController {
             if (!user) {
                 return res.status(400).json({mensagem: "Usuário não encontrado"});
             }
-
-            // Deletando dados do funcionário
-            const deletedEmp = await database.employee.delete({
-                where: {
-                    registration: user.employeeRegistration
+           
+            try {
+                // Deletando dados do usuário
+                const deletedUser = await database.user.delete({
+                    where: { id: user.id }
+                });
+                // Deletando dados do funcionário
+                const deletedEmp = await database.employee.delete({
+                    where: {
+                        registration: user.employeeRegistration
+                    }
+                });
+                return res.status(200).json({deletedUser, deletedEmp});
+            } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == 'P2003') {
+                    // Recadastrando dados do usuário excluído
+                    await database.user.create({
+                        data: {
+                            username: user.username,
+                            password: user.password,
+                            employeeRegistration: user.employeeRegistration,
+                            isAdmin: user.isAdmin
+                        }
+                    });
+                    // Um erro de restrição de chave ocorreu, informa o fato
+                    return res.status(400).json({mensagem: "Usuário não pode ser excluído pois funcionário associado está vinculado a Projeto ou a uma solicitação de relatório!"});
                 }
-            });            
-
-            // Deletando dados do usuário
-            const deletedUser = await database.user.delete({
-                where: { id: user.id }
-            });
-
-            return res.status(200).json({deletedUser, deletedEmp});
+            }
         } catch (error) {
             // Tratando erro de restrição de chave
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == 'P2003') {
